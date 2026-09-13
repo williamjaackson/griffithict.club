@@ -8,32 +8,32 @@ import { Section, SectionHeading } from '@/components/ui/section'
 /**
  * The homepage's entry point into the contact dialog.
  *
- * Deliberately not surfaced. A grey band here would end against the red
- * call-to-action's top margin and read as a stray white stripe between the two.
+ * Surfaced, and it meets the red call-to-action below it edge to edge. The two
+ * bands reading as one block is the point: a white gap between them left this
+ * looking like a stray stripe rather than a section.
+ *
+ * Everything is left-aligned and the heading stays well under the banner's. An
+ * earlier pass hung the buttons off the right edge, which left a few hundred
+ * pixels of empty grey in the middle and set this competing with the banner it
+ * is meant to sit beneath.
  */
 export function ContactSection({ contact }: { contact: Contact }) {
   const { setOpen: setContactOpen } = useDialog('contact')
   const { setOpen: setSponsorshipOpen } = useDialog('sponsorship')
 
   return (
-    <Section id="contact" className="pt-[clamp(52px,7vw,90px)]">
-      <div className="wide:grid wide:grid-cols-[repeat(auto-fit,minmax(min(100%,320px),1fr))] wide:items-center wide:gap-[clamp(28px,4vw,56px)] flex flex-col gap-[clamp(20px,2.5vw,28px)]">
-        <div className="flex flex-col items-start gap-[clamp(12px,1.6vw,18px)]">
-          <SectionHeading>Contact</SectionHeading>
-          <h3 className="m-0 text-[clamp(30px,4vw,54px)] leading-[0.98] font-extrabold tracking-[-0.035em] text-balance [font-stretch:114%]">
-            {contact.heading}
-          </h3>
-          <p className="text-body m-0 max-w-[44ch] text-[clamp(16px,1.4vw,18px)] leading-[1.6] text-pretty">
-            {contact.body}
-          </p>
-        </div>
+    <Section id="contact" surface className="mt-[clamp(52px,7vw,90px)] py-[clamp(36px,4.5vw,60px)]">
+      <div className="flex flex-col items-start gap-[clamp(12px,1.4vw,16px)]">
+        <SectionHeading>Contact</SectionHeading>
+        <h3 className="m-0 text-[clamp(28px,3.2vw,44px)] leading-[1.02] font-extrabold tracking-[-0.035em] text-balance [font-stretch:112%]">
+          {contact.heading}
+        </h3>
+        <p className="text-body m-0 max-w-[52ch] text-[clamp(16px,1.4vw,18px)] leading-[1.6] text-pretty">
+          {contact.body}
+        </p>
 
-        <div className="wide:items-end wide:justify-self-end flex flex-col items-start gap-[18px]">
-          <Button
-            size="lg"
-            onClick={() => setContactOpen(true)}
-            className="wide:w-auto w-full whitespace-nowrap"
-          >
+        <div className="mt-2 flex flex-wrap items-center gap-x-7 gap-y-4">
+          <Button onClick={() => setContactOpen(true)} className="whitespace-nowrap">
             Send us a message
           </Button>
           {/*
