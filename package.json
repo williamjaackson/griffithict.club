@@ -23,7 +23,9 @@
     "brand:og": "./scripts/make-og-image.sh",
     "funnel": "pnpm --filter @gict/funnel dev",
     "funnel:commands": "pnpm --filter @gict/funnel commands",
-    "icons": "./scripts/make-icons.sh"
+    "icons": "./scripts/make-icons.sh",
+    "reimburse": "pnpm --filter @gict/reimburse dev",
+    "reimburse:commands": "pnpm --filter @gict/reimburse commands"
   },
   "devDependencies": {
     "prettier": "^3.6.2",
