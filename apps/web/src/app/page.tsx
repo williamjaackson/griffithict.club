@@ -1,7 +1,8 @@
 import { Suspense } from 'react'
-import { eventTypes, joinSteps, links, site, sponsors } from '@/content'
+import { contact, eventTypes, joinSteps, links, site, sponsors } from '@/content'
 import { NextEventCard, UpcomingEvents, UpcomingEventsFallback } from '@/components/events/upcoming'
 import { CommitteeSection } from '@/components/committee/committee-section'
+import { ContactSection } from '@/components/contact/contact-section'
 import { currentCommittee } from '@/lib/clock'
 import { CtaBanner } from '@/components/home/cta-banner'
 import { Hero } from '@/components/home/hero'
@@ -39,6 +40,7 @@ export default async function HomePage() {
       />
       <JoinSteps steps={joinSteps} links={links} />
       <CommitteeSection roles={committee} />
+      <ContactSection contact={contact} />
       <CtaBanner links={links} />
     </main>
   )

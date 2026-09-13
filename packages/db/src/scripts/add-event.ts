@@ -15,7 +15,10 @@
 import { parseArgs } from 'node:util'
 import { sql } from 'drizzle-orm'
 import { createDatabase } from '../client'
+import { loadRootEnv } from '../env'
 import { events } from '../schema'
+
+loadRootEnv()
 
 const BRISBANE_OFFSET = '+10:00'
 

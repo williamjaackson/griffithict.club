@@ -15,6 +15,13 @@
       "when": 1789290291552,
       "tag": "0001_event_publish_at",
       "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "7",
+      "when": 1789306627410,
+      "tag": "0002_contact_enquiries",
+      "breakpoints": true
     }
   ]
 }

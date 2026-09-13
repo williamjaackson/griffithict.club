@@ -156,19 +156,30 @@ certbot certificates
 certbot renew --dry-run
 ```
 
-## Rotating the Discord webhook
+## Rotating a Discord webhook
 
-1. Discord → committee channel → Edit Channel → Integrations → Webhooks.
+There are two, one per form:
+
+| Env var                       | Form                     | Table                   |
+| ----------------------------- | ------------------------ | ----------------------- |
+| `DISCORD_WEBHOOK_URL`         | Sponsorship              | `sponsorship_enquiries` |
+| `DISCORD_CONTACT_WEBHOOK_URL` | Contact, on the homepage | `contact_enquiries`     |
+
+Both ping `DISCORD_COMMITTEE_ROLE_ID`, which is not a secret.
+
+1. Discord → the channel → Edit Channel → Integrations → Webhooks.
 2. Delete the old one, create a new one, copy the URL.
-3. On the VPS, edit `DISCORD_WEBHOOK_URL` in `/opt/gict/.env`.
-4. `docker compose up -d web`.
-5. Send a test enquiry through the sponsorship form.
+3. On the host, edit the variable in `/etc/club/ict-web.env`.
+4. `docker compose -f /srv/apps/ict-web/compose.yaml up -d web`.
+5. Send a test through the form it belongs to.
 
 Enquiries are written to the database as well, so a broken webhook loses the
-notification but not the lead. Check for missed ones:
+notification but not the lead. Anything with a null `delivered_at` never reached
+Discord:
 
 ```sql
 SELECT * FROM sponsorship_enquiries WHERE delivered_at IS NULL ORDER BY created_at DESC;
+SELECT * FROM contact_enquiries WHERE delivered_at IS NULL ORDER BY created_at DESC;
 ```
 
 ## The deploy key

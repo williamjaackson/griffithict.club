@@ -1,4 +1,8 @@
 import type { NextConfig } from 'next'
+import { loadRootEnv } from '@gict/db/env'
+
+// Next only looks for .env in apps/web; the repo keeps one at the workspace root.
+loadRootEnv()
 
 const nextConfig: NextConfig = {
   // Self-hosted in Docker. Produces a minimal server bundle in .next/standalone.

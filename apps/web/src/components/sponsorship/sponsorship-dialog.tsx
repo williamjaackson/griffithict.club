@@ -5,15 +5,11 @@ import type { Sponsorship } from '@/content/schema'
 import { submitSponsorshipEnquiry } from '@/app/_actions/sponsorship'
 import { Dialog, DialogTitle } from '@/components/ui/dialog'
 import { Button } from '@/components/ui/button'
+import { FieldLabel, Honeypot, TextArea, TextField } from '@/components/ui/field'
 import { Eyebrow } from '@/components/ui/section'
 import { useSponsorship } from './sponsorship-context'
 
 type Step = 'tier' | 'details' | 'done'
-
-const FIELD =
-  'border-edge focus:border-ink box-border min-h-[54px] w-full rounded-[14px] border-2 bg-white px-4 font-[inherit] text-base focus:outline-none'
-const LABEL =
-  'text-muted inline-flex items-center gap-[5px] text-xs font-bold tracking-[0.1em] uppercase'
 
 export function SponsorshipDialog({
   tiers,
@@ -125,11 +121,8 @@ export function SponsorshipDialog({
           </div>
 
           <fieldset className="flex flex-col gap-[9px] border-none p-0">
-            <legend className={LABEL}>
-              Sponsorship period{' '}
-              <span className="text-brand" aria-hidden="true">
-                *
-              </span>
+            <legend>
+              <FieldLabel required>Sponsorship period</FieldLabel>
             </legend>
             {periods.map((period) => (
               <label
@@ -153,37 +146,46 @@ export function SponsorshipDialog({
           </fieldset>
 
           <div className="grid grid-cols-[repeat(auto-fit,minmax(min(100%,240px),1fr))] gap-[clamp(14px,1.8vw,20px)]">
-            <Field name="organisation" label="Organisation" placeholder="Company name" required />
-            <Field name="contactName" label="Contact name" placeholder="Full name" required />
-            <Field
+            <TextField
+              name="organisation"
+              label="Organisation"
+              placeholder="Company name"
+              maxLength={200}
+              required
+            />
+            <TextField
+              name="contactName"
+              label="Contact name"
+              placeholder="Full name"
+              maxLength={200}
+              required
+            />
+            <TextField
               name="email"
               label="Email"
               type="email"
               placeholder="name@company.com"
+              maxLength={320}
               required
             />
-            <Field name="phone" label="Phone" type="tel" placeholder="Optional" />
-            <label className="col-span-full flex min-w-0 flex-col gap-[7px]">
-              <span className={LABEL}>What are you hoping to get out of it?</span>
-              <textarea
-                name="message"
-                rows={4}
-                maxLength={2000}
-                placeholder="Hiring graduates, brand awareness, running a workshop with us, anything we should know."
-                className="border-edge focus:border-ink box-border w-full resize-y rounded-[14px] border-2 bg-white px-4 py-[14px] font-[inherit] text-base leading-[1.5] focus:outline-none"
-              />
-            </label>
+            <TextField
+              name="phone"
+              label="Phone"
+              type="tel"
+              placeholder="Optional"
+              maxLength={40}
+            />
+            <TextArea
+              name="message"
+              label="What are you hoping to get out of it?"
+              rows={4}
+              maxLength={2000}
+              placeholder="Hiring graduates, brand awareness, running a workshop with us, anything we should know."
+              className="col-span-full"
+            />
           </div>
 
-          {/* Honeypot. Hidden from people, irresistible to bots. */}
-          <input
-            type="text"
-            name="website"
-            tabIndex={-1}
-            autoComplete="off"
-            aria-hidden="true"
-            className="absolute h-0 w-0 overflow-hidden opacity-0"
-          />
+          <Honeypot />
 
           {error && (
             <p role="alert" className="text-brand m-0 text-[15px]">
@@ -232,41 +234,6 @@ export function SponsorshipDialog({
         </div>
       )}
     </Dialog>
-  )
-}
-
-function Field({
-  name,
-  label,
-  type = 'text',
-  placeholder,
-  required,
-}: {
-  name: string
-  label: string
-  type?: string
-  placeholder?: string
-  required?: boolean
-}) {
-  return (
-    <label className="flex min-w-0 flex-col gap-[7px]">
-      <span className={LABEL}>
-        {label}
-        {required && (
-          <span className="text-brand" aria-hidden="true">
-            *
-          </span>
-        )}
-      </span>
-      <input
-        type={type}
-        name={name}
-        placeholder={placeholder}
-        required={required}
-        maxLength={320}
-        className={FIELD}
-      />
-    </label>
   )
 }
 

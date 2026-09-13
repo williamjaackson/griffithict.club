@@ -1,0 +1,13 @@
+# The "Get in touch" section on the homepage.
+#
+# `topics` are the options in the About select. They are stored on the enquiry as
+# written, so renaming one here leaves old rows reading as they were sent.
+heading: Get in touch
+body: >-
+  Questions about the club, working with us, or anything the Discord cannot
+  answer. Sponsorship has its own form.
+topics:
+  - General question
+  - Partnership or collaboration
+  - Media or press
+  - Something else
