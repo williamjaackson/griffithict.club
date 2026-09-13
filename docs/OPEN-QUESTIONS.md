@@ -5,13 +5,16 @@ resolved.
 
 ## Committee headshots
 
-Tylar Pinniger has one. The other three still render the hatch placeholder.
+Tylar Pinniger and Owen Richardson have one. The rest still render the hatch
+placeholder, on the cards and on the role-history timeline.
 
 Add a photo by dropping it in `public/photos/committee/` and adding a `photo:` to
 that person's term in `committee.yaml` — the thumbnail swaps itself. The photo
 belongs to the term, not the role, so a past holder keeps theirs.
 
-Needs: three more, same treatment.
+Resize before committing one. A phone screenshot is a couple of megabytes and
+image optimisation is off, so it would ship at full size for a 76px avatar. Around
+400px on the long edge as JPEG is plenty.
 
 ## `/sponsors`
 
