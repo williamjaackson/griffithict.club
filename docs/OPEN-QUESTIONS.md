@@ -5,8 +5,13 @@ resolved.
 
 ## Committee headshots
 
-Tylar Pinniger and Owen Richardson have one. The rest still render the hatch
-placeholder, on the cards and on the role-history timeline.
+Four of six terms have one. William Jackson and Zain Abrahams still render the
+hatch placeholder, on the cards and on the role-history timeline.
+
+William holds two terms, President now and Treasurer before that, so his photo
+needs listing on both. That repetition is the cost of photos belonging to terms
+rather than people, which is what lets a past holder keep their own face. Worth
+revisiting only if several people start holding several roles.
 
 Add a photo by dropping it in `public/photos/committee/` and adding a `photo:` to
 that person's term in `committee.yaml` — the thumbnail swaps itself. The photo
