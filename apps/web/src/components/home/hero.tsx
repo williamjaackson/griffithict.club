@@ -23,7 +23,7 @@ export function Hero({
   return (
     <Section
       id="top"
-      className="grid grid-cols-1 items-start gap-[clamp(34px,4vw,72px)] pt-[clamp(44px,4.5vw,72px)] pb-[clamp(56px,5vw,80px)] lg:grid-cols-[3fr_2fr]"
+      className="grid grid-cols-1 items-start gap-[clamp(34px,4vw,72px)] pt-[clamp(44px,4.5vw,72px)] pb-[clamp(28px,3vw,44px)] lg:grid-cols-[3fr_2fr]"
     >
       <div className="flex min-w-0 flex-col gap-[clamp(26px,2vw,30px)]">
         <div className="text-brand flex items-center gap-[14px] text-[clamp(10px,1vw,12px)] font-bold tracking-[0.2em] uppercase">

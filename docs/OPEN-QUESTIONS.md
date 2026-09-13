@@ -5,14 +5,13 @@ resolved.
 
 ## Committee headshots
 
-The hero photo is in (`public/photos/hackathon-2026-08.jpg`, August 2026
-hackathon). The four committee thumbnails still render a diagonal hatch
-placeholder in `components/committee/committee-section.tsx`.
+Tylar Pinniger has one. The other three still render the hatch placeholder.
 
-Less urgent than the hero was, since the section reads as a list of names and
-roles rather than looking broken. Still the last placeholder on the page.
+Add a photo by dropping it in `public/photos/committee/` and adding a `photo:` to
+that person's term in `committee.yaml` — the thumbnail swaps itself. The photo
+belongs to the term, not the role, so a past holder keeps theirs.
 
-Needs: four headshots, same treatment, ideally one session.
+Needs: three more, same treatment.
 
 ## `/sponsors`
 

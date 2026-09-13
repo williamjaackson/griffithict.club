@@ -11,7 +11,7 @@ export function SponsorStrip({ sponsors }: { sponsors: Sponsor[] }) {
   return (
     <Section
       id="sponsors"
-      className="flex flex-wrap items-center gap-[clamp(20px,3vw,48px)] py-[clamp(26px,3vw,40px)]"
+      className="flex flex-wrap items-center gap-[clamp(20px,3vw,48px)] pt-[clamp(14px,1.6vw,22px)] pb-[clamp(26px,3vw,40px)]"
     >
       {/*
         A left-aligned row, not a grid. auto-fit columns spread three logos across

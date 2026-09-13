@@ -3,6 +3,8 @@ import { formatDuration, formatTerm, monthOf, termMonths } from './term'
 
 export type ResolvedTerm = {
   name: string
+  /** Headshot path, if this person has one. */
+  photo?: string
   /** `Jul 2026 to Present` */
   term: string
   /** `1 yr 4 mos` */
@@ -35,6 +37,7 @@ export function resolveCommittee(roles: CommitteeRole[], now: Date): ResolvedRol
       .sort((a, b) => b.from.localeCompare(a.from))
       .map((entry) => ({
         name: entry.name,
+        photo: entry.photo,
         term: formatTerm(entry.from, entry.to),
         duration: formatDuration(termMonths(entry.from, entry.to ?? thisMonth)),
         current: !entry.to,

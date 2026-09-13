@@ -56,6 +56,8 @@ const month = z
 const termEntry = z
   .object({
     name: z.string(),
+    /** Headshot, if there is one. Absent falls back to a placeholder. */
+    photo: z.string().startsWith('/').optional(),
     /** First month of the term. */
     from: month,
     /** Last month of the term. Omit it for whoever holds the role now. */

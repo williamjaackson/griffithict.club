@@ -1,7 +1,7 @@
 'use client'
 
 import { useState } from 'react'
-import type { ResolvedRole } from '@/lib/committee'
+import type { ResolvedRole, ResolvedTerm } from '@/lib/committee'
 import { Dialog, DialogTitle } from '@/components/ui/dialog'
 import { Eyebrow, Section, SectionHeading } from '@/components/ui/section'
 
@@ -23,8 +23,7 @@ export function CommitteeSection({ roles }: { roles: ResolvedRole[] }) {
             onClick={() => setOpenIndex(index)}
             className="hover:bg-surface wide:-m-2.5 wide:gap-4 wide:rounded-[20px] wide:p-2.5 -m-2 flex min-w-0 cursor-pointer items-center gap-3 rounded-[18px] border-none bg-transparent p-2 text-left"
           >
-            {/* Placeholder until the committee has headshots. See docs/OPEN-QUESTIONS.md. */}
-            <span className="bg-surface wide:size-[76px] wide:rounded-[22px] size-[52px] flex-none rounded-2xl bg-[repeating-linear-gradient(135deg,#E7E3E0_0_10px,#F4F2F0_10px_20px)]" />
+            <Thumbnail holder={role.holder} />
             <span className="flex min-w-0 flex-col gap-[3px]">
               <span className="wide:text-[clamp(17px,1.5vw,20px)] text-[15px] leading-[1.2] font-bold tracking-[-0.02em] [font-stretch:106%]">
                 {role.holder.name}
@@ -55,6 +54,33 @@ export function CommitteeSection({ roles }: { roles: ResolvedRole[] }) {
         {active && <RoleDetail role={active} />}
       </Dialog>
     </Section>
+  )
+}
+
+/**
+ * A committee member's headshot, or the hatch that stands in for one.
+ *
+ * Both states are here so they cannot drift in size or radius, and so adding a
+ * photo to committee.yaml is the only step needed to swap one for the other.
+ * See docs/OPEN-QUESTIONS.md for the ones still missing.
+ */
+function Thumbnail({ holder }: { holder: ResolvedTerm }) {
+  const shape = 'wide:size-[76px] wide:rounded-[22px] size-[52px] flex-none rounded-2xl'
+
+  if (!holder.photo) {
+    return (
+      <span
+        aria-hidden="true"
+        className={`bg-surface ${shape} bg-[repeating-linear-gradient(135deg,#E7E3E0_0_10px,#F4F2F0_10px_20px)]`}
+      />
+    )
+  }
+
+  return (
+    // The name sits next to this in the same control, so the photo adds nothing
+    // for a screen reader.
+    // eslint-disable-next-line @next/next/no-img-element
+    <img src={holder.photo} alt="" className={`bg-surface ${shape} object-cover`} />
   )
 }
 
