@@ -1,0 +1,15 @@
+name: Griffith ICT Club
+shortName: GICT
+url: https://griffithict.club
+tagline: The other half of your tech degree.
+description: >-
+  Griffith University's IT club for computer science, information technology,
+  cyber security, and software engineering.
+eyebrow: Griffith's Largest Tech Club
+nav:
+  - label: What's on
+    href: '#whats-on'
+  - label: How to join
+    href: '#join'
+  - label: Committee
+    href: '#team'

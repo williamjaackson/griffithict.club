@@ -1,0 +1,53 @@
+# Benefits are a flat list, each tagged with the lowest tier that includes it.
+# A tier shows every benefit at or below its own level, so the cards stay
+# cumulative without repeating anything.
+benefits:
+  - level: 0
+    label: Logo on club website
+  - level: 0
+    label: Social media recognition
+  - level: 0
+    label: Logo at events
+  - level: 1
+    label: Job and internship promotion
+  - level: 1
+    label: Newsletter and email promotion
+  - level: 1
+    label: Promotional materials at events
+  - level: 2
+    label: Access to networking events
+  - level: 2
+    label: Dedicated co-branded event
+  - level: 2
+    label: Highest placement on all materials
+
+tiers:
+  - name: Bronze
+    price: $500
+    blurb: >-
+      Your brand on our materials. Show your support for the student tech
+      community.
+    accent: '#C2410C'
+    tint: '#FDE9DD'
+    mark: >-
+      M12 2c1.4 5.9 4.1 8.6 10 10-5.9 1.4-8.6 4.1-10 10-1.4-5.9-4.1-8.6-10-10
+      5.9-1.4 8.6-4.1 10-10z
+  - name: Silver
+    price: $1,250
+    blurb: >-
+      We actively promote you. Your opportunities reach our members directly.
+    accent: '#4C5A69'
+    tint: '#E6EAEE'
+    mark: >-
+      M14.6 1.2c.5 0 .8.4.7.9l-1.4 6.2h4.4c.7 0 1 .8.6 1.3L9.6 22.4c-.5.6-1.4.1-1.2-.6l1.9-7.5H5.6c-.7
+      0-1.1-.8-.6-1.3L13.9 1.6c.2-.3.4-.4.7-.4z
+  - name: Gold
+    price: $2,500
+    blurb: >-
+      The full partnership. We build events around you and give you top billing
+      everywhere.
+    accent: '#B8860B'
+    tint: '#FAF0D2'
+    mark: >-
+      M2.4 19.8c-.6 0-1-.5-.9-1.1l2-11.9c.1-.8 1.1-1.1 1.6-.5l3.7 4 2.3-6c.3-.8
+      1.5-.8 1.8 0l2.3 6 3.7-4c.5-.6 1.5-.3 1.6.5l2 11.9c.1.6-.3 1.1-.9 1.1z

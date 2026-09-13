@@ -1,3 +1,12 @@
 packages:
   - apps/*
   - packages/*
+
+# Install-time build scripts run arbitrary code, so pnpm makes them opt-in.
+# These are the native binaries the toolchain actually needs.
+allowBuilds:
+  esbuild: true
+  unrs-resolver: true
+
+minimumReleaseAgeExclude:
+  - zod@4.6.4
