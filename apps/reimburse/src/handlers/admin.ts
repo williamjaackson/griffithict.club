@@ -1,41 +1,6 @@
-import { MessageFlags, type ButtonInteraction, type ModalSubmitInteraction } from 'discord.js'
+import { MessageFlags, type ModalSubmitInteraction } from 'discord.js'
 import { reimburseConfig, type Database } from '@gict/db'
-import { claimsFor, configFor } from '../claims'
 import { FIELD_CHANNEL, FIELD_CURRENCY, FIELD_TREASURER } from '../modal'
-import { formatAmount, totalCents } from '../money'
-import { statusText } from '../status'
-
-/** Every claim in the server, for whoever is chasing them. */
-export async function showAllClaims(
-  interaction: ButtonInteraction,
-  database: Database,
-): Promise<void> {
-  const config = await configFor(database, interaction.guildId!)
-  const currency = config?.currency ?? 'AUD'
-  const claims = await claimsFor(database, interaction.guildId!)
-
-  if (claims.length === 0) {
-    await interaction.reply({ content: 'No claims yet.', flags: MessageFlags.Ephemeral })
-    return
-  }
-
-  const outstanding = claims.filter(
-    (claim) => claim.status !== 'paid' && claim.status !== 'rejected',
-  )
-
-  await interaction.reply({
-    content: [
-      '## All claims',
-      ...claims.map(
-        (claim) =>
-          `${statusText(claim.status)} · \`#${claim.reference}\` ${formatAmount(claim.amountCents, currency)} · <@${claim.claimantId}>`,
-      ),
-      `-# ${formatAmount(totalCents(outstanding), currency)} outstanding across ${outstanding.length} claim${outstanding.length === 1 ? '' : 's'}`,
-    ].join('\n'),
-    flags: MessageFlags.Ephemeral,
-    allowedMentions: { parse: [] },
-  })
-}
 
 export async function onSetupSubmit(
   interaction: ModalSubmitInteraction,

@@ -68,8 +68,3 @@ export function formatAmount(cents: number, currency: string): string {
     currencyDisplay: 'narrowSymbol',
   }).format(cents / 100)
 }
-
-/** Sum a column of claims without ever leaving integers. */
-export function totalCents(claims: readonly { amountCents: number }[]): number {
-  return claims.reduce((sum, claim) => sum + claim.amountCents, 0)
-}

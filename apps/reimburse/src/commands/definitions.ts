@@ -1,19 +1,24 @@
 import { SlashCommandBuilder } from 'discord.js'
 
 /**
- * One command. No subcommands, no options, no permission gate.
+ * Two commands, split by what somebody came to do.
  *
- * It opens a dashboard, and everything else is a button on it. That is fewer
- * things to remember than a verb per action, and it is the only arrangement
- * where somebody who has never used the bot can find out what it does: a member
- * had no way of guessing that `/reimbursements bank` existed.
+ * Claiming is the common act and belongs behind one word with nothing in the
+ * way, so /reimbursement opens the form directly. Everything else — chasing
+ * what is outstanding, moving claims on, exports, setup — is a different job
+ * done at a different time, and lives in one screen behind /reimbursements.
  *
- * Ungated because the dashboard shows each person only what is theirs. The
- * committee's buttons appear for the committee and nobody else.
+ * Neither is gated. The console shows each person what is theirs, and the
+ * committee's controls render only for the committee.
  */
-export const reimbursementCommand = new SlashCommandBuilder()
+export const claimCommand = new SlashCommandBuilder()
   .setName('reimbursement')
-  .setDescription('Claim money back, and see where your claims are up to')
+  .setDescription('Claim money back for something you bought')
   .setDMPermission(false)
 
-export const commands = [reimbursementCommand]
+export const consoleCommand = new SlashCommandBuilder()
+  .setName('reimbursements')
+  .setDescription('See and manage claims')
+  .setDMPermission(false)
+
+export const commands = [claimCommand, consoleCommand]

@@ -1,9 +1,16 @@
 import { database as openDatabase, loadBotConfig, shutdownOn } from '@gict/bot-kit'
-import { Client, Events, GatewayIntentBits, MessageFlags } from 'discord.js'
-import { configFor, payeeFor } from './claims'
-import { onSetupSubmit, showAllClaims } from './handlers/admin'
+import {
+  Client,
+  Events,
+  GatewayIntentBits,
+  MessageFlags,
+  type ButtonInteraction,
+  type StringSelectMenuInteraction,
+} from 'discord.js'
+import { configFor, moveAllClaims, payeeFor, type ClaimStatus } from './claims'
+import { onSetupSubmit } from './handlers/admin'
 import { onBankSubmit } from './handlers/bank'
-import { BUTTON, isCommittee, showDashboard } from './handlers/dashboard'
+import { isCommittee, openConsole, PREFIX, renderConsole, type View } from './handlers/console'
 import { onExport } from './handlers/export'
 import { onReviewButton } from './handlers/review'
 import { onClaimSubmit } from './handlers/submit'
@@ -21,8 +28,8 @@ const database = openDatabase(config.databaseUrl)
 
 /*
  * Guilds only. This bot never watches members or messages, it only answers
- * interactions, so it needs no privileged intent and no toggle in the developer
- * portal. Worth knowing when an admin asks what it can see: almost nothing.
+ * interactions, so it needs no privileged intent and nothing enabled in the
+ * developer portal.
  */
 const client = new Client({ intents: [GatewayIntentBits.Guilds] })
 
@@ -32,9 +39,16 @@ client.once(Events.ClientReady, (ready) => {
 
 client.on(Events.InteractionCreate, async (interaction) => {
   try {
-    if (interaction.isChatInputCommand() && interaction.commandName === 'reimbursement') {
-      await showDashboard(interaction, database)
-      return
+    if (interaction.isChatInputCommand()) {
+      if (interaction.commandName === 'reimbursement') {
+        const payee = await payeeFor(database, interaction.guildId!, interaction.user.id)
+        await interaction.showModal(payee ? claimModal() : bankModal(null))
+        return
+      }
+      if (interaction.commandName === 'reimbursements') {
+        await openConsole(interaction, database)
+        return
+      }
     }
 
     if (interaction.isModalSubmit()) {
@@ -46,60 +60,27 @@ client.on(Events.InteractionCreate, async (interaction) => {
         return void (await onSetupSubmit(interaction, database))
     }
 
-    if (!interaction.isButton()) return
-
-    // Moving a claim along, from the post in the review channel.
-    if (interaction.customId.startsWith('claim:')) {
+    // Moving one claim along, from its post in the review channel.
+    if (interaction.isButton() && interaction.customId.startsWith('claim:')) {
       await onReviewButton(interaction, database)
       return
     }
 
-    switch (interaction.customId) {
-      case BUTTON.claim:
-      case 'reimbursement:continue': {
-        const payee = await payeeFor(database, interaction.guildId!, interaction.user.id)
-        await interaction.showModal(payee ? claimModal() : bankModal(null))
+    if (interaction.isButton() || interaction.isStringSelectMenu()) {
+      if (interaction.customId.startsWith(PREFIX)) {
+        await onConsoleControl(interaction, interaction.customId.slice(PREFIX.length))
         return
       }
+    }
 
-      case BUTTON.bank: {
-        const payee = await payeeFor(database, interaction.guildId!, interaction.user.id)
-        await interaction.showModal(bankModal(payee))
-        return
-      }
-
-      case BUTTON.all:
-      case BUTTON.exportClaims:
-      case BUTTON.exportPayments:
-      case BUTTON.setup: {
-        // One gate for every committee button, rather than four copies of it.
-        if (!(await isCommittee(interaction, database))) {
-          await interaction.reply({
-            content: 'That one is for the committee.',
-            flags: MessageFlags.Ephemeral,
-          })
-          return
-        }
-
-        if (interaction.customId === BUTTON.all)
-          return void (await showAllClaims(interaction, database))
-        if (interaction.customId === BUTTON.setup) {
-          await interaction.showModal(setupModal(await configFor(database, interaction.guildId!)))
-          return
-        }
-        await onExport(
-          interaction,
-          database,
-          interaction.customId === BUTTON.exportPayments ? 'payments' : 'claims',
-        )
-        return
-      }
+    // The hand-off out of the bank form, since a modal cannot open a modal.
+    if (interaction.isButton() && interaction.customId === 'reimbursement:continue') {
+      await interaction.showModal(claimModal())
+      return
     }
   } catch (error) {
     console.error('Interaction failed:', error)
     if (!interaction.isRepliable()) return
-    // Without a reply Discord shows "the application did not respond", which
-    // tells the user nothing about what went wrong.
     const message = {
       content: 'Something went wrong there.',
       flags: MessageFlags.Ephemeral,
@@ -111,6 +92,73 @@ client.on(Events.InteractionCreate, async (interaction) => {
     ).catch(() => {})
   }
 })
+
+/** Everything on the management screen. */
+async function onConsoleControl(
+  interaction: ButtonInteraction | StringSelectMenuInteraction,
+  action: string,
+): Promise<void> {
+  const redraw = async (view: View, offset: number) => {
+    const rendered = await renderConsole(interaction, database, view, offset)
+    await interaction.update(rendered)
+  }
+
+  if (interaction.isStringSelectMenu() && action === 'view') {
+    await redraw(interaction.values[0] as View, 0)
+    return
+  }
+
+  if (action.startsWith('page:')) {
+    const [, view, offset] = action.split(':')
+    await redraw(view as View, Number(offset) || 0)
+    return
+  }
+
+  if (action === 'bank') {
+    const payee = await payeeFor(database, interaction.guildId!, interaction.user.id)
+    await interaction.showModal(bankModal(payee))
+    return
+  }
+
+  // One gate for every committee control, rather than a copy of it per action.
+  if (!(await isCommittee(interaction, database))) {
+    await interaction.reply({
+      content: 'That one is for the committee.',
+      flags: MessageFlags.Ephemeral,
+    })
+    return
+  }
+
+  if (action === 'setup') {
+    await interaction.showModal(setupModal(await configFor(database, interaction.guildId!)))
+    return
+  }
+
+  if (action.startsWith('export:')) {
+    if (!interaction.isButton()) return
+    await onExport(interaction, database, action.endsWith('payments') ? 'payments' : 'claims')
+    return
+  }
+
+  if (action.startsWith('bulk:')) {
+    const [, from, to] = action.split(':')
+    const moved = await moveAllClaims(
+      database,
+      interaction.guildId!,
+      from as ClaimStatus,
+      to as ClaimStatus,
+      interaction.user.id,
+    )
+    await redraw(to as View, 0)
+    await interaction.followUp({
+      content:
+        moved === 0
+          ? 'Nothing left to move — somebody got there first.'
+          : `Moved ${moved} claim${moved === 1 ? '' : 's'}.`,
+      flags: MessageFlags.Ephemeral,
+    })
+  }
+}
 
 client.on(Events.Error, (error) => console.error('Gateway error:', error))
 

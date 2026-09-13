@@ -1,4 +1,4 @@
-import { and, desc, eq, sql } from 'drizzle-orm'
+import { and, count, desc, eq, inArray, sql, sum } from 'drizzle-orm'
 import {
   reimburseClaims,
   reimburseConfig,
@@ -184,19 +184,101 @@ export async function receiptsFor(database: Database, claimId: string) {
     .where(eq(reimburseReceipts.claimId, claimId))
 }
 
-export async function claimsFor(
+export type ClaimFilter = { claimantId?: string; status?: ClaimStatus }
+
+function matching(guildId: string, filter: ClaimFilter) {
+  const wheres = [eq(reimburseClaims.guildId, guildId)]
+  if (filter.claimantId) wheres.push(eq(reimburseClaims.claimantId, filter.claimantId))
+  if (filter.status) wheres.push(eq(reimburseClaims.status, filter.status))
+  return and(...wheres)
+}
+
+/** One page, newest first. */
+export async function claimsPage(
   database: Database,
   guildId: string,
-  filter?: { claimantId?: string; status?: ClaimStatus },
+  filter: ClaimFilter,
+  offset: number,
+  limit: number,
 ): Promise<ReimburseClaim[]> {
-  const wheres = [eq(reimburseClaims.guildId, guildId)]
-  if (filter?.claimantId) wheres.push(eq(reimburseClaims.claimantId, filter.claimantId))
-  if (filter?.status) wheres.push(eq(reimburseClaims.status, filter.status))
-
   return database
     .select()
     .from(reimburseClaims)
+    .where(matching(guildId, filter))
+    .orderBy(desc(reimburseClaims.reference))
+    .limit(limit)
+    .offset(offset)
+}
+
+export async function countClaims(
+  database: Database,
+  guildId: string,
+  filter: ClaimFilter,
+): Promise<number> {
+  const [row] = await database
+    .select({ total: count() })
+    .from(reimburseClaims)
+    .where(matching(guildId, filter))
+  return row?.total ?? 0
+}
+
+/** What the server still owes: everything not paid and not rejected. */
+export async function outstanding(
+  database: Database,
+  guildId: string,
+  claimantId?: string,
+): Promise<{ cents: number; claims: number }> {
+  const wheres = [
+    eq(reimburseClaims.guildId, guildId),
+    inArray(reimburseClaims.status, ['pending', 'submitted']),
+  ]
+  if (claimantId) wheres.push(eq(reimburseClaims.claimantId, claimantId))
+
+  const [row] = await database
+    .select({ cents: sum(reimburseClaims.amountCents), claims: count() })
+    .from(reimburseClaims)
     .where(and(...wheres))
-    .orderBy(desc(reimburseClaims.createdAt))
-    .limit(25)
+
+  return { cents: Number(row?.cents ?? 0), claims: row?.claims ?? 0 }
+}
+
+/**
+ * Move every claim in one state to another, in one go.
+ *
+ * The reason this exists: a treasurer does a payment run of a dozen claims in
+ * their banking app and then has to come back and tick a dozen buttons. Doing
+ * it one at a time is where somebody gives up and the records stop matching
+ * reality.
+ *
+ * Still writes an event per claim, so the audit trail reads the same as if they
+ * had been done by hand.
+ */
+export async function moveAllClaims(
+  database: Database,
+  guildId: string,
+  from: ClaimStatus,
+  to: ClaimStatus,
+  actorId: string,
+): Promise<number> {
+  return database.transaction(async (tx) => {
+    const moved = await tx
+      .update(reimburseClaims)
+      .set({ status: to, updatedAt: new Date() })
+      .where(and(eq(reimburseClaims.guildId, guildId), eq(reimburseClaims.status, from)))
+      .returning({ id: reimburseClaims.id })
+
+    if (moved.length === 0) return 0
+
+    await tx.insert(reimburseEvents).values(
+      moved.map((claim) => ({
+        claimId: claim.id,
+        actorId,
+        fromStatus: from,
+        toStatus: to,
+        note: 'Bulk change',
+      })),
+    )
+
+    return moved.length
+  })
 }

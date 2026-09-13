@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest'
-import { formatAmount, parseAmount, totalCents } from '../money'
+import { formatAmount, parseAmount } from '../money'
 
 const cents = (input: string) => {
   const result = parseAmount(input)
@@ -91,17 +91,5 @@ describe('formatAmount', () => {
       const parsed = cents(input)
       expect(cents(formatAmount(parsed, 'AUD'))).toBe(parsed)
     }
-  })
-})
-
-describe('totalCents', () => {
-  it('adds without leaving integers', () => {
-    expect(totalCents([{ amountCents: 1250 }, { amountCents: 2075 }, { amountCents: 5 }])).toBe(
-      3330,
-    )
-  })
-
-  it('is zero for nothing', () => {
-    expect(totalCents([])).toBe(0)
   })
 })

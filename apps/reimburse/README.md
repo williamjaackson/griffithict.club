@@ -31,28 +31,33 @@ pnpm reimburse:commands   # upload the slash commands, after any change to them
 pnpm reimburse            # run it
 ```
 
-Then, in the server: `/reimbursement` → **Setup**.
+Then, in the server: `/reimbursements` → **Setup**.
 
 ## Use
 
-One command:
+Two commands, split by what somebody came to do.
 
 ```
-/reimbursement
+/reimbursement     claim money back
+/reimbursements    see and manage claims
 ```
 
-It opens a private dashboard: your claims, what you are still owed, and buttons
-for everything else. New claim and Bank details for everyone; All claims, Export
-claims, Payment run and Setup for the committee, rendered only for them so
-nobody is shown a button that will refuse them.
+Claiming is the common act, so it opens the form with nothing in the way. The
+first time it asks for bank details first and hands over with a button, because
+Discord will not let a modal submission open another modal.
 
-There are no subcommands, and no permission gate on the command. A verb per
-action meant remembering five of them, and a member had no way of discovering
-that `/reimbursements bank` existed at all. Setup is a modal now that those take
-channel and role pickers, which suits something run once per server and then
-never again.
+`/reimbursements` is one private screen. A treasurer sees the whole server;
+anybody else sees their own claims and the same controls minus the ones they
+cannot use, so there is one screen to maintain rather than two that drift.
 
-Moving a claim along happens on the claim post in the review channel, not here.
+- Filter by state, ten to a page, with the total and what is still outstanding
+- **Mark all N as …** when filtered to pending or submitted. A payment run is a
+  dozen claims at once in a banking app, and ticking a dozen buttons afterwards
+  is where somebody gives up and the records stop matching the bank. Each one
+  still gets its own event, so the trail reads as if they were done by hand.
+- Bank details for everyone; exports and setup for the committee
+
+Moving a single claim along happens on its post in the review channel.
 
 ## Things worth knowing
 
