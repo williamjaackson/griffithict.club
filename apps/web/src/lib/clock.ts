@@ -1,4 +1,6 @@
 import { cacheLife } from 'next/cache'
+import { committee } from '@/content'
+import { resolveCommittee, type ResolvedRole } from './committee'
 import { sponsorshipPeriods } from './sponsorship-period'
 
 /*
@@ -21,4 +23,17 @@ export async function currentYear(): Promise<number> {
   'use cache'
   cacheLife('days')
   return new Date().getUTCFullYear()
+}
+
+/**
+ * Committee roles with their terms worked out.
+ *
+ * The ongoing term's length depends on today's date, so this cannot be computed
+ * during a prerender without freezing the build date into the page. A day is
+ * plenty: the only thing that changes is a month rolling over.
+ */
+export async function currentCommittee(): Promise<ResolvedRole[]> {
+  'use cache'
+  cacheLife('days')
+  return resolveCommittee(committee, new Date())
 }

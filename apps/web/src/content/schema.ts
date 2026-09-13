@@ -37,22 +37,65 @@ export const sponsorsSchema = z
 
 export const eventTypesSchema = z.array(z.object({ title: z.string(), body: z.string() })).min(1)
 
+/** `YYYY-MM`. Sorts and compares correctly as a plain string, which is the point. */
+const month = z
+  .string()
+  .regex(/^\d{4}-(0[1-9]|1[0-2])$/, 'Expected a month as YYYY-MM, e.g. 2026-07')
+
+const termEntry = z
+  .object({
+    name: z.string(),
+    /** First month of the term. */
+    from: month,
+    /** Last month of the term. Omit it for whoever holds the role now. */
+    to: month.optional(),
+  })
+  .refine((t) => !t.to || t.to >= t.from, {
+    message: 'A term cannot end before it starts',
+    path: ['to'],
+  })
+
 export const committeeSchema = z
   .array(
     z.object({
       role: z.string(),
       about: z.string(),
-      // Newest first. The first entry is the current holder, which drives both
-      // the card and the highlighted row in the timeline.
+      /**
+       * Everyone who has held the role. Order does not matter — it is sorted on
+       * load — and the current holder is the entry with no `to`, rather than
+       * whichever one happens to be written first.
+       */
       history: z
-        .array(
-          z.object({
-            name: z.string(),
-            term: z.string(),
-            length: z.string(),
-          }),
-        )
-        .min(1),
+        .array(termEntry)
+        .min(1)
+        .superRefine((history, ctx) => {
+          const current = history.filter((t) => !t.to)
+          if (current.length !== 1) {
+            ctx.addIssue({
+              code: 'custom',
+              message:
+                current.length === 0
+                  ? 'No current holder: exactly one term must have no `to`'
+                  : `Two people cannot hold one role at once: ${current
+                      .map((t) => t.name)
+                      .join(' and ')} both have no \`to\``,
+            })
+          }
+
+          // Overlaps produce a timeline that reads as nonsense, and nothing
+          // downstream would notice.
+          const sorted = [...history].sort((a, b) => a.from.localeCompare(b.from))
+          for (const [i, earlier] of sorted.entries()) {
+            const later = sorted[i + 1]
+            if (!later || !earlier.to) continue
+            if (earlier.to >= later.from) {
+              ctx.addIssue({
+                code: 'custom',
+                message: `${earlier.name} and ${later.name} have overlapping terms`,
+              })
+            }
+          }
+        }),
     }),
   )
   .min(1)
@@ -111,6 +154,7 @@ export type Links = z.infer<typeof linksSchema>
 export type Sponsor = z.infer<typeof sponsorsSchema>[number]
 export type EventType = z.infer<typeof eventTypesSchema>[number]
 export type CommitteeRole = z.infer<typeof committeeSchema>[number]
+export type TermEntry = CommitteeRole['history'][number]
 export type Sponsorship = z.infer<typeof sponsorshipSchema>
 export type SponsorshipTier = Sponsorship['tiers'][number]
 export type JoinStep = z.infer<typeof joinSchema>[number]

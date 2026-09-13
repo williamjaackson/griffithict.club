@@ -1,6 +1,11 @@
-# Each entry is a role, not a person. `history` is newest first, and the first
-# entry is the person currently holding it — that drives both the card and the
-# timeline in the modal.
+# Each entry is a role, not a person, because the role outlives whoever holds it.
+#
+# A term is two months: `from`, and `to` once it ends. Everything shown on the
+# site — the date range, how long it ran, who currently holds the role — is worked
+# out from those, so there is nothing to keep up to date. Leave `to` off the
+# current holder.
+#
+# Order does not matter. The site sorts newest first.
 - role: President
   about: >-
     Sets the club's direction, runs committee meetings, and is the club's point of
@@ -8,11 +13,10 @@
     club puts its name on.
   history:
     - name: William Jackson
-      term: Jul 2026 to Present
-      length: 3 mos
+      from: 2026-07
     - name: Owen Richardson
-      term: Mar 2025 to Jun 2026
-      length: 1 yr 4 mos
+      from: 2025-03
+      to: 2026-06
 
 - role: Vice President
   about: >-
@@ -21,11 +25,10 @@
     the night.
   history:
     - name: Tylar Pinniger
-      term: Feb 2026 to Present
-      length: 8 mos
+      from: 2026-02
     - name: Michael Geurts
-      term: Sep 2025 to Jan 2026
-      length: 5 mos
+      from: 2025-09
+      to: 2026-01
 
 - role: Secretary
   about: >-
@@ -34,11 +37,10 @@
     announcements.
   history:
     - name: Julio Medeiros
-      term: Jul 2026 to Present
-      length: 3 mos
+      from: 2026-07
     - name: Zain Abrahams
-      term: Mar 2025 to Jun 2026
-      length: 1 yr 4 mos
+      from: 2025-03
+      to: 2026-06
 
 - role: Treasurer
   about: >-
@@ -46,8 +48,7 @@
     reimbursements, and reporting the accounts back to members.
   history:
     - name: Novak Bigic
-      term: Jul 2026 to Present
-      length: 3 mos
+      from: 2026-07
     - name: William Jackson
-      term: Mar 2025 to Jun 2026
-      length: 1 yr 4 mos
+      from: 2025-03
+      to: 2026-06
