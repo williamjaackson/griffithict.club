@@ -1,6 +1,7 @@
-import { MessageFlags, type ChatInputCommandInteraction } from 'discord.js'
+import { MessageFlags, PermissionFlagsBits, type ChatInputCommandInteraction } from 'discord.js'
 import { reimburseConfig, type Database } from '@gict/db'
-import { claimsFor, configFor } from '../claims'
+import { claimsFor, configFor, payeeFor } from '../claims'
+import { bankModal } from '../modal'
 import { statusText, type ClaimStatus } from '../status'
 import { formatAmount, totalCents } from '../money'
 
@@ -9,9 +10,47 @@ export async function onAdminCommand(
   database: Database,
 ): Promise<void> {
   const sub = interaction.options.getSubcommand()
+
+  // Open to everyone: your own details, and your own claims.
+  if (sub === 'bank') {
+    const payee = await payeeFor(database, interaction.guildId!, interaction.user.id)
+    await interaction.showModal(bankModal(payee))
+    return
+  }
+  if (sub === 'mine') return list(interaction, database, true)
+
+  if (!(await allowed(interaction, database, sub))) return
+
   if (sub === 'setup') return setup(interaction, database)
   if (sub === 'list') return list(interaction, database, false)
-  if (sub === 'mine') return list(interaction, database, true)
+}
+
+/**
+ * Who may see the rest.
+ *
+ * `setup` changes the server's configuration, so it wants Manage Server.
+ * `list` shows every member's claims and amounts, so the treasurer role counts
+ * too — they are the person the list is for.
+ */
+async function allowed(
+  interaction: ChatInputCommandInteraction,
+  database: Database,
+  sub: string,
+): Promise<boolean> {
+  const isAdmin = interaction.memberPermissions?.has(PermissionFlagsBits.ManageGuild) ?? false
+  if (isAdmin) return true
+
+  if (sub === 'list') {
+    const config = await configFor(database, interaction.guildId!)
+    const member = await interaction.guild?.members.fetch(interaction.user.id)
+    if (config?.treasurerRoleId && member?.roles.cache.has(config.treasurerRoleId)) return true
+  }
+
+  await interaction.reply({
+    content: 'That part is for the committee. `/reimbursements mine` shows your own claims.',
+    flags: MessageFlags.Ephemeral,
+  })
+  return false
 }
 
 async function setup(interaction: ChatInputCommandInteraction, database: Database): Promise<void> {

@@ -15,18 +15,12 @@ import {
   canMoveTo,
   configFor,
   createClaim,
-  rememberPayee,
+  payeeFor,
   type NewReceipt,
 } from '../claims'
 import { formatAmount, parseAmount } from '../money'
-import { formatBankCode, maskAccount, parsePayee, splitBankFields } from '../payee'
-import {
-  FIELD_ACCOUNT_NAME,
-  FIELD_AMOUNT,
-  FIELD_BANK_CODE,
-  FIELD_DESCRIPTION,
-  FIELD_RECEIPT,
-} from '../modal'
+import { formatBankCode, maskAccount } from '../payee'
+import { FIELD_AMOUNT, FIELD_DESCRIPTION, FIELD_RECEIPT } from '../modal'
 import { STATUS } from '../status'
 
 /** Discord's own ceiling for a free upload. Anything larger never arrives. */
@@ -59,14 +53,17 @@ export async function onClaimSubmit(
     return
   }
 
-  const bank = splitBankFields(interaction.fields.getTextInputValue(FIELD_BANK_CODE))
-  const payee = parsePayee(
-    interaction.fields.getTextInputValue(FIELD_ACCOUNT_NAME),
-    bank.bankCode,
-    bank.accountNumber,
-  )
-  if (!payee.ok) {
-    await interaction.reply({ content: payee.error, flags: MessageFlags.Ephemeral })
+  /*
+   * Read rather than asked for. The claim form has no room for bank details and
+   * nobody wants to retype them every time, so /reimbursement sends a first-time
+   * claimant through the bank modal before ever showing this one.
+   */
+  const payee = await payeeFor(database, interaction.guildId, interaction.user.id)
+  if (!payee) {
+    await interaction.reply({
+      content: 'Add your bank details first with `/reimbursements bank`.',
+      flags: MessageFlags.Ephemeral,
+    })
     return
   }
 
@@ -106,11 +103,8 @@ export async function onClaimSubmit(
     amountCents: amount.cents,
     description,
     receipts,
-    payee: payee.details,
+    payee,
   })
-
-  // Kept so the next claim comes pre-filled rather than retyped.
-  await rememberPayee(database, interaction.guildId, interaction.user.id, payee.details)
 
   await post(interaction, database, claim, config.reviewChannelId, config.currency, receipts)
 

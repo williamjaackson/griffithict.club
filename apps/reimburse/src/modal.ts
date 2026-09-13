@@ -1,7 +1,9 @@
 import { ModalBuilder, TextInputStyle } from 'discord.js'
 import type { ReimbursePayee } from '@gict/db'
 
-export const MODAL_ID = 'reimbursement:new'
+export const CLAIM_MODAL_ID = 'reimbursement:claim'
+export const BANK_MODAL_ID = 'reimbursement:bank'
+
 export const FIELD_AMOUNT = 'amount'
 export const FIELD_DESCRIPTION = 'description'
 export const FIELD_RECEIPT = 'receipt'
@@ -9,24 +11,23 @@ export const FIELD_ACCOUNT_NAME = 'accountName'
 export const FIELD_BANK_CODE = 'bankCode'
 export const FIELD_ACCOUNT_NUMBER = 'accountNumber'
 
-/**
- * The claim form.
+/*
+ * Two modals rather than one.
  *
- * A file upload inside a modal, which Discord only made possible in late 2025.
- * Before that a receipt had to come in as a slash command attachment option,
- * which meant picking the file before seeing the form.
+ * A modal holds five components, and the claim needs three while the bank
+ * details need three. An earlier version squeezed the BSB and account number
+ * into a single field to fit, which made people type a separator and made the
+ * parser guess what they meant by it.
  *
- * Bank details are always on the form, pre-filled from last time once there is
- * a last time. Asking only on the first claim would mean a separate command to
- * ever change them, and somebody whose account has changed would have no way to
- * say so at the moment they are thinking about it.
- *
- * Five fields, which is the modal's ceiling. Anything else this form ever needs
- * has to replace something.
+ * They are asked for separately because they are answered at different times:
+ * bank details once, the claim every time. Discord will not let a modal submit
+ * open another modal, so the first hands over through a button.
  */
-export function claimModal(payee: ReimbursePayee | null): ModalBuilder {
+
+/** What the money went on. Shown every time. */
+export function claimModal(): ModalBuilder {
   return new ModalBuilder()
-    .setCustomId(MODAL_ID)
+    .setCustomId(CLAIM_MODAL_ID)
     .setTitle('Reimbursement claim')
     .addLabelComponents(
       (label) =>
@@ -59,6 +60,15 @@ export function claimModal(payee: ReimbursePayee | null): ModalBuilder {
           .setFileUploadComponent((upload) =>
             upload.setCustomId(FIELD_RECEIPT).setMinValues(1).setMaxValues(5).setRequired(true),
           ),
+    )
+}
+
+/** Where the money goes. Asked once, then pre-filled whenever it is changed. */
+export function bankModal(payee: ReimbursePayee | null): ModalBuilder {
+  return new ModalBuilder()
+    .setCustomId(BANK_MODAL_ID)
+    .setTitle(payee ? 'Update your bank details' : 'Your bank details')
+    .addLabelComponents(
       (label) =>
         label.setLabel('Account name').setTextInputComponent((input) =>
           input
@@ -70,28 +80,27 @@ export function claimModal(payee: ReimbursePayee | null): ModalBuilder {
             .setValue(payee?.accountName ?? ''),
         ),
       (label) =>
+        label.setLabel('BSB').setTextInputComponent((input) =>
+          input
+            .setCustomId(FIELD_BANK_CODE)
+            .setStyle(TextInputStyle.Short)
+            .setPlaceholder('123-456')
+            .setRequired(true)
+            .setMaxLength(20)
+            .setValue(payee?.bankCode ?? ''),
+        ),
+      (label) =>
         label
-          .setLabel('BSB and account number')
-          .setDescription('Where the money goes. Remembered for next time.')
+          .setLabel('Account number')
+          .setDescription('Remembered, so you only do this once.')
           .setTextInputComponent((input) =>
             input
-              .setCustomId(FIELD_BANK_CODE)
+              .setCustomId(FIELD_ACCOUNT_NUMBER)
               .setStyle(TextInputStyle.Short)
-              .setPlaceholder('123-456 / 12345678')
+              .setPlaceholder('12345678')
               .setRequired(true)
-              .setMaxLength(60)
-              .setValue(combined(payee)),
+              .setMaxLength(34)
+              .setValue(payee?.accountNumber ?? ''),
           ),
     )
-}
-
-/**
- * BSB and account number in one field.
- *
- * Not because they belong together, but because the modal holds five components
- * and the receipt, amount and description have stronger claims on the other
- * four. They are split apart again on the way in.
- */
-function combined(payee: ReimbursePayee | null): string {
-  return payee ? `${payee.bankCode} / ${payee.accountNumber}` : ''
 }

@@ -20,18 +20,6 @@ function digits(value: string): string {
   return value.replace(/[\s-]/g, '')
 }
 
-/**
- * Split "123-456 / 12345678" back into its two halves.
- *
- * The two arrive in one modal field because five components is the ceiling.
- * Accepts a slash, a space or a pipe between them, since people will type
- * whichever they think of.
- */
-export function splitBankFields(value: string): { bankCode: string; accountNumber: string } {
-  const parts = value.split(/[/|,]|\s+/).filter((part) => part.trim() !== '')
-  return { bankCode: parts[0] ?? '', accountNumber: parts.slice(1).join('') }
-}
-
 export function parsePayee(
   accountName: string,
   bankCode: string,

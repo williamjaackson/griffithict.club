@@ -37,10 +37,16 @@ Then, in the server: `/reimbursements setup channel:#treasury treasurer:@Treasur
 
 ```
 /reimbursement                 opens the claim form
+/reimbursements bank           set or change where you are paid
+/reimbursements mine           your own claims
 /reimbursements setup          review channel, treasurer role, currency
 /reimbursements list [status]  every claim
-/reimbursements mine           your own
 ```
+
+`bank` and `mine` are open to everyone; `setup` needs Manage Server and `list`
+needs that or the treasurer role. Those checks are in the handler rather than on
+the command, because a single Discord permission would either hide somebody's
+own bank details from them or show the whole claim list to the server.
 
 `/reimbursement` has no subcommands on purpose. A command that has them cannot
 be run bare, so Discord would make somebody choose from a list before they could
@@ -65,10 +71,13 @@ claim itself.
   things is usually the one holding the role, and a second pair of hands mostly
   means nothing gets logged at all. `reimburse_events` records who moved what
   either way, which is the control an audit actually asks about.
-- **Bank details live on the form**, pre-filled from the last claim rather than
-  asked once and locked in. They are stored per server, and copied onto each
-  claim as given at the time, so changing them later does not rewrite which
-  account an old claim was paid into.
+- **Bank details are a separate form.** A modal holds five components, and the
+  claim needs three while the details need three, so they cannot share one. A
+  first-time claimant gets the bank form, then a button through to the claim,
+  because Discord will not let a modal submission open another modal. After that
+  it is one step forever.
+- **Details are copied onto each claim** as given at the time, so changing them
+  later does not rewrite which account an old claim was paid into.
 - **The account number is masked** on the claim post. Whoever pays it has the
   full number in the payment run; the channel does not need it.
 - **The review channel should be private.** Claims carry names, amounts and what

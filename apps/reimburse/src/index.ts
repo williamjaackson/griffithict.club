@@ -1,11 +1,12 @@
 import { Client, Events, GatewayIntentBits, MessageFlags } from 'discord.js'
 import { loadConfig } from './config'
 import { payeeFor } from './claims'
+import { CONTINUE_BUTTON, onBankSubmit } from './handlers/bank'
 import { db } from './db'
 import { onAdminCommand } from './handlers/admin'
 import { onReviewButton } from './handlers/review'
 import { onClaimSubmit } from './handlers/submit'
-import { claimModal, MODAL_ID } from './modal'
+import { bankModal, BANK_MODAL_ID, claimModal, CLAIM_MODAL_ID } from './modal'
 
 const config = loadConfig()
 const database = db(config.databaseUrl)
@@ -26,12 +27,15 @@ client.on(Events.InteractionCreate, async (interaction) => {
     if (interaction.isChatInputCommand()) {
       // The bare command opens the form. Everything else is under the plural.
       if (interaction.commandName === 'reimbursement') {
-        // Pre-filled from last time, so bank details stay editable on every
-        // claim rather than being locked in by the first one.
+        /*
+         * A first-time claimant is sent through the bank form first, because
+         * the claim needs somewhere to pay and the two together do not fit in
+         * one modal. After that this is a single step forever.
+         */
         const payee = interaction.inGuild()
           ? await payeeFor(database, interaction.guildId, interaction.user.id)
           : null
-        await interaction.showModal(claimModal(payee))
+        await interaction.showModal(payee ? claimModal() : bankModal(null))
         return
       }
       if (interaction.commandName === 'reimbursements') {
@@ -40,8 +44,20 @@ client.on(Events.InteractionCreate, async (interaction) => {
       }
     }
 
-    if (interaction.isModalSubmit() && interaction.customId === MODAL_ID) {
-      await onClaimSubmit(interaction, database)
+    if (interaction.isModalSubmit()) {
+      if (interaction.customId === CLAIM_MODAL_ID) {
+        await onClaimSubmit(interaction, database)
+        return
+      }
+      if (interaction.customId === BANK_MODAL_ID) {
+        await onBankSubmit(interaction, database)
+        return
+      }
+    }
+
+    // The hand-off out of the bank form, since a modal cannot open a modal.
+    if (interaction.isButton() && interaction.customId === CONTINUE_BUTTON) {
+      await interaction.showModal(claimModal())
       return
     }
 

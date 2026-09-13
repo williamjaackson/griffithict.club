@@ -1,4 +1,4 @@
-import { ChannelType, PermissionFlagsBits, SlashCommandBuilder } from 'discord.js'
+import { ChannelType, SlashCommandBuilder } from 'discord.js'
 
 /**
  * The claim form, and nothing else.
@@ -15,11 +15,19 @@ export const claimCommand = new SlashCommandBuilder()
   .setDescription('Claim money back for something you bought for the club')
   .setDMPermission(false)
 
+/*
+ * Not gated at the Discord level, because `bank` and `mine` belong to everyone
+ * while `setup` and `list` do not. A single permission on the command would
+ * either hide somebody's own bank details from them or show the whole claim
+ * list to the server. The checks live in the handler instead.
+ */
 export const adminCommand = new SlashCommandBuilder()
   .setName('reimbursements')
-  .setDescription('Look at and configure reimbursement claims')
-  .setDefaultMemberPermissions(PermissionFlagsBits.ManageGuild)
+  .setDescription('Reimbursement claims and your bank details')
   .setDMPermission(false)
+  .addSubcommand((sub) =>
+    sub.setName('bank').setDescription('Set or change where your reimbursements are paid'),
+  )
   .addSubcommand((sub) =>
     sub
       .setName('setup')
