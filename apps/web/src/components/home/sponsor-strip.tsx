@@ -13,7 +13,13 @@ export function SponsorStrip({ sponsors }: { sponsors: Sponsor[] }) {
       id="sponsors"
       className="flex flex-wrap items-center gap-[clamp(20px,3vw,48px)] py-[clamp(26px,3vw,40px)]"
     >
-      <div className="wide:flex-[1_1_420px] wide:grid-cols-[repeat(auto-fit,minmax(300px,1fr))] wide:gap-[clamp(14px,2.5vw,32px)] grid flex-[1_1_100%] grid-cols-1 items-center justify-items-center gap-[18px]">
+      {/*
+        A left-aligned row, not a grid. auto-fit columns spread three logos across
+        the full width with gaps that grow as sponsors are added or removed, so
+        the strip never sits still. Flex keeps them together against the same
+        gutter as every other section.
+      */}
+      <div className="wide:flex-nowrap wide:gap-[clamp(20px,2.5vw,40px)] flex flex-1 flex-wrap items-center gap-[clamp(16px,3vw,28px)]">
         {sponsors.map((sponsor) => (
           <a
             key={sponsor.name}
@@ -31,7 +37,7 @@ export function SponsorStrip({ sponsors }: { sponsors: Sponsor[] }) {
         <Button
           onClick={() => setOpen(true)}
           variant="ink"
-          className="wide:col-span-1 wide:w-auto col-span-full w-full"
+          className="wide:ml-auto wide:w-auto w-full flex-none"
         >
           Sponsor us
         </Button>

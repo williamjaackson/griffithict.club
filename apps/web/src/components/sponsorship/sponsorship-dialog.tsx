@@ -83,7 +83,15 @@ export function SponsorshipDialog({
               />
             ))}
           </div>
-          <div className="flex justify-end">
+          <div className="flex flex-wrap items-center justify-end gap-4">
+            {/*
+              A disabled button on its own says something is wrong without saying
+              what. This names the one thing standing in the way, and disappears
+              once it is done.
+            */}
+            {tierIndex === null && (
+              <p className="text-muted m-0 mr-auto text-[15px]">Choose a tier to continue</p>
+            )}
             <Button
               onClick={() => tierIndex !== null && setStep('details')}
               disabled={tierIndex === null}
