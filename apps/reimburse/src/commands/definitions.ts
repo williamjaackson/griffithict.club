@@ -70,5 +70,19 @@ export const adminCommand = new SlashCommandBuilder()
       ),
   )
   .addSubcommand((sub) => sub.setName('mine').setDescription('Your own claims'))
+  .addSubcommand((sub) =>
+    sub
+      .setName('export')
+      .setDescription('Download claims as a spreadsheet')
+      .addStringOption((option) =>
+        option
+          .setName('what')
+          .setDescription('Which export')
+          .addChoices(
+            { name: 'Claims — the record, no bank details', value: 'claims' },
+            { name: 'Payment run — what is owed, with bank details', value: 'payments' },
+          ),
+      ),
+  )
 
 export const commands = [claimCommand, adminCommand]

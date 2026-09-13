@@ -1,15 +1,14 @@
+import { loadBotConfig, database as openDatabase, shutdownOn } from '@gict/bot-kit'
 import { Client, Events, GatewayIntentBits, MessageFlags } from 'discord.js'
-import { loadConfig } from './config'
 import { payeeFor } from './claims'
 import { CONTINUE_BUTTON, onBankSubmit } from './handlers/bank'
-import { db } from './db'
 import { onAdminCommand } from './handlers/admin'
 import { onReviewButton } from './handlers/review'
 import { onClaimSubmit } from './handlers/submit'
 import { bankModal, BANK_MODAL_ID, claimModal, CLAIM_MODAL_ID } from './modal'
 
-const config = loadConfig()
-const database = db(config.databaseUrl)
+const config = loadBotConfig('REIMBURSE')
+const database = openDatabase(config.databaseUrl)
 
 /*
  * Guilds only. This bot never watches members or messages, it only answers
@@ -84,11 +83,6 @@ client.on(Events.InteractionCreate, async (interaction) => {
 
 client.on(Events.Error, (error) => console.error('Gateway error:', error))
 
-for (const signal of ['SIGINT', 'SIGTERM'] as const) {
-  process.on(signal, () => {
-    console.log(`\n${signal} — shutting down`)
-    void client.destroy().finally(() => process.exit(0))
-  })
-}
+shutdownOn(client)
 
 await client.login(config.token)

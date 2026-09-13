@@ -41,7 +41,13 @@ Then, in the server: `/reimbursements setup channel:#treasury treasurer:@Treasur
 /reimbursements mine           your own claims
 /reimbursements setup          review channel, treasurer role, currency
 /reimbursements list [status]  every claim
+/reimbursements export [what]  download a spreadsheet
 ```
+
+Two exports. **Claims** is the record: every claim, no bank details, safe to
+hand to an auditor or the next committee. **Payment run** is a worklist: what is
+owed and where to send it, so it carries account numbers and should not leave
+the treasurer's machine. Both arrive as an ephemeral file.
 
 `bank` and `mine` are open to everyone; `setup` needs Manage Server and `list`
 needs that or the treasurer role. Those checks are in the handler rather than on
@@ -54,6 +60,10 @@ type an amount. Everything the treasurer does is on buttons attached to the
 claim itself.
 
 ## Things worth knowing
+
+- **CSV cells that start with `=`, `+`, `-` or `@` are prefixed.** Descriptions
+  are whatever somebody typed into a modal, and a spreadsheet runs such a cell as
+  a formula rather than showing it.
 
 - **Receipts are stored, not linked.** Discord's CDN URLs carry signed expiry
   parameters and stop working within the day, so the bytes are pulled down at

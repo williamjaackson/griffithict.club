@@ -1,6 +1,5 @@
+import { loadBotConfig, database as openDatabase, shutdownOn } from '@gict/bot-kit'
 import { Client, Events, GatewayIntentBits, MessageFlags, type Guild } from 'discord.js'
-import { loadConfig } from './config'
-import { db } from './db'
 import { onCommand } from './handlers/interaction'
 import { onMemberJoin } from './handlers/member-join'
 import { InviteCache } from './invites/cache'
@@ -17,8 +16,8 @@ import {
 } from './invites/store'
 import { notify } from './notify'
 
-const config = loadConfig()
-const database = db(config.databaseUrl)
+const config = loadBotConfig('FUNNEL')
+const database = openDatabase(config.databaseUrl)
 const cache = new InviteCache()
 
 const client = new Client({
@@ -202,11 +201,6 @@ client.on(Events.InteractionCreate, async (interaction) => {
 
 client.on(Events.Error, (error) => console.error('Gateway error:', error))
 
-for (const signal of ['SIGINT', 'SIGTERM'] as const) {
-  process.on(signal, () => {
-    console.log(`\n${signal} — shutting down`)
-    void client.destroy().finally(() => process.exit(0))
-  })
-}
+shutdownOn(client)
 
 await client.login(config.token)

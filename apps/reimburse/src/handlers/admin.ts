@@ -2,6 +2,7 @@ import { MessageFlags, PermissionFlagsBits, type ChatInputCommandInteraction } f
 import { reimburseConfig, type Database } from '@gict/db'
 import { claimsFor, configFor, payeeFor } from '../claims'
 import { bankModal } from '../modal'
+import { onExport } from './export'
 import { statusText, type ClaimStatus } from '../status'
 import { formatAmount, totalCents } from '../money'
 
@@ -23,6 +24,7 @@ export async function onAdminCommand(
 
   if (sub === 'setup') return setup(interaction, database)
   if (sub === 'list') return list(interaction, database, false)
+  if (sub === 'export') return onExport(interaction, database)
 }
 
 /**
@@ -40,7 +42,9 @@ async function allowed(
   const isAdmin = interaction.memberPermissions?.has(PermissionFlagsBits.ManageGuild) ?? false
   if (isAdmin) return true
 
-  if (sub === 'list') {
+  // The treasurer is who these are for, so the role counts as well as the
+  // server permission.
+  if (sub === 'list' || sub === 'export') {
     const config = await configFor(database, interaction.guildId!)
     const member = await interaction.guild?.members.fetch(interaction.user.id)
     if (config?.treasurerRoleId && member?.roles.cache.has(config.treasurerRoleId)) return true
