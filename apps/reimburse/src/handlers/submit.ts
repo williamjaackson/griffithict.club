@@ -172,6 +172,22 @@ export function reviewButtons(claim: ReimburseClaim): ActionRowBuilder<ButtonBui
   return [new ActionRowBuilder<ButtonBuilder>().addComponents(buttons)]
 }
 
+/**
+ * The whole claim post: text, buttons, and mentions turned off.
+ *
+ * One function because it is written in four places — once on send and three
+ * times on edit — and Discord re-evaluates mentions on every edit unless told
+ * not to. Suppressing it at three of the four call sites is how a claimant ends
+ * up pinged every time a treasurer touches their claim.
+ */
+export function claimMessage(claim: ReimburseClaim, currency: string) {
+  return {
+    content: claimSummary(claim, currency),
+    components: reviewButtons(claim),
+    allowedMentions: { parse: [] as const },
+  }
+}
+
 export function claimSummary(claim: ReimburseClaim, currency: string): string {
   const lines = [
     `## ${STATUS[claim.status].icon} Claim #${claim.reference} · ${formatAmount(claim.amountCents, currency)}`,
@@ -208,11 +224,9 @@ async function post(
   if (!channel || channel.type !== ChannelType.GuildText) return
 
   const message = await channel.send({
-    content: claimSummary(claim, currency),
+    ...claimMessage(claim, currency),
     // Re-uploaded from what was stored, not linked. The original link expires.
     files: receipts.map((receipt) => ({ attachment: receipt.data, name: receipt.filename })),
-    components: reviewButtons(claim),
-    allowedMentions: { parse: [] },
   })
 
   await database

@@ -4,7 +4,7 @@ import { canMoveTo, claimById, configFor, moveClaim } from '../claims'
 import { STATUS, type ClaimStatus } from '../status'
 import { formatAmount } from '../money'
 import { formatBankCode } from '../payee'
-import { claimSummary, reviewButtons } from './submit'
+import { claimMessage } from './submit'
 
 export async function onReviewButton(
   interaction: ButtonInteraction,
@@ -67,10 +67,7 @@ export async function onReviewButton(
    * than complain: the claim is in the state they asked for.
    */
   if (claim.status === to) {
-    await interaction.update({
-      content: claimSummary(claim, config.currency),
-      components: reviewButtons(claim),
-    })
+    await interaction.update(claimMessage(claim, config.currency))
     return
   }
 
@@ -96,10 +93,7 @@ export async function onReviewButton(
     const current = await claimById(database, claim.id)
 
     if (current?.status === to) {
-      await interaction.update({
-        content: claimSummary(current, config.currency),
-        components: reviewButtons(current),
-      })
+      await interaction.update(claimMessage(current, config.currency))
       return
     }
 
@@ -112,10 +106,7 @@ export async function onReviewButton(
     return
   }
 
-  await interaction.update({
-    content: claimSummary(moved, config.currency),
-    components: reviewButtons(moved),
-  })
+  await interaction.update(claimMessage(moved, config.currency))
 
   await interaction.followUp({
     content: `Claim #${moved.reference} ${STATUS[to].told}.`,
