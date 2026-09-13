@@ -148,14 +148,6 @@ export const joinSchema = z
   )
   .min(1)
 
-export const perksSchema = z.array(
-  z.object({
-    name: z.string(),
-    description: z.string(),
-    url: url.optional(),
-  }),
-)
-
 export type Site = z.infer<typeof siteSchema>
 export type Links = z.infer<typeof linksSchema>
 export type Sponsor = z.infer<typeof sponsorsSchema>[number]
@@ -165,4 +157,3 @@ export type TermEntry = CommitteeRole['history'][number]
 export type Sponsorship = z.infer<typeof sponsorshipSchema>
 export type SponsorshipTier = Sponsorship['tiers'][number]
 export type JoinStep = z.infer<typeof joinSchema>[number]
-export type Perk = z.infer<typeof perksSchema>[number]

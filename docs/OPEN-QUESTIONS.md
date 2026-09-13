@@ -15,15 +15,6 @@ it — this is the one item that should hold a launch.
 Needs: one strong landscape photo of an event, and four headshots. Same
 treatment, ideally the same session.
 
-## Perks program — needs a design
-
-Both mockups link to a perks program from the footer, but neither designed the
-page. There is a schema (`content/schema.ts`), a content file
-(`content/perks.yaml`, currently empty) and a route (`app/perks/page.tsx`) that
-renders entries against the existing type scale.
-
-Adding perks to the YAML works today. It just will not look designed.
-
 ## Campus Groups link
 
 `links.yaml` has `membership: '#'`, carried over from the mockup. Step 2 of "How

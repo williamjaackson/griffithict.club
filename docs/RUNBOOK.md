@@ -89,7 +89,7 @@ Open https://local.drizzle.studio, edit the `events` table.
 
 ## Editing everything else
 
-Sponsors, perks, links and the committee are files in
+Sponsors, links and the committee are files in
 `apps/web/src/content/*.yaml`. Edit, open a pull request, merge. The schemas are
 checked on build, so a typo fails CI instead of breaking the page.
 

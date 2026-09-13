@@ -8,9 +8,9 @@
 # Order does not matter. The site sorts newest first.
 - role: President
   about: >-
-    Sets the club's direction, runs committee meetings, and is the club's point of
-    contact with the university and with sponsors. Accountable for everything the
-    club puts its name on.
+    Sets the club's direction with the committee and chairs its meetings.
+    Acts as the club's ambassador and its main point of contact with the Student
+    Guild.
   history:
     - name: William Jackson
       from: 2026-07
@@ -20,9 +20,9 @@
 
 - role: Vice President
   about: >-
-    Supports the President and steps in when they are unavailable. Owns event
-    delivery day to day, making sure what the committee plans actually happens on
-    the night.
+    Supports the President and stands in when they are unavailable.
+    Takes the lead on getting events delivered, so what the committee plans
+    actually happens on the night.
   history:
     - name: Tylar Pinniger
       from: 2026-02
@@ -32,9 +32,9 @@
 
 - role: Secretary
   about: >-
-    Keeps the club's records: meeting minutes, the member register, and the
-    paperwork the university requires. Handles club communications and
-    announcements.
+    Keeps the club's records and correspondence: meeting notices,
+    agendas, minutes, and chasing the actions that come out of them. Coordinates
+    committee and member meetings, including the AGM.
   history:
     - name: Julio Medeiros
       from: 2026-07
@@ -44,8 +44,9 @@
 
 - role: Treasurer
   about: >-
-    Looks after the club's money: budgets for each event, sponsorship income,
-    reimbursements, and reporting the accounts back to members.
+    Prepares the club's budget and tracks income and expenditure
+    against it. Reports the accounts back to members and the Student Guild, and
+    handles purchasing and reimbursements.
   history:
     - name: Novak Bigic
       from: 2026-07

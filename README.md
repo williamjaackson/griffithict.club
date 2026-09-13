@@ -31,7 +31,7 @@ The site comes up on http://localhost:3000.
 
 ## Editing content
 
-Sponsors, perks, links and the committee live in `apps/web/src/content/*.yaml`.
+Sponsors, links and the committee live in `apps/web/src/content/*.yaml`.
 Edit the file, open a pull request. The schemas are validated on build, so a typo
 fails CI rather than the page.
 

@@ -65,9 +65,6 @@ export function SiteFooter({ site, links, year }: { site: Site; links: Links; ye
           >
             Sponsor us
           </button>
-          <Link href="/perks" className="hover:text-brand text-white">
-            Perks program
-          </Link>
         </div>
       </div>
 
