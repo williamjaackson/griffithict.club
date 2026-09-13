@@ -7,6 +7,23 @@ import { db } from './db'
 export type { Event }
 
 /**
+ * Runs a query, or gives up and returns a fallback.
+ *
+ * The homepage is mostly static content that has nothing to do with the database.
+ * If Postgres is down, the What's On section should say so while the rest of the
+ * page carries on — losing the whole homepage because one section cannot load is
+ * a much worse outage than the one actually happening.
+ */
+async function orEmpty<T>(query: () => Promise<T[]>): Promise<T[]> {
+  try {
+    return await query()
+  } catch (error) {
+    console.error('Event query failed; rendering the empty state instead:', error)
+    return []
+  }
+}
+
+/**
  * Events starting from now, soonest first.
  *
  * Only `published` rows. Drafts are invisible so a half-written event can sit in
@@ -14,12 +31,14 @@ export type { Event }
  * for the committee to add one.
  */
 export async function getUpcomingEvents(limit = 3): Promise<Event[]> {
-  return db()
-    .select()
-    .from(events)
-    .where(and(eq(events.status, 'published'), gte(events.startsAt, new Date())))
-    .orderBy(asc(events.startsAt))
-    .limit(limit)
+  return orEmpty(() =>
+    db()
+      .select()
+      .from(events)
+      .where(and(eq(events.status, 'published'), gte(events.startsAt, new Date())))
+      .orderBy(asc(events.startsAt))
+      .limit(limit),
+  )
 }
 
 /**
@@ -37,9 +56,7 @@ export async function getEventBySlug(slug: string): Promise<Event | undefined> {
 
 /** Published events, for the calendar page and the sitemap. */
 export async function getPublishedEvents(): Promise<Event[]> {
-  return db()
-    .select()
-    .from(events)
-    .where(eq(events.status, 'published'))
-    .orderBy(asc(events.startsAt))
+  return orEmpty(() =>
+    db().select().from(events).where(eq(events.status, 'published')).orderBy(asc(events.startsAt)),
+  )
 }

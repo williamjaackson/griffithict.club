@@ -74,6 +74,9 @@
 @layer base {
   html {
     -webkit-font-smoothing: antialiased;
+    /* Reserve the scrollbar gutter, so locking scroll for a dialog does not
+       shift the page sideways as the scrollbar disappears. */
+    scrollbar-gutter: stable;
   }
 
   body {
