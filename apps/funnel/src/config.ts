@@ -19,6 +19,14 @@ export type Config = {
   /** Application id. Not secret; slash command registration needs it. */
   applicationId: string
   databaseUrl: string
+  /**
+   * Register commands to one server instead of globally.
+   *
+   * Global registration can take up to an hour to reach a client, which is
+   * indistinguishable from a bot that is simply broken. Guild registration is
+   * immediate, so this is set while developing and removed to publish.
+   */
+  devGuildId: string | null
 }
 
 const WHERE =
@@ -37,5 +45,6 @@ export function loadConfig(): Config {
     token: required('FUNNEL_BOT_TOKEN'),
     applicationId: required('FUNNEL_APPLICATION_ID'),
     databaseUrl: required('DATABASE_URL'),
+    devGuildId: process.env.FUNNEL_DEV_GUILD_ID?.trim() || null,
   }
 }

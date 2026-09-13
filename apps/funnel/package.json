@@ -8,7 +8,8 @@
     "start": "tsx src/index.ts",
     "typecheck": "tsc --noEmit",
     "test": "vitest run --passWithNoTests",
-    "lint": "eslint ."
+    "lint": "eslint .",
+    "commands": "tsx src/commands/register.ts"
   },
   "dependencies": {
     "@gict/db": "workspace:*",

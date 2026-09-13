@@ -1,6 +1,7 @@
-import { Client, Events, GatewayIntentBits, type Guild } from 'discord.js'
+import { Client, Events, GatewayIntentBits, MessageFlags, type Guild } from 'discord.js'
 import { loadConfig } from './config'
 import { db } from './db'
+import { onCommand } from './handlers/interaction'
 import { onMemberJoin } from './handlers/member-join'
 import { InviteCache } from './invites/cache'
 import { readInvites, readVanity } from './invites/read'
@@ -115,6 +116,26 @@ client.on(Events.InviteCreate, (invite) => {
 client.on(Events.InviteDelete, (invite) => {
   if (!invite.guild) return
   cache.remove(invite.guild.id, invite.code)
+})
+
+client.on(Events.InteractionCreate, async (interaction) => {
+  if (!interaction.isChatInputCommand()) return
+  try {
+    await onCommand(interaction, database, cache)
+  } catch (error) {
+    console.error('Command failed:', error)
+    // An interaction with no reply shows "the application did not respond",
+    // which tells the user nothing about what went wrong.
+    const message = {
+      content: 'Something went wrong running that.',
+      flags: MessageFlags.Ephemeral,
+    } as const
+    await (
+      interaction.deferred || interaction.replied
+        ? interaction.followUp(message)
+        : interaction.reply(message)
+    ).catch(() => {})
+  }
 })
 
 client.on(Events.Error, (error) => console.error('Gateway error:', error))
