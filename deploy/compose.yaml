@@ -49,6 +49,24 @@ services:
     networks: [club]
     logging: *logging
 
+  # The Discord bot. Outbound only: no ports, nothing to reverse-proxy, and
+  # nothing to healthcheck, since it serves no traffic. Its own env file, because
+  # a bot token has no business sitting beside the website's secrets.
+  funnel:
+    image: ghcr.io/williamjaackson/funnel:${IMAGE_TAG:-latest}
+    restart: unless-stopped
+    env_file: /etc/club/funnel.env
+    init: true
+    read_only: true
+    # tsx compiles to a cache under the system temp directory.
+    tmpfs:
+      - /tmp
+    depends_on:
+      migrate:
+        condition: service_completed_successfully
+    networks: [club]
+    logging: *logging
+
 networks:
   club:
     external: true
