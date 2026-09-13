@@ -180,12 +180,14 @@ GitHub Secrets holds `DEPLOY_SSH_KEY`, `DEPLOY_HOST`, `DEPLOY_USER` and
 `DEPLOY_KNOWN_HOSTS`. Nothing else. The application's own secrets live only in
 `/etc/club/ict-web.env` on the host.
 
-The key currently has a full shell. Restricting it to a forced command, so a
-leaked key can deploy an existing tag and nothing more, is worth doing:
+The key is restricted to a forced command, `/usr/local/bin/ci-deploy-ict-web`.
+That wrapper takes the SHA out of what CI sent, refuses anything that is not 40
+hex characters, and execs the host's deploy script. A leaked key can therefore
+redeploy an existing commit and nothing else: no shell, no file access, no other
+app.
 
-```
-command="/srv/infra/scripts/deploy.sh ict-web",no-agent-forwarding,no-port-forwarding,no-pty ssh-ed25519 AAAA...
-```
+To rotate it: generate a new pair on the host, replace the line in
+`/root/.ssh/authorized_keys`, and update `DEPLOY_SSH_KEY`.
 
 ## Monitoring
 
