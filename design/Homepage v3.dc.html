@@ -1,0 +1,659 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin="" />
+<link href="https://fonts.googleapis.com/css2?family=Archivo:ital,wdth,wght@0,62..125,100..900;1,62..125,100..900&amp;display=swap" rel="stylesheet" />
+<style>
+  body { margin: 0; background: #FFFFFF; font-family: Archivo, Helvetica, Arial, sans-serif; color: #111010; -webkit-font-smoothing: antialiased; }
+  a { color: #E51B13; text-decoration: none; }
+  a:hover { color: #111010; }
+  * { box-sizing: border-box; }
+  section[id] { scroll-margin-top: 92px; }
+  html, div { scrollbar-width: none; -ms-overflow-style: none; }
+  html::-webkit-scrollbar, div::-webkit-scrollbar { width: 0; height: 0; display: none; }
+
+  @keyframes gictRise { from { opacity: 0; transform: translateY(16px); } to { opacity: 1; transform: none; } }
+  @keyframes gictRule { from { transform: scaleX(0); } to { transform: scaleX(1); } }
+  @keyframes gictSlideIn { from { transform: translateX(100%); } to { transform: none; } }
+  @keyframes gictFadeUp { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: none; } }
+</style>
+</helmet>
+
+<div style="width: 100%; max-width: 100%; overflow-x: clip; background: #FFFFFF">
+
+  <header style="position: sticky; top: 0; z-index: 20; display: flex; align-items: center; justify-content: space-between; gap: clamp(12px, 2vw, 32px); flex-wrap: wrap; padding: 14px clamp(20px, 5vw, 56px); background: {{ headerBg }}; backdrop-filter: {{ headerBlur }}; -webkit-backdrop-filter: {{ headerBlur }}; box-shadow: {{ headerShadow }}; transition: box-shadow 0.25s ease">
+    <a href="#top" style="display: block; flex: none"><img src="logo/lockup-inline-frame-red-ink.svg" alt="Griffith ICT Club" style="height: clamp(26px, 3.4vw, 32px); width: auto; display: block" /></a>
+    <sc-if value="{{ wide }}" hint-placeholder-val="{{ true }}">
+      <nav style="display: flex; align-items: center; gap: clamp(14px, 2vw, 28px); flex-wrap: wrap; font-size: 13px; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase">
+        <a href="#whats-on" style="color: #111010">What's on</a>
+        <a href="#join" style="color: #111010">How to join</a>
+        <a href="#team" style="color: #111010">Committee</a>
+        <a href="{{ discordUrl }}" style="display: inline-flex; align-items: center; gap: 8px; height: 42px; padding: 0 18px; border-radius: 11px; background: #E51B13; color: #FFFFFF; font-size: 13px; font-weight: 700; letter-spacing: 0.06em" style-hover="background: #111010">Join the Discord</a>
+      </nav>
+    </sc-if>
+    <sc-if value="{{ compact }}" hint-placeholder-val="{{ false }}">
+      <button type="button" onClick="{{ toggleMenu }}" aria-label="{{ menuLabel }}" style="flex: none; margin-right: -10px; width: 46px; height: 46px; border: none; border-radius: 13px; background: transparent; display: inline-flex; align-items: center; justify-content: center; cursor: pointer" style-hover="background: #F4F2F0">
+        <span style="position: relative; width: 22px; height: 16px; display: block">
+          <span style="{{ bar1 }}"></span>
+          <span style="{{ bar2 }}"></span>
+          <span style="{{ bar3 }}"></span>
+        </span>
+      </button>
+    </sc-if>
+  </header>
+
+  <sc-if value="{{ menuOpen }}" hint-placeholder-val="{{ false }}">
+    <div style="position: fixed; top: 74px; left: 0; right: 0; bottom: 0; z-index: 15; background: #FFFFFF; display: flex; flex-direction: column; padding: 16px clamp(24px, 5.5vw, 88px) 28px; animation: gictSlideIn 0.32s cubic-bezier(.2,.8,.2,1) both">
+      <nav style="display: flex; flex-direction: column">
+        <a href="#whats-on" onClick="{{ closeMenu }}" style="padding: 20px 0; border-bottom: 1px solid #EAE6E3; color: #111010; font-size: 26px; font-weight: 800; font-stretch: 110%; letter-spacing: -0.03em; display: flex; align-items: center; justify-content: space-between; animation: gictFadeUp 0.34s 0.04s cubic-bezier(.2,.8,.2,1) both">What's on</a>
+        <a href="#join" onClick="{{ closeMenu }}" style="padding: 20px 0; border-bottom: 1px solid #EAE6E3; color: #111010; font-size: 26px; font-weight: 800; font-stretch: 110%; letter-spacing: -0.03em; display: flex; align-items: center; justify-content: space-between; animation: gictFadeUp 0.34s 0.09s cubic-bezier(.2,.8,.2,1) both">How to join</a>
+        <a href="#team" onClick="{{ closeMenu }}" style="padding: 20px 0; border-bottom: 1px solid #EAE6E3; color: #111010; font-size: 26px; font-weight: 800; font-stretch: 110%; letter-spacing: -0.03em; display: flex; align-items: center; justify-content: space-between; animation: gictFadeUp 0.34s 0.14s cubic-bezier(.2,.8,.2,1) both">Committee</a>
+      </nav>
+      <a href="{{ discordUrl }}" onClick="{{ closeMenu }}" style="margin-top: auto; display: inline-flex; align-items: center; justify-content: center; min-height: 62px; padding: 0 24px; border-radius: 16px; background: #E51B13; color: #FFFFFF; font-size: 18px; font-weight: 700; animation: gictFadeUp 0.34s 0.19s cubic-bezier(.2,.8,.2,1) both" style-hover="background: #111010">Join the Discord</a>
+    </div>
+  </sc-if>
+
+  <section id="top" style="padding: clamp(44px, 4.5vw, 72px) clamp(24px, 5.5vw, 88px) clamp(56px, 5vw, 80px); display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 360px), 1fr)); gap: clamp(34px, 4vw, 72px); align-items: start">
+    <div style="display: flex; flex-direction: column; gap: clamp(26px, 2vw, 30px); min-width: 0">
+      <div style="display: flex; align-items: center; gap: 14px; font-size: clamp(10px, 1vw, 12px); font-weight: 700; letter-spacing: 0.2em; text-transform: uppercase; color: #E51B13">
+        <span>Griffith's Largest Tech Club</span>
+        <span style="flex: 1; min-width: 16px; height: 1px; background: #E51B13; transform-origin: left; animation: gictRule 0.9s cubic-bezier(.2,.8,.2,1) both"></span>
+      </div>
+
+      <h1 style="margin: 0; font-size: clamp(35px, 4.6vw, 66px); line-height: 1.04; font-weight: 800; font-stretch: 112%; letter-spacing: -0.035em; text-wrap: balance; animation: gictRise 0.6s cubic-bezier(.2,.8,.2,1) both">The other half<br />of your <span style="color: #E51B13">tech degree</span>.</h1>
+
+      <p style="margin: 0; max-width: 52ch; font-size: clamp(16.5px, 1.35vw, 19px); line-height: 1.65; color: #3A3735; text-wrap: pretty">Griffith University's IT club for computer science, information technology, cyber security, and software engineering.</p>
+
+      <div style="display: flex; gap: 12px; flex-wrap: wrap">
+        <a href="{{ discordUrl }}" style="flex: 1 1 240px; max-width: 340px; display: inline-flex; align-items: center; justify-content: center; gap: 12px; min-height: 64px; padding: 12px 26px; border-radius: 17px; background: #E51B13; color: #FFFFFF; font-size: clamp(16px, 1.35vw, 19px); font-weight: 700" style-hover="background: #111010">Join the Discord</a>
+      </div>
+    </div>
+
+    <div style="position: relative; min-width: 0; width: 100%; max-width: min(100%, 520px); justify-self: end; animation: gictRise 0.7s 0.12s cubic-bezier(.2,.8,.2,1) both">
+      <div style="aspect-ratio: 4 / 5; min-height: 280px; max-height: 620px; border-radius: clamp(28px, 3.4vw, 48px); background-color: #F4F2F0; background-image: repeating-linear-gradient(135deg, #E7E3E0 0 10px, #F4F2F0 10px 20px); display: flex; align-items: flex-start; padding: clamp(18px, 2vw, 28px)">
+      </div>
+      <div style="position: absolute; top: clamp(-14px, -1.6vw, -12px); right: {{ heroInsetRight }}; width: clamp(64px, 9vw, 108px); height: auto; background: #E51B13; border-radius: clamp(18px, 2.4vw, 29px); padding: clamp(10px, 1.3vw, 16px); display: flex">
+        <img src="logo/brandmark-white.svg" alt="" style="width: 100%; height: auto; display: block" />
+      </div>
+      <div style="position: absolute; left: {{ heroInset }}; right: {{ heroInsetRight }}; bottom: {{ heroInset }}; background: #FFFFFF; border-radius: clamp(18px, 2.2vw, 28px); padding: clamp(16px, 1.8vw, 22px); display: grid; grid-template-columns: minmax(0, 1fr) auto; align-items: center; gap: 14px">
+        <div style="min-width: 0; display: flex; flex-direction: column; gap: 4px">
+          <span style="font-size: 11px; font-weight: 700; letter-spacing: 0.16em; text-transform: uppercase; color: #E51B13">Next up · {{ nextEvent.when }}</span>
+          <span style="font-size: clamp(17px, 1.6vw, 22px); font-weight: 700; font-stretch: 106%; letter-spacing: -0.02em; line-height: 1.15">{{ nextEvent.title }}</span>
+        </div>
+        <a href="#whats-on" style="flex: none; display: inline-flex; align-items: center; justify-content: center; min-height: 44px; padding: 0 18px; border-radius: 12px; background: #111010; color: #FFFFFF; font-size: 14px; font-weight: 700" style-hover="background: #E51B13">See all</a>
+      </div>
+    </div>
+  </section>
+
+  <section style="padding: clamp(26px, 3vw, 40px) clamp(24px, 5.5vw, 88px); display: flex; align-items: center; gap: clamp(20px, 3vw, 48px); flex-wrap: wrap">
+    <div style="{{ sponsorGrid }}">
+      <div style="height: 58px; min-width: 0; display: flex; align-items: center; justify-content: center; overflow: hidden">
+        <img src="sponsors/datacamp.png" alt="DataCamp" style="height: 58px; width: auto; max-width: none; display: block" />
+      </div>
+      <div style="height: 58px; min-width: 0; display: flex; align-items: center; justify-content: center; overflow: hidden">
+        <img src="sponsors/redbull.png" alt="Red Bull" style="height: 58px; width: auto; max-width: none; display: block" />
+      </div>
+      <div style="height: 58px; min-width: 0; display: flex; align-items: center; justify-content: center; overflow: hidden">
+        <img src="sponsors/cohort.png" alt="Cohort Innovation Space" style="height: 58px; width: auto; max-width: none; display: block" />
+      </div>
+      <button type="button" onClick="{{ openSponsor }}" style="{{ sponsorBtn }}" style-hover="background: #E51B13">Sponsor us</button>
+    </div>
+  </section>
+
+  <section id="whats-on" style="margin-top: clamp(40px, 5vw, 72px); background: #F4F2F0; padding: clamp(52px, 7vw, 90px) clamp(24px, 5.5vw, 88px) clamp(44px, 6vw, 80px)">
+    <div style="display: flex; align-items: baseline; justify-content: space-between; gap: 24px; flex-wrap: wrap; padding-bottom: 18px">
+      <h2 style="margin: 0; font-size: clamp(12px, 1.3vw, 14px); font-weight: 700; letter-spacing: 0.2em; text-transform: uppercase">What's on</h2>
+    </div>
+    <div style="{{ typesGrid }}">
+      <sc-for list="{{ eventTypes }}" as="t" hint-placeholder-count="4">
+        <div style="display: flex; flex-direction: column; gap: 8px; min-width: 0">
+          <h3 style="{{ typeTitle }}">{{ t.title }}</h3>
+          <p style="{{ typeBody }}">{{ t.body }}</p>
+        </div>
+      </sc-for>
+    </div>
+    <sc-for list="{{ events }}" as="ev" hint-placeholder-count="3">
+      <div onClick="{{ ev.open }}" style="{{ eventRow }}">
+        <div style="{{ eventChip }}">
+          <div style="background: #E51B13; color: #FFFFFF; padding: 5px 0; text-align: center; font-size: 11px; font-weight: 800; letter-spacing: 0.14em; text-transform: uppercase">{{ ev.month }}</div>
+          <div style="{{ eventDay }}">{{ ev.day }}</div>
+        </div>
+        <div style="flex: 1 1 240px; min-width: 0; display: flex; flex-direction: column; gap: 4px">
+          <h3 style="{{ eventTitle }}">{{ ev.title }}</h3>
+          <span style="font-size: 13px; font-weight: 600; letter-spacing: 0.04em; color: #6B6764">{{ ev.meta }}</span>
+        </div>
+        <button type="button" onClick="{{ ev.open }}" aria-label="Event details" style="{{ eventBtn }}" style-hover="background: #111010">
+          <svg width="18" height="18" viewBox="0 0 16 16" aria-hidden="true" fill="none" style="display: block"><circle cx="8" cy="8" r="6.6" stroke="currentColor" stroke-width="1.8"></circle><path d="M8 7.1v4.2" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"></path><circle cx="8" cy="4.7" r="1" fill="currentColor"></circle></svg>
+        </button>
+      </div>
+    </sc-for>
+  </section>
+
+  <section id="join" style="padding: clamp(52px, 7vw, 90px) clamp(24px, 5.5vw, 88px) 0">
+    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 320px), 1fr)); gap: 0">
+      <sc-for list="{{ steps }}" as="st" hint-placeholder-count="2">
+        <div style="padding: clamp(28px, 3vw, 40px) clamp(0px, 2.4vw, 44px) clamp(28px, 3vw, 40px) 0; display: flex; flex-direction: column; gap: 12px; align-items: start">
+          <span style="font-size: 13px; font-weight: 700; letter-spacing: 0.14em; text-transform: uppercase; color: #E51B13">{{ st.n }}</span>
+          <h3 style="margin: 0; font-size: clamp(28px, 3vw, 40px); font-weight: 800; font-stretch: 112%; letter-spacing: -0.03em; line-height: 1">{{ st.title }}</h3>
+          <p style="margin: 0; font-size: clamp(16px, 1.4vw, 18px); line-height: 1.55; color: #3A3735; max-width: 460px; text-wrap: pretty">{{ st.body }}</p>
+          <a href="{{ st.href }}" style="margin-top: 8px; display: inline-flex; align-items: center; justify-content: center; min-height: 58px; padding: 0 30px; border-radius: 16px; background: #111010; color: #FFFFFF; font-size: 17px; font-weight: 700; white-space: nowrap" style-hover="background: #E51B13">{{ st.cta }}</a>
+        </div>
+      </sc-for>
+    </div>
+  </section>
+
+  <section id="team" style="padding: clamp(52px, 7vw, 90px) clamp(24px, 5.5vw, 88px) 0">
+    <div style="display: flex; align-items: baseline; justify-content: space-between; gap: 24px; flex-wrap: wrap; padding-bottom: clamp(20px, 2.5vw, 30px)">
+      <h2 style="margin: 0; font-size: clamp(12px, 1.3vw, 14px); font-weight: 700; letter-spacing: 0.2em; text-transform: uppercase">Executive Committee</h2>
+    </div>
+    <div style="{{ execGrid }}">
+      <sc-for list="{{ exec }}" as="p" hint-placeholder-count="4">
+        <div onClick="{{ p.open }}" style="{{ execCard }}" style-hover="background: #F4F2F0">
+          <div style="{{ execThumb }}"></div>
+          <div style="min-width: 0; display: flex; flex-direction: column; gap: 3px">
+            <span style="{{ execName }}">{{ p.name }}</span>
+            <span style="{{ execRole }}">{{ p.role }}</span>
+          </div>
+        </div>
+      </sc-for>
+    </div>
+  </section>
+
+  <section style="margin-top: clamp(52px, 7vw, 96px); background: #E51B13; color: #FFFFFF; padding: clamp(44px, 6vw, 84px) clamp(24px, 5.5vw, 88px)">
+    <div style="{{ ctaGrid }}">
+      <div style="display: flex; flex-direction: column; gap: clamp(20px, 2.5vw, 30px); align-items: start">
+        <h2 style="margin: 0; font-size: clamp(34px, 5.4vw, 76px); line-height: 0.93; font-weight: 800; font-stretch: 118%; letter-spacing: -0.04em; text-wrap: balance">The next thing we run, you could be at.</h2>
+        <a href="{{ discordUrl }}" style="display: inline-flex; align-items: center; justify-content: center; gap: 12px; min-height: 66px; padding: 12px 32px; border-radius: 18px; background: #FFFFFF; color: #E51B13; font-size: clamp(18px, 1.6vw, 21px); font-weight: 700" style-hover="background: #111010; color: #FFFFFF">Join the Discord</a>
+      </div>
+      <img src="logo/brandmark-white.svg" alt="" style="{{ ctaMark }}" />
+    </div>
+  </section>
+
+  <sc-if value="{{ modal }}" hint-placeholder-val="{{ false }}">
+    <div onClick="{{ closeModal }}" style="position: fixed; inset: 0; z-index: 60; background: rgba(17,16,16,0.45); backdrop-filter: blur(6px); -webkit-backdrop-filter: blur(6px); display: flex; align-items: center; justify-content: center; padding: clamp(16px, 4vw, 48px)">
+      <div onClick="{{ stopPropagation }}" style="width: 100%; max-width: 560px; max-height: 90vh; overflow-y: auto; background: #FFFFFF; border-radius: clamp(22px, 3vw, 32px); padding: clamp(24px, 3.4vw, 40px); display: flex; flex-direction: column; gap: 22px; animation: gictRise 0.28s cubic-bezier(.2,.8,.2,1) both">
+        <div style="display: flex; align-items: flex-start; justify-content: space-between; gap: 18px">
+          <div style="display: flex; align-items: center; gap: 16px; min-width: 0">
+            <div style="flex: none; width: 68px; border-radius: 15px; overflow: hidden; background: #F4F2F0">
+              <div style="background: #E51B13; color: #FFFFFF; padding: 4px 0; text-align: center; font-size: 10px; font-weight: 800; letter-spacing: 0.14em; text-transform: uppercase">{{ modal.month }}</div>
+              <div style="padding: 5px 0 8px; text-align: center; font-size: 26px; font-weight: 800; font-stretch: 108%; letter-spacing: -0.03em; line-height: 1; color: #111010">{{ modal.day }}</div>
+            </div>
+            <div style="min-width: 0; display: flex; flex-direction: column; gap: 4px">
+              <h3 style="margin: 0; font-size: clamp(22px, 2.4vw, 30px); font-weight: 800; font-stretch: 110%; letter-spacing: -0.028em; line-height: 1.08">{{ modal.title }}</h3>
+              <span style="font-size: 13px; font-weight: 600; letter-spacing: 0.04em; color: #6B6764">{{ modal.meta }}</span>
+            </div>
+          </div>
+          <button type="button" onClick="{{ closeModal }}" aria-label="Close" style="flex: none; width: 44px; height: 44px; border-radius: 13px; border: none; background: transparent; color: #6B6764; display: inline-flex; align-items: center; justify-content: center; cursor: pointer" style-hover="background: #E51B13; color: #FFFFFF">
+            <svg width="16" height="16" viewBox="0 0 16 16" aria-hidden="true" fill="none" style="display: block"><path d="M3 3L13 13M13 3L3 13" stroke="currentColor" stroke-width="2" stroke-linecap="round"></path></svg>
+          </button>
+        </div>
+        <p style="margin: 0; font-size: clamp(16px, 1.4vw, 18px); line-height: 1.6; color: #3A3735; text-wrap: pretty">{{ modal.body }}</p>
+        <div style="display: flex; flex-direction: column; gap: 6px; padding: 18px 20px; border-radius: 18px; background: #F4F2F0">
+          <span style="font-size: 11px; font-weight: 700; letter-spacing: 0.16em; text-transform: uppercase; color: #E51B13">Registration</span>
+          <span style="font-size: clamp(15px, 1.3vw, 17px); line-height: 1.5; color: #111010; font-weight: 500">Sign-ups and tickets for every event are handled in the Discord.</span>
+        </div>
+        <a href="{{ discordUrl }}" style="display: inline-flex; align-items: center; justify-content: center; min-height: 60px; padding: 0 28px; border-radius: 16px; background: #E51B13; color: #FFFFFF; font-size: clamp(17px, 1.5vw, 19px); font-weight: 700" style-hover="background: #111010">Join the Discord</a>
+      </div>
+    </div>
+  </sc-if>
+
+  <sc-if value="{{ roleModal }}" hint-placeholder-val="{{ false }}">
+    <div onClick="{{ closeRole }}" style="position: fixed; inset: 0; z-index: 60; background: rgba(17,16,16,0.45); backdrop-filter: blur(6px); -webkit-backdrop-filter: blur(6px); display: flex; align-items: center; justify-content: center; padding: clamp(16px, 4vw, 48px)">
+      <div onClick="{{ stopPropagation }}" style="width: 100%; max-width: 560px; max-height: 90vh; overflow-y: auto; background: #FFFFFF; border-radius: clamp(22px, 3vw, 32px); padding: clamp(24px, 3.4vw, 40px); display: flex; flex-direction: column; gap: 24px; animation: gictRise 0.28s cubic-bezier(.2,.8,.2,1) both">
+        <div style="display: flex; align-items: flex-start; justify-content: space-between; gap: 18px">
+          <div style="min-width: 0; display: flex; flex-direction: column; gap: 5px">
+            <span style="font-size: 12px; font-weight: 700; letter-spacing: 0.16em; text-transform: uppercase; color: #E51B13">{{ roleModal.role }}</span>
+            <h3 style="margin: 0; font-size: clamp(24px, 2.6vw, 34px); font-weight: 800; font-stretch: 110%; letter-spacing: -0.03em; line-height: 1.06">{{ roleModal.name }}</h3>
+          </div>
+          <button type="button" onClick="{{ closeRole }}" aria-label="Close" style="flex: none; width: 44px; height: 44px; border-radius: 13px; border: none; background: transparent; color: #6B6764; display: inline-flex; align-items: center; justify-content: center; cursor: pointer" style-hover="background: #E51B13; color: #FFFFFF">
+            <svg width="16" height="16" viewBox="0 0 16 16" aria-hidden="true" fill="none" style="display: block"><path d="M3 3L13 13M13 3L3 13" stroke="currentColor" stroke-width="2" stroke-linecap="round"></path></svg>
+          </button>
+        </div>
+        <p style="margin: 0; font-size: clamp(16px, 1.4vw, 18px); line-height: 1.6; color: #3A3735; text-wrap: pretty">{{ roleModal.about }}</p>
+        <div style="display: flex; flex-direction: column; gap: 14px">
+          <span style="font-size: 11px; font-weight: 700; letter-spacing: 0.16em; text-transform: uppercase; color: #6B6764">Role history</span>
+          <div style="display: flex; flex-direction: column">
+            <sc-for list="{{ roleModal.history }}" as="h" hint-placeholder-count="2">
+              <div style="display: grid; grid-template-columns: 14px minmax(0, 1fr); column-gap: 16px">
+                <div style="display: flex; flex-direction: column; align-items: center">
+                  <span style="flex: none; width: 14px; height: 14px; border-radius: 50%; background: {{ h.dotBg }}; border: {{ h.dotBorder }}; box-sizing: border-box"></span>
+                  <span style="flex: 1; width: 0; border-left: {{ h.rail }}; margin: 4px 0"></span>
+                </div>
+                <div style="min-width: 0; padding: {{ h.pad }}; display: flex; flex-direction: column; gap: 3px; margin-top: -3px">
+                  <span style="font-size: clamp(16px, 1.4vw, 18px); font-weight: 700; letter-spacing: -0.015em; color: {{ h.nameColor }}">{{ h.name }}</span>
+                  <span style="font-size: 14px; line-height: 1.45; color: #6B6764">{{ h.term }} · {{ h.len }}</span>
+                </div>
+              </div>
+            </sc-for>
+          </div>
+        </div>
+      </div>
+    </div>
+  </sc-if>
+
+  <sc-if value="{{ sponsorOpen }}" hint-placeholder-val="{{ false }}">
+    <div onClick="{{ closeSponsor }}" style="position: fixed; inset: 0; z-index: 60; background: rgba(17,16,16,0.45); backdrop-filter: blur(6px); -webkit-backdrop-filter: blur(6px); display: flex; align-items: center; justify-content: center; padding: clamp(12px, 3vw, 40px)">
+      <div onClick="{{ stopPropagation }}" style="width: 100%; max-width: 1040px; max-height: 92vh; overflow-y: auto; background: #FFFFFF; border-radius: clamp(22px, 3vw, 32px); padding: clamp(22px, 3.2vw, 40px); display: flex; flex-direction: column; gap: clamp(22px, 2.6vw, 32px); animation: gictRise 0.28s cubic-bezier(.2,.8,.2,1) both">
+        <div style="display: flex; align-items: flex-start; justify-content: space-between; gap: 18px">
+          <div style="min-width: 0; display: flex; flex-direction: column; gap: 8px">
+            <span style="font-size: 12px; font-weight: 700; letter-spacing: 0.16em; text-transform: uppercase; color: #E51B13">Sponsorship</span>
+            <h3 style="margin: 0; font-size: clamp(26px, 3vw, 40px); font-weight: 800; font-stretch: 112%; letter-spacing: -0.035em; line-height: 1.02">Reach every tech student at Griffith.</h3>
+          </div>
+          <button type="button" onClick="{{ closeSponsor }}" aria-label="Close" style="flex: none; width: 44px; height: 44px; border-radius: 13px; border: none; background: transparent; color: #6B6764; display: inline-flex; align-items: center; justify-content: center; cursor: pointer" style-hover="background: #E51B13; color: #FFFFFF">
+            <svg width="16" height="16" viewBox="0 0 16 16" aria-hidden="true" fill="none" style="display: block"><path d="M3 3L13 13M13 3L3 13" stroke="currentColor" stroke-width="2" stroke-linecap="round"></path></svg>
+          </button>
+        </div>
+
+        <sc-if value="{{ stepOne }}" hint-placeholder-val="{{ true }}">
+          <div style="display: flex; flex-direction: column; gap: clamp(20px, 2.4vw, 28px)">
+            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 250px), 1fr)); gap: clamp(12px, 1.6vw, 18px); align-items: start">
+              <sc-for list="{{ tiers }}" as="t" hint-placeholder-count="3">
+                <div onClick="{{ t.select }}" style="{{ t.cardStyle }}">
+                  <span style="{{ t.markStyle }}">
+                    <svg width="40" height="40" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true" style="display: block"><path d="{{ t.mark }}"></path></svg>
+                  </span>
+                  <div style="display: flex; align-items: flex-start; justify-content: space-between; gap: 12px; padding-right: 68px">
+                    <div style="min-width: 0; display: flex; flex-direction: column; gap: 6px">
+                      <span style="display: flex; align-items: center; gap: 9px; font-size: 12px; font-weight: 800; letter-spacing: 0.18em; text-transform: uppercase; color: {{ t.metal }}"><span style="{{ t.radioStyle }}"></span>{{ t.name }}</span>
+                      <span style="font-size: clamp(28px, 3.2vw, 38px); font-weight: 800; font-stretch: 112%; letter-spacing: -0.035em; line-height: 1; color: #111010">{{ t.price }}</span>
+                    </div>
+                    </div>
+                  <div style="display: flex; flex-direction: column; gap: 10px">
+                    <sc-for list="{{ t.items }}" as="item" hint-placeholder-count="3">
+                      <div style="display: flex; gap: 11px; align-items: start">
+                        <span style="{{ item.tickStyle }}">
+                          <svg width="13" height="13" viewBox="0 0 16 16" aria-hidden="true" fill="none" style="display: block"><path d="M2.5 8.5L6 12L13.5 4" stroke="currentColor" stroke-width="2.8" stroke-linecap="round" stroke-linejoin="round"></path></svg>
+                        </span>
+                        <span style="flex: 1 1 auto; min-width: 0; font-size: 14.5px; line-height: 1.5; color: #111010">{{ item.label }}</span>
+                      </div>
+                    </sc-for>
+                  </div>
+                </div>
+              </sc-for>
+            </div>
+            <div style="display: flex; justify-content: flex-end">
+              <button type="button" onClick="{{ goStepTwo }}" style="{{ continueStyle }}">Contact Us</button>
+            </div>
+          </div>
+        </sc-if>
+
+        <sc-if value="{{ stepTwo }}" hint-placeholder-val="{{ false }}">
+          <form onSubmit="{{ submitForm }}" style="display: flex; flex-direction: column; gap: clamp(20px, 2.4vw, 26px)">
+            <div style="display: flex; align-items: center; gap: 12px; padding: 16px 20px; border-radius: 16px; background: #FAF8F7; flex-wrap: wrap">
+              <span style="font-size: 12px; font-weight: 800; letter-spacing: 0.18em; text-transform: uppercase; color: {{ chosenMetal }}">{{ chosenTier.name }}</span>
+              <span style="font-size: 18px; font-weight: 700; letter-spacing: -0.02em; color: #111010">{{ chosenTier.price }}</span>
+              <button type="button" onClick="{{ backStepOne }}" style="margin-left: auto; min-height: 44px; padding: 0 16px; border: none; border-radius: 12px; background: transparent; font-family: inherit; font-size: 14px; font-weight: 700; color: #6B6764; cursor: pointer" style-hover="background: #111010; color: #FFFFFF">Change tier</button>
+            </div>
+            <div style="display: flex; flex-direction: column; gap: 9px">
+              <span style="font-size: 12px; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; color: #6B6764; display: inline-flex; align-items: center; gap: 5px">Sponsorship period <span style="color: #E51B13" aria-hidden="true">*</span></span>
+              <sc-for list="{{ periods }}" as="p" hint-placeholder-count="2">
+                <label style="{{ p.rowStyle }}">
+                  <input type="radio" name="period" value="{{ p.label }}" disabled="{{ p.disabled }}" required="{{ p.required }}" style="width: 18px; height: 18px; accent-color: #E51B13; margin: 0; flex: none" />
+                  <span style="{{ p.textStyle }}">{{ p.label }}</span>
+                  <span style="{{ p.noteStyle }}">{{ p.note }}</span>
+                </label>
+              </sc-for>
+            </div>
+            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 240px), 1fr)); gap: clamp(14px, 1.8vw, 20px)">
+              <label style="display: flex; flex-direction: column; gap: 7px; min-width: 0">
+                <span style="font-size: 12px; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; color: #6B6764; display: inline-flex; align-items: center; gap: 5px">Organisation <span style="color: #E51B13" aria-hidden="true">*</span></span>
+                <input type="text" name="organisation" placeholder="Company name" required="{{ yes }}" style="width: 100%; min-height: 54px; padding: 0 16px; border: 2px solid #E7E3E0; border-radius: 14px; background: #FFFFFF; font-family: inherit; font-size: 16px; color: #111010; box-sizing: border-box" style-focus="border-color: #111010; outline: none" />
+              </label>
+              <label style="display: flex; flex-direction: column; gap: 7px; min-width: 0">
+                <span style="font-size: 12px; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; color: #6B6764; display: inline-flex; align-items: center; gap: 5px">Contact name <span style="color: #E51B13" aria-hidden="true">*</span></span>
+                <input type="text" name="contact" placeholder="Full name" required="{{ yes }}" style="width: 100%; min-height: 54px; padding: 0 16px; border: 2px solid #E7E3E0; border-radius: 14px; background: #FFFFFF; font-family: inherit; font-size: 16px; color: #111010; box-sizing: border-box" style-focus="border-color: #111010; outline: none" />
+              </label>
+              <label style="display: flex; flex-direction: column; gap: 7px; min-width: 0">
+                <span style="font-size: 12px; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; color: #6B6764; display: inline-flex; align-items: center; gap: 5px">Email <span style="color: #E51B13" aria-hidden="true">*</span></span>
+                <input type="email" name="email" placeholder="name@company.com" required="{{ yes }}" style="width: 100%; min-height: 54px; padding: 0 16px; border: 2px solid #E7E3E0; border-radius: 14px; background: #FFFFFF; font-family: inherit; font-size: 16px; color: #111010; box-sizing: border-box" style-focus="border-color: #111010; outline: none" />
+              </label>
+              <label style="display: flex; flex-direction: column; gap: 7px; min-width: 0">
+                <span style="font-size: 12px; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; color: #6B6764">Phone</span>
+                <input type="tel" name="phone" placeholder="Optional" style="width: 100%; min-height: 54px; padding: 0 16px; border: 2px solid #E7E3E0; border-radius: 14px; background: #FFFFFF; font-family: inherit; font-size: 16px; color: #111010; box-sizing: border-box" style-focus="border-color: #111010; outline: none" />
+              </label>
+              <label style="display: flex; flex-direction: column; gap: 7px; min-width: 0; grid-column: 1 / -1">
+                <span style="font-size: 12px; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; color: #6B6764">What are you hoping to get out of it?</span>
+                <textarea name="message" rows="4" placeholder="Hiring graduates, brand awareness, running a workshop with us, anything we should know." style="width: 100%; padding: 14px 16px; border: 2px solid #E7E3E0; border-radius: 14px; background: #FFFFFF; font-family: inherit; font-size: 16px; line-height: 1.5; color: #111010; resize: vertical; box-sizing: border-box" style-focus="border-color: #111010; outline: none"></textarea>
+              </label>
+            </div>
+            <div style="display: flex; justify-content: flex-end">
+              <button type="submit" style="flex: none; display: inline-flex; align-items: center; justify-content: center; min-height: 60px; padding: 0 32px; border: none; border-radius: 16px; background: #E51B13; font-family: inherit; font-size: clamp(16px, 1.4vw, 18px); font-weight: 700; color: #FFFFFF; cursor: pointer" style-hover="background: #111010">Express Interest</button>
+            </div>
+          </form>
+        </sc-if>
+
+        <sc-if value="{{ stepDone }}" hint-placeholder-val="{{ false }}">
+          <div style="display: flex; flex-direction: column; gap: 18px; align-items: start; padding: clamp(16px, 2vw, 26px) 0 clamp(8px, 1vw, 14px)">
+            <span style="width: 56px; height: 56px; border-radius: 18px; background: #E51B13; color: #FFFFFF; display: inline-flex; align-items: center; justify-content: center">
+              <svg width="26" height="26" viewBox="0 0 16 16" aria-hidden="true" fill="none" style="display: block"><path d="M2.5 8.5L6 12L13.5 4" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"></path></svg>
+            </span>
+            <h4 style="margin: 0; font-size: clamp(24px, 2.6vw, 32px); font-weight: 800; font-stretch: 110%; letter-spacing: -0.03em; line-height: 1.06">Interest registered.</h4>
+            <p style="margin: 0; max-width: 46ch; font-size: clamp(16px, 1.4vw, 18px); line-height: 1.6; color: #3A3735; text-wrap: pretty">Thanks, the committee will review your interest in the {{ chosenTier.name }} package and come back to you.</p>
+            <button type="button" onClick="{{ closeSponsor }}" style="min-height: 58px; padding: 0 30px; border: none; border-radius: 16px; background: #111010; font-family: inherit; font-size: 17px; font-weight: 700; color: #FFFFFF; cursor: pointer" style-hover="background: #E51B13">Done</button>
+          </div>
+        </sc-if>
+      </div>
+    </div>
+  </sc-if>
+
+  <footer style="background: #111010; color: #FFFFFF; padding: clamp(44px, 5vw, 68px) clamp(24px, 5.5vw, 88px) 34px">
+    <div style="{{ footerGrid }}; padding-bottom: clamp(28px, 3.5vw, 44px); border-bottom: 1px solid #35312F">
+      <div style="{{ footerBrand }}">
+        <img src="logo/lockup-stacked-frame-white.svg" alt="Griffith ICT Club" style="{{ footerLogo }}" />
+        <div style="{{ footerSocials }}">
+          <a href="{{ discordUrl }}" aria-label="Discord" title="Discord" style="{{ socialLink }}" style-hover="color: #FFFFFF">
+            <svg viewBox="0 0 16 16" fill="currentColor" aria-hidden="true" style="width: 20px; height: 20px; display: block"><path d="M13.545 2.907a13.2 13.2 0 0 0-3.257-1.011.05.05 0 0 0-.052.025c-.141.25-.297.577-.406.833a12.2 12.2 0 0 0-3.658 0 8 8 0 0 0-.412-.833.05.05 0 0 0-.052-.025c-1.125.194-2.22.534-3.257 1.011a.04.04 0 0 0-.021.018C.356 6.024-.213 9.047.066 12.032q.003.022.021.037a13.3 13.3 0 0 0 3.995 2.02.05.05 0 0 0 .056-.019q.463-.63.818-1.329a.05.05 0 0 0-.01-.059l-.018-.011a9 9 0 0 1-1.248-.595.05.05 0 0 1-.02-.066l.015-.019q.127-.095.248-.195a.05.05 0 0 1 .051-.007c2.619 1.196 5.454 1.196 8.041 0a.05.05 0 0 1 .053.007q.121.1.248.195a.05.05 0 0 1-.004.085 8 8 0 0 1-1.249.594.05.05 0 0 0-.03.03.05.05 0 0 0 .003.041c.24.465.515.909.817 1.329a.05.05 0 0 0 .056.019 13.2 13.2 0 0 0 4.001-2.02.05.05 0 0 0 .021-.037c.334-3.451-.559-6.449-2.366-9.106a.03.03 0 0 0-.02-.019m-8.198 7.307c-.789 0-1.438-.724-1.438-1.612s.637-1.613 1.438-1.613c.807 0 1.45.73 1.438 1.613 0 .888-.637 1.612-1.438 1.612m5.316 0c-.788 0-1.438-.724-1.438-1.612s.637-1.613 1.438-1.613c.807 0 1.451.73 1.438 1.613 0 .888-.631 1.612-1.438 1.612"></path></svg>
+          </a>
+          <a href="https://instagram.com/griffithictclub" aria-label="Instagram" title="Instagram" style="{{ socialLink }}" style-hover="color: #FFFFFF">
+            <svg viewBox="0 0 16 16" fill="currentColor" aria-hidden="true" style="width: 20px; height: 20px; display: block"><path d="M8 0C5.829 0 5.556.01 4.703.048 3.85.088 3.269.222 2.76.42a3.9 3.9 0 0 0-1.417.923A3.9 3.9 0 0 0 .42 2.76C.222 3.268.087 3.85.048 4.7.01 5.555 0 5.827 0 8.001c0 2.172.01 2.444.048 3.297.04.852.174 1.433.372 1.942.205.526.478.972.923 1.417.444.445.89.719 1.416.923.51.198 1.09.333 1.942.372C5.555 15.99 5.827 16 8 16s2.444-.01 3.298-.048c.851-.04 1.434-.174 1.943-.372a3.9 3.9 0 0 0 1.416-.923c.445-.445.718-.891.923-1.417.197-.509.332-1.09.372-1.942C15.99 10.445 16 10.173 16 8s-.01-2.445-.048-3.299c-.04-.851-.175-1.433-.372-1.941a3.9 3.9 0 0 0-.923-1.417A3.9 3.9 0 0 0 13.24.42c-.51-.198-1.092-.333-1.943-.372C10.443.01 10.172 0 7.998 0zm-.717 1.442h.718c2.136 0 2.389.007 3.232.046.78.035 1.204.166 1.486.275.373.145.64.319.92.599s.453.546.598.92c.11.281.24.705.275 1.485.039.843.047 1.096.047 3.231s-.008 2.389-.047 3.232c-.035.78-.166 1.203-.275 1.485a2.5 2.5 0 0 1-.599.919c-.28.28-.546.453-.92.598-.28.11-.704.24-1.485.276-.843.038-1.096.047-3.232.047s-2.39-.009-3.233-.047c-.78-.036-1.203-.166-1.485-.276a2.5 2.5 0 0 1-.92-.598 2.5 2.5 0 0 1-.6-.92c-.109-.281-.24-.705-.275-1.485-.038-.843-.046-1.096-.046-3.233s.008-2.388.046-3.231c.036-.78.166-1.204.276-1.486.145-.373.319-.64.599-.92s.546-.453.92-.598c.282-.11.705-.24 1.485-.276.738-.034 1.024-.044 2.515-.045zm4.988 1.328a.96.96 0 1 0 0 1.92.96.96 0 0 0 0-1.92m-4.27 1.122a4.109 4.109 0 1 0 0 8.217 4.109 4.109 0 0 0 0-8.217m0 1.441a2.667 2.667 0 1 1 0 5.334 2.667 2.667 0 0 1 0-5.334"></path></svg>
+          </a>
+          <a href="https://www.linkedin.com/company/griffithtechorg/" aria-label="LinkedIn" title="LinkedIn" style="{{ socialLink }}" style-hover="color: #FFFFFF">
+            <svg viewBox="0 0 16 16" fill="currentColor" aria-hidden="true" style="width: 20px; height: 20px; display: block"><path d="M0 1.146C0 .513.526 0 1.175 0h13.65C15.474 0 16 .513 16 1.146v13.708c0 .633-.526 1.146-1.175 1.146H1.175C.526 16 0 15.487 0 14.854zm4.943 12.248V6.169H2.542v7.225zm-1.2-8.212c.837 0 1.358-.554 1.358-1.248-.015-.709-.52-1.248-1.342-1.248S2.4 3.226 2.4 3.934c0 .694.521 1.248 1.327 1.248zm4.908 8.212V9.359c0-.216.016-.432.08-.586.173-.431.568-.878 1.232-.878.869 0 1.216.662 1.216 1.634v3.865h2.401V9.25c0-2.22-1.184-3.252-2.764-3.252-1.274 0-1.845.7-2.165 1.193v.025h-.016l.016-.025V6.169h-2.4c.03.678 0 7.225 0 7.225z"></path></svg>
+          </a>
+          <a href="https://github.com/williamjaackson/griffith-ict-web/" aria-label="GitHub" title="GitHub" style="{{ socialLink }}" style-hover="color: #FFFFFF">
+            <svg viewBox="0 0 16 16" fill="currentColor" aria-hidden="true" style="width: 20px; height: 20px; display: block"><path d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27s1.36.09 2 .27c1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.01 8.01 0 0 0 16 8c0-4.42-3.58-8-8-8"></path></svg>
+          </a>
+        </div>
+      </div>
+      <div style="display: flex; flex-direction: column; gap: 11px; font-size: 15px">
+        <span style="font-size: 12px; font-weight: 700; letter-spacing: 0.16em; text-transform: uppercase; color: #8C8683">Club</span>
+        <a href="#whats-on" style="color: #FFFFFF">What's on</a>
+        <a href="#join" style="color: #FFFFFF">How to join</a>
+        <a href="#team" style="color: #FFFFFF">Committee</a>
+      </div>
+      <div style="display: flex; flex-direction: column; gap: 11px; font-size: 15px">
+        <span style="font-size: 12px; font-weight: 700; letter-spacing: 0.16em; text-transform: uppercase; color: #8C8683">Partners</span>
+        <a href="#top" style="color: #FFFFFF">Our sponsors</a>
+        <a onClick="{{ openSponsor }}" style="color: #FFFFFF; cursor: pointer">Sponsor us</a>
+        <a href="#top" style="color: #FFFFFF">Perks program</a>
+      </div>
+    </div>
+    <div style="margin-top: 22px; display: flex; align-items: flex-end; justify-content: space-between; gap: 20px; flex-wrap: wrap; font-size: 13px; color: #8C8683">
+      <p style="margin: 0">© 2026 Griffith ICT Club. By students.</p>
+      <div style="display: flex; align-items: center; gap: 20px; flex-wrap: wrap">
+        <a href="https://jaackson.com/" style="color: #8C8683" style-hover="color: #FFFFFF">Built and Operated by William Jackson</a>
+        <a href="https://www.griffith.edu.au" style="color: #8C8683" style-hover="color: #FFFFFF">Griffith University</a>
+      </div>
+    </div>
+  </footer>
+
+</div>
+
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props="{&quot;discordUrl&quot;:{&quot;editor&quot;:&quot;text&quot;,&quot;default&quot;:&quot;https://discord.gg/ESvqmEF4vA&quot;,&quot;tsType&quot;:&quot;string&quot;},&quot;memberUrl&quot;:{&quot;editor&quot;:&quot;text&quot;,&quot;default&quot;:&quot;#&quot;,&quot;tsType&quot;:&quot;string&quot;}}">
+class Component extends DCLogic {
+  events = [
+    { month: "Aug", day: "14", meta: "Thursday · 5:30pm", title: "Project Night #01", body: "Bring whatever you are building and work on it alongside everyone else, or join something already running. Members further along float between tables to help unstick people." },
+    { month: "Aug", day: "28", meta: "Thursday · 5:30pm", title: "Resume Building Workshop", body: "A practical pass over your resume for tech roles: what recruiters actually scan for, how to write up projects, and live feedback on what you bring in." },
+    { month: "Sep", day: "20", meta: "Saturday · 9:00am", title: "24-Hour Club Hackathon", body: "Form a team on the day, build for 24 hours, then present to judges from industry. Prizes for the top teams, and food throughout." }
+  ];
+
+  state = { compact: false, menuOpen: false, scrolled: false, modalIndex: null, roleIndex: null, sponsorOpen: false, sponsorStep: 1, tierIndex: null };
+
+  metals = ["#C2410C", "#4C5A69", "#B8860B"];
+  tints = ["#FDE9DD", "#E6EAEE", "#FAF0D2"];
+  marks = [
+    "M12 2c1.4 5.9 4.1 8.6 10 10-5.9 1.4-8.6 4.1-10 10-1.4-5.9-4.1-8.6-10-10 5.9-1.4 8.6-4.1 10-10z",
+    "M14.6 1.2c.5 0 .8.4.7.9l-1.4 6.2h4.4c.7 0 1 .8.6 1.3L9.6 22.4c-.5.6-1.4.1-1.2-.6l1.9-7.5H5.6c-.7 0-1.1-.8-.6-1.3L13.9 1.6c.2-.3.4-.4.7-.4z",
+    "M2.4 19.8c-.6 0-1-.5-.9-1.1l2-11.9c.1-.8 1.1-1.1 1.6-.5l3.7 4 2.3-6c.3-.8 1.5-.8 1.8 0l2.3 6 3.7-4c.5-.6 1.5-.3 1.6.5l2 11.9c.1.6-.3 1.1-.9 1.1z"
+  ];
+
+  benefits = [
+    { level: 0, label: "Logo on club website" },
+    { level: 0, label: "Social media recognition" },
+    { level: 0, label: "Logo at events" },
+    { level: 1, label: "Job and internship promotion" },
+    { level: 1, label: "Newsletter and email promotion" },
+    { level: 1, label: "Promotional materials at events" },
+    { level: 2, label: "Access to networking events" },
+    { level: 2, label: "Dedicated co-branded event" },
+    { level: 2, label: "Highest placement on all materials" }
+  ];
+
+  tiers = [
+    { name: "Bronze", price: "$500", blurb: "Your brand on our materials. Show your support for the student tech community." },
+    { name: "Silver", price: "$1,250", blurb: "We actively promote you. Your opportunities reach our members directly." },
+    { name: "Gold", price: "$2,500", blurb: "The full partnership. We build events around you and give you top billing everywhere." }
+  ];
+
+  exec = [
+    { role: "President", name: "William Jackson",
+      about: "Sets the club's direction, runs committee meetings, and is the club's point of contact with the university and with sponsors. Accountable for everything the club puts its name on.",
+      history: [
+        { name: "William Jackson", term: "Jul 2026 to Present", len: "3 mos", dot: "#E51B13" },
+        { name: "Owen Richardson", term: "Mar 2025 to Jun 2026", len: "1 yr 4 mos", dot: "#C9C4C1" }
+      ] },
+    { role: "Vice President", name: "Tylar Pinniger",
+      about: "Supports the President and steps in when they are unavailable. Owns event delivery day to day, making sure what the committee plans actually happens on the night.",
+      history: [
+        { name: "Tylar Pinniger", term: "Feb 2026 to Present", len: "8 mos", dot: "#E51B13" },
+        { name: "Michael Geurts", term: "Sep 2025 to Jan 2026", len: "5 mos", dot: "#C9C4C1" }
+      ] },
+    { role: "Secretary", name: "Julio Medeiros",
+      about: "Keeps the club's records: meeting minutes, the member register, and the paperwork the university requires. Handles club communications and announcements.",
+      history: [
+        { name: "Julio Medeiros", term: "Jul 2026 to Present", len: "3 mos", dot: "#E51B13" },
+        { name: "Zain Abrahams", term: "Mar 2025 to Jun 2026", len: "1 yr 4 mos", dot: "#C9C4C1" }
+      ] },
+    { role: "Treasurer", name: "Novak Bigic",
+      about: "Looks after the club's money: budgets for each event, sponsorship income, reimbursements, and reporting the accounts back to members.",
+      history: [
+        { name: "Novak Bigic", term: "Jul 2026 to Present", len: "3 mos", dot: "#E51B13" },
+        { name: "William Jackson", term: "Mar 2025 to Jun 2026", len: "1 yr 4 mos", dot: "#C9C4C1" }
+      ] }
+  ];
+
+  componentDidMount() {
+    this._onScroll = () => {
+      const scrolled = window.scrollY > 8;
+      if (scrolled !== this.state.scrolled) this.setState({ scrolled });
+    };
+    window.addEventListener("scroll", this._onScroll, { passive: true });
+    this._onScroll();
+    this._mq = window.matchMedia("(max-width: 700px)");
+    this._sync = () => this.setState({ compact: this._mq.matches, menuOpen: false });
+    this._sync();
+    this._mq.addEventListener("change", this._sync);
+  }
+
+  componentWillUnmount() {
+    if (this._mq) this._mq.removeEventListener("change", this._sync);
+    window.removeEventListener("scroll", this._onScroll);
+  }
+
+  renderVals() {
+    const discordUrl = this.props.discordUrl ?? "https://discord.gg/ESvqmEF4vA";
+    const memberUrl = this.props.memberUrl ?? "#";
+    return {
+      discordUrl,
+      memberUrl,
+      headerBg: this.state.menuOpen ? "#FFFFFF" : "rgba(255,255,255,0.72)",
+      headerBlur: this.state.menuOpen ? "none" : "blur(18px) saturate(180%)",
+      headerShadow: this.state.scrolled && !this.state.menuOpen ? "0 1px 0 rgba(17,16,16,0.06), 0 8px 24px rgba(17,16,16,0.07)" : "none",
+      modal: this.state.modalIndex === null ? false : this.events[this.state.modalIndex],
+      closeModal: () => this.setState({ modalIndex: null }),
+      stopPropagation: e => e.stopPropagation(),
+      sponsorGrid: this.state.compact
+        ? "flex: 1 1 100%; display: grid; grid-template-columns: 1fr; gap: 18px; justify-items: center; align-items: center"
+        : "flex: 1 1 420px; display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: clamp(14px, 2.5vw, 32px); align-items: center",
+      sponsorBtn: this.state.compact
+        ? "grid-column: 1 / -1; width: 100%; height: 54px; margin-top: 4px; padding: 0 22px; border: none; border-radius: 15px; background: #111010; display: inline-flex; align-items: center; justify-content: center; font-family: inherit; font-size: 15px; font-weight: 700; letter-spacing: 0.02em; color: #FFFFFF; white-space: nowrap; cursor: pointer"
+        : "height: 58px; padding: 0 22px; border: none; border-radius: 15px; background: #111010; display: inline-flex; align-items: center; justify-content: center; font-family: inherit; font-size: 14px; font-weight: 700; letter-spacing: 0.02em; color: #FFFFFF; white-space: nowrap; cursor: pointer",
+      heroInset: this.state.compact ? "14px" : "clamp(12px, 1.6vw, 20px)",
+      heroInsetRight: this.state.compact ? "14px" : "clamp(26px, 3.4vw, 44px)",
+      whenOrder: this.state.compact ? -1 : 0,
+      wide: !this.state.compact,
+      compact: this.state.compact,
+      menuOpen: this.state.compact && this.state.menuOpen,
+      menuLabel: this.state.menuOpen ? "Close menu" : "Open menu",
+      bar1: "position: absolute; left: 0; right: 0; top: 50%; height: 2px; border-radius: 2px; background: #111010; transition: transform 0.3s cubic-bezier(.2,.8,.2,1); transform: "
+        + (this.state.menuOpen ? "translateY(-1px) rotate(45deg)" : "translateY(-8px)"),
+      bar2: "position: absolute; left: 0; right: 0; top: 50%; height: 2px; border-radius: 2px; background: #111010; transform: translateY(-1px); transition: opacity 0.18s ease, transform 0.3s cubic-bezier(.2,.8,.2,1); opacity: "
+        + (this.state.menuOpen ? "0" : "1"),
+      bar3: "position: absolute; left: 0; right: 0; top: 50%; height: 2px; border-radius: 2px; background: #111010; transition: transform 0.3s cubic-bezier(.2,.8,.2,1); transform: "
+        + (this.state.menuOpen ? "translateY(-1px) rotate(-45deg)" : "translateY(6px)"),
+      toggleMenu: () => this.setState(s => {
+        document.body.style.overflow = s.menuOpen ? "" : "hidden";
+        return { menuOpen: !s.menuOpen };
+      }),
+      closeMenu: () => { document.body.style.overflow = ""; this.setState({ menuOpen: false }); },
+      pillars: [
+        { n: "01", title: "Build things", body: "Project nights and hackathons where you make something real, with people around you who will help you finish it." },
+        { n: "02", title: "Be ready", body: "Resume workshops, mock interviews and industry nights, so applying for your first role doesn't start from nothing." },
+        { n: "03", title: "Know everyone", body: "The people in your tutorials, the years ahead of you, and the ones already working in the field." }
+      ],
+      steps: [
+        { n: "Step 1", title: "Join the Discord", body: "The club's main communication channel.", cta: "Open Discord", href: discordUrl },
+        { n: "Step 2", title: "Join Campus Groups", body: "Official membership registration.", cta: "Register", href: memberUrl }
+      ],
+      events: this.events.map((ev, i) => ({
+        ...ev,
+        open: () => this.setState({ modalIndex: i })
+      })),
+      eventTypes: [
+        { title: "Social Events", body: "Game nights, BBQs, trivia, and casual hangouts. The best part of uni is the people, and we make sure you meet them." },
+        { title: "Industry Events", body: "Connect with companies hiring grads. Hear from engineers, ask questions, and get your foot in the door early." },
+        { title: "Hackathons", body: "Team up, ship fast, win prizes. We design and run our own hackathons that everyone can participate in." },
+        { title: "Workshops", body: "Hands-on sessions covering web dev, cloud, AI, cybersecurity, and more. Learn by building real things." }
+      ],
+      exec: this.exec.map((p, i) => ({ ...p, open: () => this.setState({ roleIndex: i }) })),
+      roleModal: this.state.roleIndex === null ? false : (() => {
+        const r = this.exec[this.state.roleIndex];
+        const last = r.history.length - 1;
+        return {
+          ...r,
+          history: r.history.map((h, i) => ({
+            ...h,
+            rail: i === last ? "none" : "2px solid #E7E3E0",
+            pad: i === last ? "0" : "0 0 22px 0",
+            dotBg: i === 0 ? "#E51B13" : "#FFFFFF",
+            dotBorder: i === 0 ? "3px solid #E51B13" : "3px solid #D6D1CD",
+            nameColor: i === 0 ? "#111010" : "#3A3735",
+            current: i === 0
+          }))
+        };
+      })(),
+      closeRole: () => this.setState({ roleIndex: null }),
+      sponsorOpen: this.state.sponsorOpen,
+      openSponsor: () => this.setState({ sponsorOpen: true, sponsorStep: 1, tierIndex: null }),
+      closeSponsor: () => this.setState({ sponsorOpen: false }),
+      tiers: this.tiers.map((t, i) => {
+        const chosen = this.state.tierIndex === i;
+        return {
+          ...t,
+          metal: this.metals[i],
+          mark: this.marks[i],
+          markStyle: "position: absolute; top: -10px; right: -10px; width: 74px; height: 74px; border-radius: 26px; background: " + this.metals[i] + "; color: #FFFFFF; display: inline-flex; align-items: center; justify-content: center; transform: rotate(-10deg); box-shadow: 0 10px 24px " + this.tints[i],
+          cardStyle: "position: relative; background: " + (chosen ? "#FFFFFF" : "#FAF8F7")
+            + "; border: 2px solid " + (chosen ? "#111010" : "#E7E3E0")
+            + "; border-radius: clamp(18px, 2.2vw, 26px); padding: clamp(20px, 2.4vw, 26px); display: flex; flex-direction: column; gap: 16px; min-width: 0; cursor: pointer; transition: border-color 0.16s ease, background 0.16s ease",
+          radioStyle: "flex: none; width: 16px; height: 16px; border-radius: 50%; box-sizing: border-box; border: "
+            + (chosen ? "5px solid #111010" : "2px solid #C4BDB8") + "; background: #FFFFFF",
+          items: this.benefits.filter(b => b.level <= i).map(b => ({
+            label: b.label,
+            tickStyle: "flex: none; width: 22px; height: 22px; border-radius: 8px; background: " + this.tints[b.level] + "; color: " + this.metals[b.level] + "; display: inline-flex; align-items: center; justify-content: center; margin-top: 1px"
+          })),
+          select: () => this.setState({ tierIndex: i })
+        };
+      }),
+      yes: true,
+      typesGrid: this.state.compact
+        ? "display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 20px 16px; padding: 6px 0 30px"
+        : "display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 250px), 1fr)); gap: clamp(22px, 3vw, 44px); padding: clamp(8px, 1vw, 14px) 0 clamp(34px, 4vw, 54px)",
+      typeTitle: this.state.compact
+        ? "margin: 0; font-size: 19px; font-weight: 800; font-stretch: 112%; letter-spacing: -0.028em; line-height: 1.08"
+        : "margin: 0; font-size: clamp(22px, 2.2vw, 30px); font-weight: 800; font-stretch: 112%; letter-spacing: -0.028em; line-height: 1.05",
+      typeBody: this.state.compact
+        ? "margin: 0; font-size: 14px; line-height: 1.5; color: #3A3735; text-wrap: pretty"
+        : "margin: 0; font-size: clamp(15px, 1.3vw, 17px); line-height: 1.55; color: #3A3735; text-wrap: pretty",
+      eventRow: this.state.compact
+        ? "display: flex; align-items: center; gap: 12px; flex-wrap: nowrap; padding: 14px 0; border-radius: 18px; cursor: pointer"
+        : "display: flex; align-items: center; gap: clamp(12px, 2vw, 32px); flex-wrap: wrap; padding: clamp(16px, 1.8vw, 22px) clamp(12px, 1.4vw, 18px); margin: 0 clamp(-12px, -1.4vw, -18px); border-radius: 18px; cursor: pointer",
+      eventChip: this.state.compact
+        ? "flex: none; width: 56px; border-radius: 13px; overflow: hidden; background: #FFFFFF"
+        : "flex: none; width: 76px; border-radius: 16px; overflow: hidden; background: #FFFFFF",
+      eventDay: this.state.compact
+        ? "padding: 4px 0 7px; text-align: center; font-size: 22px; font-weight: 800; font-stretch: 108%; letter-spacing: -0.03em; line-height: 1; color: #111010"
+        : "padding: 6px 0 9px; text-align: center; font-size: 30px; font-weight: 800; font-stretch: 108%; letter-spacing: -0.03em; line-height: 1; color: #111010",
+      eventTitle: this.state.compact
+        ? "margin: 0; font-size: 17px; font-weight: 700; font-stretch: 108%; letter-spacing: -0.02em; line-height: 1.15"
+        : "margin: 0; font-size: clamp(21px, 2.3vw, 31px); font-weight: 700; font-stretch: 108%; letter-spacing: -0.02em; line-height: 1.1",
+      eventBtn: this.state.compact
+        ? "flex: none; width: 44px; height: 44px; display: inline-flex; align-items: center; justify-content: center; color: #FFFFFF; background: #E51B13; border: none; border-radius: 13px; cursor: pointer"
+        : "flex: none; width: 48px; height: 48px; display: inline-flex; align-items: center; justify-content: center; color: #FFFFFF; background: #E51B13; border: none; border-radius: 14px; cursor: pointer",
+      execGrid: this.state.compact
+        ? "display: grid; grid-template-columns: repeat(auto-fit, minmax(160px, 1fr)); gap: 16px 12px"
+        : "display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 220px), 1fr)); gap: clamp(18px, 2.4vw, 32px)",
+      execCard: this.state.compact
+        ? "display: flex; align-items: center; gap: 12px; min-width: 0; padding: 8px; margin: -8px; border-radius: 18px; cursor: pointer"
+        : "display: flex; align-items: center; gap: 16px; min-width: 0; padding: 10px; margin: -10px; border-radius: 20px; cursor: pointer",
+      execName: this.state.compact
+        ? "font-size: 15px; font-weight: 700; font-stretch: 106%; letter-spacing: -0.02em; line-height: 1.2"
+        : "font-size: clamp(17px, 1.5vw, 20px); font-weight: 700; font-stretch: 106%; letter-spacing: -0.02em; line-height: 1.2",
+      execRole: this.state.compact
+        ? "font-size: 11px; font-weight: 700; letter-spacing: 0.09em; text-transform: uppercase; color: #E51B13"
+        : "font-size: 13px; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; color: #E51B13",
+      execThumb: this.state.compact
+        ? "flex: none; width: 52px; height: 52px; border-radius: 16px; background-color: #F4F2F0; background-image: repeating-linear-gradient(135deg, #E7E3E0 0 10px, #F4F2F0 10px 20px)"
+        : "flex: none; width: 76px; height: 76px; border-radius: 22px; background-color: #F4F2F0; background-image: repeating-linear-gradient(135deg, #E7E3E0 0 10px, #F4F2F0 10px 20px)",
+      ctaGrid: this.state.compact
+        ? "display: flex; flex-direction: column-reverse; gap: 26px; align-items: start"
+        : "display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 320px), 1fr)); gap: clamp(28px, 4vw, 56px); align-items: center",
+      ctaMark: this.state.compact
+        ? "width: 52px; height: auto; display: block"
+        : "width: clamp(120px, 20vw, 210px); height: auto; display: block; justify-self: end",
+      periods: (() => {
+        const now = new Date();
+        const open = now.getMonth() >= 5 ? now.getFullYear() + 1 : now.getFullYear();
+        const label = y => "March " + y + " to February " + (y + 1);
+        return [
+          { label: label(open), note: "Open", disabled: false, required: true,
+            rowStyle: "display: flex; align-items: center; gap: 13px; min-height: 56px; padding: 0 16px; border: 2px solid #E7E3E0; border-radius: 14px; background: #FFFFFF; cursor: pointer",
+            textStyle: "font-size: 16px; font-weight: 700; letter-spacing: -0.01em; color: #111010",
+            noteStyle: "margin-left: auto; font-size: 12px; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; color: #E51B13" }
+        ];
+      })(),
+      footerGrid: this.state.compact
+        ? "display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 30px 20px"
+        : "display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 170px), 1fr)); gap: clamp(28px, 3vw, 44px)",
+      socialLink: this.state.compact
+        ? "display: inline-flex; align-items: center; justify-content: center; min-width: 44px; min-height: 44px; color: #8C8683"
+        : "display: inline-flex; align-items: center; justify-content: center; min-width: 44px; min-height: 44px; color: #8C8683",
+      footerLogo: this.state.compact
+        ? "width: 58px; height: auto; display: block"
+        : "width: 84px; height: auto; display: block",
+      footerBrand: this.state.compact
+        ? "grid-column: 1 / -1; display: flex; align-items: flex-start; justify-content: space-between; gap: 14px"
+        : "display: flex; flex-direction: column; gap: 20px; align-items: start",
+      footerSocials: this.state.compact
+        ? "display: flex; align-items: center; gap: 0; margin: 0 -12px 0 0"
+        : "display: flex; align-items: center; gap: 2px; flex-wrap: wrap; margin-left: -12px",
+      sponsorStep: this.state.sponsorStep,
+      stepOne: this.state.sponsorStep === 1,
+      stepTwo: this.state.sponsorStep === 2,
+      stepDone: this.state.sponsorStep === 3,
+      canContinue: this.state.tierIndex !== null,
+      continueStyle: "flex: none; display: inline-flex; align-items: center; justify-content: center; min-height: 60px; padding: 0 32px; border: none; border-radius: 16px; font-family: inherit; font-size: clamp(16px, 1.4vw, 18px); font-weight: 700; color: #FFFFFF; background: "
+        + (this.state.tierIndex === null ? "#C9C4C1" : "#E51B13")
+        + "; cursor: " + (this.state.tierIndex === null ? "not-allowed" : "pointer"),
+      goStepTwo: () => { if (this.state.tierIndex !== null) this.setState({ sponsorStep: 2 }); },
+      backStepOne: () => this.setState({ sponsorStep: 1 }),
+      submitForm: e => { e.preventDefault(); this.setState({ sponsorStep: 3 }); },
+      chosenTier: this.state.tierIndex === null ? null : this.tiers[this.state.tierIndex],
+      chosenMetal: this.state.tierIndex === null ? "#111010" : this.metals[this.state.tierIndex],
+      nextEvent: { when: "Thu 14 Aug", title: "Project Night #01" }
+    };
+  }
+}
+
+</script>
+</body>
+</html>
