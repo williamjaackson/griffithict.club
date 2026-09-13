@@ -1,15 +1,9 @@
 import { MessageFlags, type ButtonInteraction } from 'discord.js'
 import type { Database } from '@gict/db'
-import { canMoveTo, claimById, configFor, moveClaim, type ClaimStatus } from '../claims'
+import { canMoveTo, claimById, configFor, moveClaim } from '../claims'
+import { STATUS, type ClaimStatus } from '../status'
 import { formatAmount } from '../money'
 import { claimSummary, reviewButtons } from './submit'
-
-const TOLD: Record<ClaimStatus, string> = {
-  pending: 'is back to pending',
-  submitted: 'has gone to the Guild',
-  paid: 'has been paid',
-  rejected: 'was rejected',
-}
 
 export async function onReviewButton(
   interaction: ButtonInteraction,
@@ -52,18 +46,17 @@ export async function onReviewButton(
     return
   }
 
-  // Nobody signs off their own money, including a treasurer who is owed some.
-  if (claim.claimantId === interaction.user.id) {
-    await interaction.reply({
-      content: 'You cannot move your own claim along. Ask someone else on the committee.',
-      flags: MessageFlags.Ephemeral,
-    })
-    return
-  }
+  /*
+   * A treasurer may move their own claim along. In a club the person buying
+   * things is very often the person holding the role, and a second pair of
+   * hands mostly means nothing gets logged at all. reimburse_events records
+   * who moved what either way, which is the control that actually answers an
+   * audit.
+   */
 
   if (!canMoveTo(claim.status, to)) {
     await interaction.reply({
-      content: `Claim #${claim.reference} is already **${claim.status}**, so that is not a move it can make.`,
+      content: `Claim #${claim.reference} is already **${STATUS[claim.status].label}**, so that is not a move it can make.`,
       flags: MessageFlags.Ephemeral,
     })
     return
@@ -86,7 +79,7 @@ export async function onReviewButton(
   })
 
   await interaction.followUp({
-    content: `Claim #${moved.reference} ${TOLD[to]}.`,
+    content: `Claim #${moved.reference} ${STATUS[to].told}.`,
     flags: MessageFlags.Ephemeral,
   })
 
@@ -95,7 +88,7 @@ export async function onReviewButton(
   await interaction.client.users
     .send(
       moved.claimantId,
-      `Your claim **#${moved.reference}** for ${formatAmount(moved.amountCents, config.currency)} ${TOLD[to]}.`,
+      `${STATUS[to].icon} Your claim **#${moved.reference}** for ${formatAmount(moved.amountCents, config.currency)} ${STATUS[to].told}.`,
     )
     .catch(() => {
       // Closed DMs. Not worth failing the transition that already happened.

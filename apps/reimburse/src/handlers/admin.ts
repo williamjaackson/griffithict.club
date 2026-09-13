@@ -1,14 +1,8 @@
 import { MessageFlags, type ChatInputCommandInteraction } from 'discord.js'
 import { reimburseConfig, type Database } from '@gict/db'
-import { claimsFor, configFor, type ClaimStatus } from '../claims'
+import { claimsFor, configFor } from '../claims'
+import { statusText, type ClaimStatus } from '../status'
 import { formatAmount, totalCents } from '../money'
-
-const LABEL: Record<ClaimStatus, string> = {
-  pending: 'Pending',
-  submitted: 'With the Guild',
-  paid: 'Paid',
-  rejected: 'Rejected',
-}
 
 export async function onAdminCommand(
   interaction: ChatInputCommandInteraction,
@@ -70,7 +64,7 @@ async function list(
   const rows = claims
     .map(
       (claim) =>
-        `\`#${String(claim.reference).padStart(3, '0')}\` ${formatAmount(claim.amountCents, currency)} · ${LABEL[claim.status]}${
+        `${statusText(claim.status)} · \`#${String(claim.reference).padStart(3, '0')}\` ${formatAmount(claim.amountCents, currency)}${
           onlyMine ? '' : ` · <@${claim.claimantId}>`
         }`,
     )

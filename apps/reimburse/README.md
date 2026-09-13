@@ -57,7 +57,10 @@ claim itself.
 - **`submitted` means sent to the Guild**, not filed by the member. The club does
   not hold its own money. `pending` → `submitted` → `paid`, with `rejected` as
   the way to close one that is not going anywhere.
-- **Nobody moves their own claim along**, including a treasurer who is owed.
+- **A treasurer may move their own claim along.** In a club the person buying
+  things is usually the one holding the role, and a second pair of hands mostly
+  means nothing gets logged at all. `reimburse_events` records who moved what
+  either way, which is the control an audit actually asks about.
 - **The review channel should be private.** Claims carry names, amounts and what
   people bought.
 - **reimburse_events is append-only.** The status says where a claim is; the

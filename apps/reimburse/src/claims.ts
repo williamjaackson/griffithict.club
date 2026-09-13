@@ -8,8 +8,9 @@ import {
   type ReimburseClaim,
   type ReimburseConfig,
 } from '@gict/db'
+import type { ClaimStatus } from './status'
 
-export type ClaimStatus = ReimburseClaim['status']
+export type { ClaimStatus } from './status'
 
 /** The states a claim can move to from where it is. */
 const NEXT: Record<ClaimStatus, ClaimStatus[]> = {

@@ -13,6 +13,7 @@ import { reimburseClaims, type Database, type ReimburseClaim } from '@gict/db'
 import { canMoveTo, configFor, createClaim, type NewReceipt } from '../claims'
 import { formatAmount, parseAmount } from '../money'
 import { FIELD_AMOUNT, FIELD_DESCRIPTION, FIELD_RECEIPT } from '../modal'
+import { STATUS } from '../status'
 
 /** Discord's own ceiling for a free upload. Anything larger never arrives. */
 const MAX_RECEIPT_BYTES = 10 * 1024 * 1024
@@ -118,7 +119,8 @@ export function reviewButtons(claim: ReimburseClaim): ActionRowBuilder<ButtonBui
     buttons.push(
       new ButtonBuilder()
         .setCustomId(`claim:submitted:${claim.id}`)
-        .setLabel('Sent to the Guild')
+        .setEmoji(STATUS.submitted.icon)
+        .setLabel(STATUS.submitted.label)
         .setStyle(ButtonStyle.Primary),
     )
   }
@@ -127,7 +129,8 @@ export function reviewButtons(claim: ReimburseClaim): ActionRowBuilder<ButtonBui
     buttons.push(
       new ButtonBuilder()
         .setCustomId(`claim:paid:${claim.id}`)
-        .setLabel('Paid')
+        .setEmoji(STATUS.paid.icon)
+        .setLabel(STATUS.paid.label)
         .setStyle(ButtonStyle.Success),
     )
   }
@@ -136,6 +139,7 @@ export function reviewButtons(claim: ReimburseClaim): ActionRowBuilder<ButtonBui
     buttons.push(
       new ButtonBuilder()
         .setCustomId(`claim:rejected:${claim.id}`)
+        .setEmoji(STATUS.rejected.icon)
         .setLabel('Reject')
         .setStyle(ButtonStyle.Danger),
     )
@@ -144,17 +148,10 @@ export function reviewButtons(claim: ReimburseClaim): ActionRowBuilder<ButtonBui
   return buttons.length === 0 ? [] : [new ActionRowBuilder<ButtonBuilder>().addComponents(buttons)]
 }
 
-const LABEL: Record<ReimburseClaim['status'], string> = {
-  pending: 'Pending',
-  submitted: 'Sent to the Guild',
-  paid: 'Paid',
-  rejected: 'Rejected',
-}
-
 export function claimSummary(claim: ReimburseClaim, currency: string): string {
   return [
-    `## Claim #${claim.reference} · ${formatAmount(claim.amountCents, currency)}`,
-    `<@${claim.claimantId}> · **${LABEL[claim.status]}**`,
+    `## ${STATUS[claim.status].icon} Claim #${claim.reference} · ${formatAmount(claim.amountCents, currency)}`,
+    `<@${claim.claimantId}> · **${STATUS[claim.status].label}**`,
     '',
     claim.description,
   ].join('\n')
