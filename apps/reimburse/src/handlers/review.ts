@@ -54,9 +54,22 @@ export async function onReviewButton(
    * audit.
    */
 
+  /*
+   * Already there. The buttons on this message are out of date, which happens
+   * when somebody else moved it while this one sat on screen. Redraw rather
+   * than complain: the claim is in the state they asked for.
+   */
+  if (claim.status === to) {
+    await interaction.update({
+      content: claimSummary(claim, config.currency),
+      components: reviewButtons(claim),
+    })
+    return
+  }
+
   if (!canMoveTo(claim.status, to)) {
     await interaction.reply({
-      content: `Claim #${claim.reference} is already **${STATUS[claim.status].label}**, so that is not a move it can make.`,
+      content: `Claim #${claim.reference} cannot go to **${STATUS[to].label}** from **${STATUS[claim.status].label}**.`,
       flags: MessageFlags.Ephemeral,
     })
     return
@@ -65,9 +78,28 @@ export async function onReviewButton(
   // Conditional on the status still reading as it did, so two treasurers
   // pressing at once cannot both succeed.
   const moved = await moveClaim(database, claim.id, claim.status, to, interaction.user.id)
+
   if (!moved) {
+    /*
+     * The update found nothing, so the status changed between reading it and
+     * writing it. Whether that matters depends on where it landed: if it is
+     * already where this press was taking it, the outcome is the one that was
+     * wanted and saying "somebody beat you" is just noise.
+     */
+    const current = await claimById(database, claim.id)
+
+    if (current?.status === to) {
+      await interaction.update({
+        content: claimSummary(current, config.currency),
+        components: reviewButtons(current),
+      })
+      return
+    }
+
     await interaction.reply({
-      content: 'Somebody moved that claim a moment before you did. Have another look.',
+      content: current
+        ? `Somebody moved claim #${current.reference} to **${STATUS[current.status].label}** just before you. Have another look.`
+        : 'That claim no longer exists.',
       flags: MessageFlags.Ephemeral,
     })
     return
