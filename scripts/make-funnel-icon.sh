@@ -10,8 +10,8 @@
 set -euo pipefail
 
 ROOT="$(git rev-parse --show-toplevel)"
-SRC="$ROOT/apps/bot/assets/icon.svg"
-OUT="$ROOT/apps/bot/assets/icon-512.png"
+SRC="$ROOT/apps/funnel/assets/icon.svg"
+OUT="$ROOT/apps/funnel/assets/icon-512.png"
 
 for tool in rsvg-convert; do
   command -v "$tool" >/dev/null || { echo "$tool not found; brew install librsvg" >&2; exit 1; }

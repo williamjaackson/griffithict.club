@@ -11,7 +11,7 @@ import {
 } from 'drizzle-orm/pg-core'
 
 /**
- * Funnel — the invite attribution bot in apps/bot.
+ * Funnel — the invite attribution bot in apps/funnel.
  *
  * Every table here is scoped by guild. One instance serves any server that adds
  * it, not just this club's, so a guild id on each row is what keeps two servers'

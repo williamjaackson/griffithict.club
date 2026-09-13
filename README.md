@@ -7,7 +7,7 @@ The Griffith ICT Club website.
 | Path          | What                                                  |
 | ------------- | ----------------------------------------------------- |
 | `apps/web`    | The site. Next.js 16, App Router                      |
-| `apps/bot`    | Discord bot. Not built yet                            |
+| `apps/funnel` | Funnel, the Discord invite and funnel tracker         |
 | `packages/db` | Drizzle schema and migrations for the shared Postgres |
 | `design/`     | The original mockup, kept as a visual reference       |
 | `deploy/`     | The compose file the VPS runs                         |
