@@ -65,13 +65,17 @@ export function ContactDialog({ contact }: { contact: Contact }) {
             required
             defaultValue={contact.topics[0]}
           />
-          <TextField
-            name="name"
-            label="Your name"
-            placeholder="Full name"
-            maxLength={200}
-            required
-          />
+          {/* Paired, so adding company did not push the send button past the fold. */}
+          <div className="grid grid-cols-[repeat(auto-fit,minmax(min(100%,200px),1fr))] gap-[clamp(14px,1.8vw,20px)]">
+            <TextField
+              name="name"
+              label="Your name"
+              placeholder="Full name"
+              maxLength={200}
+              required
+            />
+            <TextField name="company" label="Company" placeholder="Optional" maxLength={200} />
+          </div>
           <TextField
             name="email"
             label="Email"

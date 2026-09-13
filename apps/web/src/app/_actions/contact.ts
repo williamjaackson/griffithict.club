@@ -20,6 +20,7 @@ const schema = z.object({
   // devtools into something arbitrary.
   topic: z.enum(contact.topics as [string, ...string[]]),
   name: z.string().trim().min(1).max(200),
+  company: z.string().trim().max(200).optional().or(z.literal('')),
   email: z.email().max(320),
   message: z.string().trim().min(1).max(2000),
   // Hidden field. Real people leave it empty; bots fill everything in.
@@ -49,7 +50,11 @@ export async function submitContactEnquiry(formData: FormData): Promise<ContactR
   // did not, which is the row worth checking after a webhook outage.
   await db()
     .insert(contactEnquiries)
-    .values({ ...enquiry, deliveredAt: delivered ? new Date() : null })
+    .values({
+      ...enquiry,
+      company: enquiry.company || null,
+      deliveredAt: delivered ? new Date() : null,
+    })
 
   return { ok: true }
 }

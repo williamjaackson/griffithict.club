@@ -100,6 +100,8 @@ export const contactEnquiries = pgTable('contact_enquiries', {
   /** One of the options in contact.yaml, stored as written so old rows survive an edit. */
   topic: varchar('topic', { length: 60 }).notNull(),
   name: varchar('name', { length: 200 }).notNull(),
+  /** Who they are writing on behalf of, if anyone. Blank for most students. */
+  company: varchar('company', { length: 200 }),
   email: varchar('email', { length: 320 }).notNull(),
   message: text('message').notNull(),
   /** Null when Discord rejected it. The row worth checking after a webhook outage. */

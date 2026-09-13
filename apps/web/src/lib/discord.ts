@@ -123,15 +123,22 @@ export async function postContactEnquiry(enquiry: NewContactEnquiry): Promise<bo
     return false
   }
 
+  const fields: Field[] = [
+    { name: 'From', value: enquiry.name, inline: true },
+    { name: 'Email', value: code(enquiry.email), inline: true },
+  ]
+  if (enquiry.company) fields.push({ name: 'Company', value: enquiry.company, inline: true })
+  fields.push(
+    { name: 'About', value: enquiry.topic, inline: false },
+    { name: 'Message', value: clamp(enquiry.message), inline: false },
+  )
+
   return post({
     webhook,
-    title: `${enquiry.topic} — ${enquiry.name}`,
+    title: enquiry.company
+      ? `${enquiry.topic} — ${enquiry.name}, ${enquiry.company}`
+      : `${enquiry.topic} — ${enquiry.name}`,
     description: 'new enquiry from the website',
-    fields: [
-      { name: 'From', value: enquiry.name, inline: true },
-      { name: 'Email', value: code(enquiry.email), inline: true },
-      { name: 'About', value: enquiry.topic, inline: false },
-      { name: 'Message', value: clamp(enquiry.message), inline: false },
-    ],
+    fields,
   })
 }
