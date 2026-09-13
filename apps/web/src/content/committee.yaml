@@ -1,0 +1,53 @@
+# Each entry is a role, not a person. `history` is newest first, and the first
+# entry is the person currently holding it — that drives both the card and the
+# timeline in the modal.
+- role: President
+  about: >-
+    Sets the club's direction, runs committee meetings, and is the club's point of
+    contact with the university and with sponsors. Accountable for everything the
+    club puts its name on.
+  history:
+    - name: William Jackson
+      term: Jul 2026 to Present
+      length: 3 mos
+    - name: Owen Richardson
+      term: Mar 2025 to Jun 2026
+      length: 1 yr 4 mos
+
+- role: Vice President
+  about: >-
+    Supports the President and steps in when they are unavailable. Owns event
+    delivery day to day, making sure what the committee plans actually happens on
+    the night.
+  history:
+    - name: Tylar Pinniger
+      term: Feb 2026 to Present
+      length: 8 mos
+    - name: Michael Geurts
+      term: Sep 2025 to Jan 2026
+      length: 5 mos
+
+- role: Secretary
+  about: >-
+    Keeps the club's records: meeting minutes, the member register, and the
+    paperwork the university requires. Handles club communications and
+    announcements.
+  history:
+    - name: Julio Medeiros
+      term: Jul 2026 to Present
+      length: 3 mos
+    - name: Zain Abrahams
+      term: Mar 2025 to Jun 2026
+      length: 1 yr 4 mos
+
+- role: Treasurer
+  about: >-
+    Looks after the club's money: budgets for each event, sponsorship income,
+    reimbursements, and reporting the accounts back to members.
+  history:
+    - name: Novak Bigic
+      term: Jul 2026 to Present
+      length: 3 mos
+    - name: William Jackson
+      term: Mar 2025 to Jun 2026
+      length: 1 yr 4 mos

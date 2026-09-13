@@ -1,0 +1,362 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<meta name="design_doc_mode" content="canvas" />
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin="" />
+<link href="https://fonts.googleapis.com/css2?family=Archivo:ital,wdth,wght@0,62..125,100..900;1,62..125,100..900&amp;display=swap" rel="stylesheet" />
+<style>
+  body { margin: 0; background: #EDEBE8; font-family: Archivo, Helvetica, Arial, sans-serif; -webkit-font-smoothing: antialiased; }
+  a { color: #E51B13; text-decoration: none; }
+  a:hover { color: #111010; }
+  * { box-sizing: border-box; }
+  @keyframes gictRise { from { opacity: 0; transform: translateY(18px); } to { opacity: 1; transform: none; } }
+  @keyframes gictRule { from { transform: scaleX(0); } to { transform: scaleX(1); } }
+</style>
+</helmet>
+
+<section style="padding: 72px 72px 140px; display: flex; flex-direction: column; gap: 40px">
+  <header style="display: flex; align-items: baseline; gap: 20px; font-size: 13px; letter-spacing: 0.16em; text-transform: uppercase; color: #6B6764; font-weight: 600">
+    <span style="color: #111010">Turn 2 — three new directions</span>
+    <span>2a broadsheet (recommended) · 2b ledger · 2c timetable</span>
+  </header>
+
+  <div style="display: flex; gap: 96px; align-items: flex-start; flex-wrap: wrap">
+
+    <!-- ============ 2a ============ -->
+    <div id="2a" style="display: flex; flex-direction: column; gap: 18px">
+      <div style="display: flex; align-items: center; gap: 14px">
+        <span style="display: inline-flex; align-items: center; justify-content: center; width: 44px; height: 44px; border-radius: 12px; background: #E51B13; color: #fff; font-weight: 800; font-size: 17px">2a</span>
+        <div style="display: flex; flex-direction: column; gap: 2px">
+          <strong style="font-size: 19px; font-weight: 800; color: #111010; letter-spacing: -0.01em">Broadsheet</strong>
+          <span style="font-size: 13px; color: #6B6764; letter-spacing: 0.04em">A masthead and a column grid. Full-bleed type, real photography, no boxes at all.</span>
+        </div>
+      </div>
+
+      <div style="width: 1320px; background: #FFFFFF; overflow: hidden; box-shadow: 0 24px 80px rgba(17,16,16,0.13)">
+        <div style="display: flex; align-items: center; justify-content: space-between; gap: 32px; padding: 18px 48px; border-bottom: 1px solid #111010">
+          <nav style="display: flex; gap: 28px; font-size: 13px; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; color: #111010">
+            <a href="#2a" style="color: #111010">About</a>
+            <a href="#2a" style="color: #111010">Events</a>
+            <a href="#2a" style="color: #111010">Sponsors</a>
+          </nav>
+          <img src="logo/lockup-inline-frame-red-ink.svg" alt="Griffith ICT Club" style="height: 30px; width: auto; display: block" />
+          <a href="{{ discordUrl }}" style="display: inline-flex; align-items: center; gap: 9px; height: 42px; padding: 0 20px; border-radius: 11px; background: #E51B13; color: #FFFFFF; font-size: 14px; font-weight: 700" style-hover="background: #111010">Join the Discord <span style="font-size: 16px">→</span></a>
+        </div>
+
+        <div style="padding: 64px 48px 0">
+          <div style="display: flex; align-items: center; gap: 18px; font-size: 12px; font-weight: 700; letter-spacing: 0.2em; text-transform: uppercase; color: #E51B13">
+            <span>Griffith University · Established student club</span>
+            <span style="flex: 1; height: 1px; background: #E51B13; transform-origin: left; animation: gictRule 0.9s cubic-bezier(.2,.8,.2,1) both"></span>
+            <span>Semester 2, 2026</span>
+          </div>
+
+          <h1 style="margin: 34px 0 0; font-size: 158px; line-height: 0.83; font-weight: 800; font-stretch: 122%; letter-spacing: -0.05em; color: #111010; animation: gictRise 0.7s 0.08s cubic-bezier(.2,.8,.2,1) both">Students who<br />build things,<br /><span style="color: #E51B13">together</span>.</h1>
+
+          <div style="display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 44px; margin-top: 48px; padding-top: 28px; border-top: 2px solid #111010">
+            <p style="margin: 0; font-size: 19px; line-height: 1.55; color: #111010; font-weight: 500; text-wrap: pretty">Griffith's largest club for computer science, information technology, cyber security and software engineering students — and for anyone else who would rather be making something.</p>
+            <p style="margin: 0; font-size: 17px; line-height: 1.6; color: #3A3735; text-wrap: pretty">Every week of semester there is something on: a workshop that leaves you with working code, an industry night with the people who do the hiring, a hackathon, or a barbecue.</p>
+            <div style="display: flex; flex-direction: column; gap: 14px; align-items: start">
+              <a href="{{ discordUrl }}" style="display: inline-flex; align-items: center; gap: 12px; height: 64px; padding: 0 30px; border-radius: 17px; background: #E51B13; color: #FFFFFF; font-size: 19px; font-weight: 700" style-hover="background: #111010">Join the Discord <span style="font-size: 21px">→</span></a>
+              <a href="{{ memberUrl }}" style="display: inline-flex; align-items: center; height: 64px; padding: 0 28px; border-radius: 17px; border: 1px solid #111010; color: #111010; font-size: 19px; font-weight: 600" style-hover="background: #111010; color: #FFFFFF">Become a member</a>
+              <span style="font-size: 14px; color: #6B6764; line-height: 1.45">Free, and open to every degree.</span>
+            </div>
+          </div>
+        </div>
+
+        <div style="margin-top: 56px; height: 520px; background-color: #F4F2F0; background-image: repeating-linear-gradient(135deg, #E7E3E0 0 10px, #F4F2F0 10px 20px); display: flex; align-items: flex-end; justify-content: space-between; gap: 24px; padding: 28px 48px; border-top: 1px solid #111010; border-bottom: 1px solid #111010">
+          <span style="font-size: 12px; font-weight: 700; letter-spacing: 0.18em; text-transform: uppercase; color: #6B6764">Photograph — full bleed, a real crowd at a real event</span>
+          <span style="font-size: 12px; font-weight: 700; letter-spacing: 0.18em; text-transform: uppercase; color: #6B6764">1320 × 520</span>
+        </div>
+
+        <div style="padding: 88px 48px 0">
+          <div style="display: flex; align-items: baseline; justify-content: space-between; gap: 32px; padding-bottom: 18px; border-bottom: 2px solid #111010">
+            <h2 style="margin: 0; font-size: 14px; font-weight: 700; letter-spacing: 0.2em; text-transform: uppercase; color: #111010">What we run</h2>
+            <span style="font-size: 15px; color: #6B6764">Four kinds of evening, all semester long</span>
+          </div>
+          <sc-for list="{{ programme }}" as="row" hint-placeholder-count="4">
+            <div style="display: grid; grid-template-columns: 72px minmax(0, 340px) minmax(0, 1fr); gap: 36px; align-items: start; padding: 32px 4px; border-bottom: 1px solid #DEDAD6" style-hover="background: #FAF8F7">
+              <span style="font-size: 14px; font-weight: 700; color: #E51B13; letter-spacing: 0.08em; padding-top: 10px">{{ row.n }}</span>
+              <h3 style="margin: 0; font-size: 44px; font-weight: 800; font-stretch: 114%; letter-spacing: -0.03em; line-height: 0.98; color: #111010">{{ row.title }}</h3>
+              <p style="margin: 0; font-size: 18px; line-height: 1.55; color: #3A3735; max-width: 640px; text-wrap: pretty">{{ row.body }}</p>
+            </div>
+          </sc-for>
+        </div>
+
+        <div style="padding: 88px 48px 0">
+          <div style="display: flex; align-items: baseline; justify-content: space-between; gap: 32px; padding-bottom: 18px; border-bottom: 2px solid #111010">
+            <h2 style="margin: 0; font-size: 14px; font-weight: 700; letter-spacing: 0.2em; text-transform: uppercase; color: #111010">What's coming up</h2>
+            <span style="font-size: 15px; color: #6B6764">Dates, tickets and changes are posted in the server first</span>
+          </div>
+          <sc-for list="{{ events }}" as="ev" hint-placeholder-count="3">
+            <div style="display: grid; grid-template-columns: 240px minmax(0, 1fr) 150px; gap: 32px; align-items: center; padding: 26px 4px; border-bottom: 1px solid #DEDAD6" style-hover="background: #FAF8F7">
+              <span style="font-size: 14px; font-weight: 700; letter-spacing: 0.09em; text-transform: uppercase; color: #6B6764; white-space: nowrap">{{ ev.when }}</span>
+              <h3 style="margin: 0; font-size: 30px; font-weight: 700; font-stretch: 108%; letter-spacing: -0.02em; color: #111010">{{ ev.title }}</h3>
+              <span style="justify-self: end; font-size: 12px; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase; color: #E51B13; border: 1px solid #E51B13; border-radius: 9px; padding: 7px 12px">{{ ev.tag }}</span>
+            </div>
+          </sc-for>
+        </div>
+
+        <div style="margin: 88px 0 0; background: #E51B13; color: #FFFFFF; padding: 80px 48px">
+          <div style="display: grid; grid-template-columns: minmax(0, 1fr) 200px; gap: 56px; align-items: center">
+            <div style="display: flex; flex-direction: column; gap: 28px">
+              <h2 style="margin: 0; font-size: 82px; line-height: 0.92; font-weight: 800; font-stretch: 118%; letter-spacing: -0.04em; text-wrap: balance">The next thing we run, you could be at.</h2>
+              <a href="{{ discordUrl }}" style="align-self: start; display: inline-flex; align-items: center; gap: 12px; height: 68px; padding: 0 34px; border-radius: 18px; background: #FFFFFF; color: #E51B13; font-size: 21px; font-weight: 700" style-hover="background: #111010; color: #FFFFFF">Join the Discord <span style="font-size: 23px">→</span></a>
+            </div>
+            <img src="logo/brandmark-white.svg" alt="" style="width: 100%; height: auto; display: block; justify-self: end" />
+          </div>
+        </div>
+
+        <div style="background: #111010; color: #FFFFFF; padding: 60px 48px 36px">
+          <div style="display: grid; grid-template-columns: 240px repeat(3, minmax(0, 1fr)); gap: 44px; padding-bottom: 40px; border-bottom: 1px solid #35312F">
+            <img src="logo/lockup-stacked-frame-white.svg" alt="Griffith ICT Club" style="width: 146px; height: auto; display: block" />
+            <div style="display: flex; flex-direction: column; gap: 11px; font-size: 15px">
+              <span style="font-size: 12px; font-weight: 700; letter-spacing: 0.16em; text-transform: uppercase; color: #8C8683">Club</span>
+              <a href="#2a" style="color: #FFFFFF">About us</a>
+              <a href="#2a" style="color: #FFFFFF">Executive team</a>
+              <a href="#2a" style="color: #FFFFFF">Events</a>
+            </div>
+            <div style="display: flex; flex-direction: column; gap: 11px; font-size: 15px">
+              <span style="font-size: 12px; font-weight: 700; letter-spacing: 0.16em; text-transform: uppercase; color: #8C8683">Partners</span>
+              <a href="#2a" style="color: #FFFFFF">Our sponsors</a>
+              <a href="#2a" style="color: #FFFFFF">Sponsor us</a>
+              <a href="#2a" style="color: #FFFFFF">Perks program</a>
+            </div>
+            <div style="display: flex; flex-direction: column; gap: 11px; font-size: 15px">
+              <span style="font-size: 12px; font-weight: 700; letter-spacing: 0.16em; text-transform: uppercase; color: #8C8683">Elsewhere</span>
+              <a href="{{ discordUrl }}" style="color: #FFFFFF">Discord</a>
+              <a href="#2a" style="color: #FFFFFF">GitHub</a>
+              <a href="#2a" style="color: #FFFFFF">Instagram</a>
+              <a href="#2a" style="color: #FFFFFF">LinkedIn</a>
+            </div>
+          </div>
+          <p style="margin: 22px 0 0; font-size: 13px; color: #8C8683">© 2026 Griffith ICT Club. Run by students.</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- ============ 2b ============ -->
+    <div id="2b" style="display: flex; flex-direction: column; gap: 18px">
+      <div style="display: flex; align-items: center; gap: 14px">
+        <span style="display: inline-flex; align-items: center; justify-content: center; width: 44px; height: 44px; border-radius: 12px; background: #111010; color: #fff; font-weight: 800; font-size: 17px">2b</span>
+        <div style="display: flex; flex-direction: column; gap: 2px">
+          <strong style="font-size: 19px; font-weight: 800; color: #111010; letter-spacing: -0.01em">Ledger</strong>
+          <span style="font-size: 13px; color: #6B6764; letter-spacing: 0.04em">A fixed ink rail on the left holds the brand and the CTA forever; content scrolls beside it.</span>
+        </div>
+      </div>
+
+      <div style="width: 1320px; background: #FFFFFF; overflow: hidden; box-shadow: 0 24px 80px rgba(17,16,16,0.13); display: grid; grid-template-columns: 372px minmax(0, 1fr)">
+        <div style="background: #111010; color: #FFFFFF; padding: 44px 40px; display: flex; flex-direction: column; gap: 44px">
+          <div style="position: sticky; top: 44px; display: flex; flex-direction: column; gap: 40px">
+            <img src="logo/lockup-stacked-frame-white.svg" alt="Griffith ICT Club" style="width: 168px; height: auto; display: block" />
+            <p style="margin: 0; font-size: 17px; line-height: 1.55; color: #C9C4C1; text-wrap: pretty">Griffith's largest club for computer science, IT, cyber security and software engineering students.</p>
+            <nav style="display: flex; flex-direction: column; border-top: 1px solid #35312F">
+              <a href="#2b" style="padding: 16px 0; border-bottom: 1px solid #35312F; color: #FFFFFF; font-size: 17px; font-weight: 600; display: flex; justify-content: space-between" style-hover="color: #E51B13">About us <span>→</span></a>
+              <a href="#2b" style="padding: 16px 0; border-bottom: 1px solid #35312F; color: #FFFFFF; font-size: 17px; font-weight: 600; display: flex; justify-content: space-between" style-hover="color: #E51B13">Events <span>→</span></a>
+              <a href="#2b" style="padding: 16px 0; border-bottom: 1px solid #35312F; color: #FFFFFF; font-size: 17px; font-weight: 600; display: flex; justify-content: space-between" style-hover="color: #E51B13">Executive team <span>→</span></a>
+              <a href="#2b" style="padding: 16px 0; border-bottom: 1px solid #35312F; color: #FFFFFF; font-size: 17px; font-weight: 600; display: flex; justify-content: space-between" style-hover="color: #E51B13">Sponsors <span>→</span></a>
+            </nav>
+            <div style="display: flex; flex-direction: column; gap: 12px">
+              <a href="{{ discordUrl }}" style="display: flex; align-items: center; justify-content: center; gap: 12px; height: 66px; border-radius: 18px; background: #E51B13; color: #FFFFFF; font-size: 19px; font-weight: 700" style-hover="background: #FFFFFF; color: #E51B13">Join the Discord <span style="font-size: 21px">→</span></a>
+              <a href="{{ memberUrl }}" style="display: flex; align-items: center; justify-content: center; height: 66px; border-radius: 18px; border: 1px solid #6B6764; color: #FFFFFF; font-size: 19px; font-weight: 600" style-hover="background: #FFFFFF; color: #111010; border-color: #FFFFFF">Become a member</a>
+            </div>
+            <span style="font-size: 13px; color: #8C8683; line-height: 1.5">© 2026 Griffith ICT Club. Run by students.</span>
+          </div>
+        </div>
+
+        <div style="display: flex; flex-direction: column">
+          <div style="padding: 76px 56px 72px; display: flex; flex-direction: column; gap: 34px">
+            <span style="font-size: 12px; font-weight: 700; letter-spacing: 0.2em; text-transform: uppercase; color: #E51B13">Four disciplines, one club</span>
+            <h1 style="margin: 0; font-size: 118px; line-height: 0.85; font-weight: 800; font-stretch: 120%; letter-spacing: -0.048em; color: #111010; animation: gictRise 0.7s cubic-bezier(.2,.8,.2,1) both">Come for<br />the code.<br /><span style="color: #E51B13">Stay for<br />the people.</span></h1>
+            <ul style="margin: 0; padding: 0; list-style: none; display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); border-top: 1px solid #DEDAD6">
+              <li style="padding: 15px 0; border-bottom: 1px solid #DEDAD6; font-size: 15px; font-weight: 600; letter-spacing: 0.04em; text-transform: uppercase; color: #111010">Computer Science</li>
+              <li style="padding: 15px 0 15px 24px; border-bottom: 1px solid #DEDAD6; font-size: 15px; font-weight: 600; letter-spacing: 0.04em; text-transform: uppercase; color: #111010">Information Technology</li>
+              <li style="padding: 15px 0; border-bottom: 1px solid #DEDAD6; font-size: 15px; font-weight: 600; letter-spacing: 0.04em; text-transform: uppercase; color: #111010">Cyber Security</li>
+              <li style="padding: 15px 0 15px 24px; border-bottom: 1px solid #DEDAD6; font-size: 15px; font-weight: 600; letter-spacing: 0.04em; text-transform: uppercase; color: #111010">Software Engineering</li>
+            </ul>
+          </div>
+
+          <div style="height: 380px; background-color: #F4F2F0; background-image: repeating-linear-gradient(135deg, #E7E3E0 0 10px, #F4F2F0 10px 20px); display: flex; align-items: flex-end; padding: 24px 56px; border-top: 1px solid #DEDAD6; border-bottom: 1px solid #DEDAD6">
+            <span style="font-size: 12px; font-weight: 700; letter-spacing: 0.18em; text-transform: uppercase; color: #6B6764">Photograph — workshop in progress, wide crop</span>
+          </div>
+
+          <div style="padding: 76px 56px 0">
+            <h2 style="margin: 0 0 6px; font-size: 52px; font-weight: 800; font-stretch: 116%; letter-spacing: -0.035em; color: #111010">What we run.</h2>
+            <p style="margin: 0 0 22px; font-size: 18px; color: #6B6764">Something every week of semester.</p>
+            <sc-for list="{{ programme }}" as="row" hint-placeholder-count="4">
+              <div style="display: grid; grid-template-columns: 60px minmax(0, 1fr); gap: 28px; align-items: start; padding: 28px 0; border-top: 1px solid #DEDAD6">
+                <span style="font-size: 14px; font-weight: 700; color: #E51B13; letter-spacing: 0.08em; padding-top: 7px">{{ row.n }}</span>
+                <div style="display: flex; flex-direction: column; gap: 9px">
+                  <h3 style="margin: 0; font-size: 34px; font-weight: 800; font-stretch: 112%; letter-spacing: -0.028em; line-height: 1; color: #111010">{{ row.title }}</h3>
+                  <p style="margin: 0; font-size: 18px; line-height: 1.55; color: #3A3735; max-width: 620px; text-wrap: pretty">{{ row.body }}</p>
+                </div>
+              </div>
+            </sc-for>
+          </div>
+
+          <div style="padding: 76px 56px 0">
+            <h2 style="margin: 0 0 6px; font-size: 52px; font-weight: 800; font-stretch: 116%; letter-spacing: -0.035em; color: #111010">What's coming up.</h2>
+            <p style="margin: 0 0 22px; font-size: 18px; color: #6B6764">Dates and tickets are posted in the server first.</p>
+            <sc-for list="{{ events }}" as="ev" hint-placeholder-count="3">
+              <div style="display: grid; grid-template-columns: 230px minmax(0, 1fr) auto; gap: 24px; align-items: center; padding: 24px 0; border-top: 1px solid #DEDAD6">
+                <span style="font-size: 14px; font-weight: 700; letter-spacing: 0.09em; text-transform: uppercase; color: #6B6764; white-space: nowrap">{{ ev.when }}</span>
+                <h3 style="margin: 0; font-size: 28px; font-weight: 700; font-stretch: 108%; letter-spacing: -0.02em; color: #111010">{{ ev.title }}</h3>
+                <span style="font-size: 12px; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase; color: #E51B13; border: 1px solid #E51B13; border-radius: 9px; padding: 7px 12px">{{ ev.tag }}</span>
+              </div>
+            </sc-for>
+          </div>
+
+          <div style="margin-top: 76px; background: #E51B13; color: #FFFFFF; padding: 72px 56px; display: flex; flex-direction: column; gap: 26px">
+            <h2 style="margin: 0; font-size: 66px; line-height: 0.94; font-weight: 800; font-stretch: 118%; letter-spacing: -0.04em; max-width: 700px">Two minutes now, a whole degree of company later.</h2>
+            <a href="{{ discordUrl }}" style="align-self: start; display: inline-flex; align-items: center; gap: 12px; height: 68px; padding: 0 34px; border-radius: 18px; background: #FFFFFF; color: #E51B13; font-size: 21px; font-weight: 700" style-hover="background: #111010; color: #FFFFFF">Join the Discord <span style="font-size: 23px">→</span></a>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ============ 2c ============ -->
+    <div id="2c" style="display: flex; flex-direction: column; gap: 18px">
+      <div style="display: flex; align-items: center; gap: 14px">
+        <span style="display: inline-flex; align-items: center; justify-content: center; width: 44px; height: 44px; border-radius: 12px; background: #111010; color: #fff; font-weight: 800; font-size: 17px">2c</span>
+        <div style="display: flex; flex-direction: column; gap: 2px">
+          <strong style="font-size: 19px; font-weight: 800; color: #111010; letter-spacing: -0.01em">Timetable</strong>
+          <span style="font-size: 13px; color: #6B6764; letter-spacing: 0.04em">The semester itself is the layout — a 13-week ruler you read across.</span>
+        </div>
+      </div>
+
+      <div style="width: 1320px; background: #FFFFFF; overflow: hidden; box-shadow: 0 24px 80px rgba(17,16,16,0.13)">
+        <div style="display: flex; align-items: center; justify-content: space-between; gap: 32px; padding: 20px 52px; border-bottom: 1px solid #111010">
+          <img src="logo/lockup-inline-frame-red-ink.svg" alt="Griffith ICT Club" style="height: 32px; width: auto; display: block" />
+          <nav style="display: flex; gap: 26px; font-size: 13px; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; color: #111010">
+            <a href="#2c" style="color: #111010">About</a>
+            <a href="#2c" style="color: #111010">Events</a>
+            <a href="#2c" style="color: #111010">Team</a>
+            <a href="#2c" style="color: #111010">Sponsors</a>
+          </nav>
+          <a href="{{ discordUrl }}" style="display: inline-flex; align-items: center; gap: 9px; height: 42px; padding: 0 20px; border-radius: 11px; background: #E51B13; color: #FFFFFF; font-size: 14px; font-weight: 700" style-hover="background: #111010">Join the Discord <span style="font-size: 16px">→</span></a>
+        </div>
+
+        <div style="padding: 72px 52px 0; display: grid; grid-template-columns: minmax(0, 1fr) 280px; gap: 48px; align-items: end">
+          <div style="display: flex; flex-direction: column; gap: 30px">
+            <span style="font-size: 12px; font-weight: 700; letter-spacing: 0.2em; text-transform: uppercase; color: #E51B13">Griffith's largest ICT club</span>
+            <h1 style="margin: 0; font-size: 130px; line-height: 0.84; font-weight: 800; font-stretch: 120%; letter-spacing: -0.048em; color: #111010; animation: gictRise 0.7s cubic-bezier(.2,.8,.2,1) both">Thirteen weeks.<br />Something on<br /><span style="color: #E51B13">every one</span>.</h1>
+            <p style="margin: 0; max-width: 620px; font-size: 20px; line-height: 1.5; color: #3A3735; text-wrap: pretty">A club for computer science, IT, cyber security and software engineering students. Workshops, hackathons, industry nights and the occasional barbecue — laid out below, week by week.</p>
+            <div style="display: flex; gap: 14px; flex-wrap: wrap; align-items: center">
+              <a href="{{ discordUrl }}" style="display: inline-flex; align-items: center; gap: 12px; height: 66px; padding: 0 32px; border-radius: 18px; background: #E51B13; color: #FFFFFF; font-size: 20px; font-weight: 700" style-hover="background: #111010">Join the Discord <span style="font-size: 22px">→</span></a>
+              <a href="{{ memberUrl }}" style="display: inline-flex; align-items: center; height: 66px; padding: 0 28px; border-radius: 18px; border: 1px solid #111010; color: #111010; font-size: 20px; font-weight: 600" style-hover="background: #111010; color: #FFFFFF">Become a member</a>
+            </div>
+          </div>
+          <img src="logo/brandmark-red.svg" alt="" style="width: 100%; height: auto; display: block; justify-self: end" />
+        </div>
+
+        <div style="margin-top: 72px; padding: 0 52px">
+          <div style="display: flex; align-items: baseline; justify-content: space-between; gap: 24px; padding-bottom: 14px; border-bottom: 2px solid #111010">
+            <h2 style="margin: 0; font-size: 14px; font-weight: 700; letter-spacing: 0.2em; text-transform: uppercase; color: #111010">Semester 2, 2026</h2>
+            <span style="font-size: 15px; color: #6B6764">Everything is confirmed in the server before it appears here</span>
+          </div>
+          <div style="display: grid; grid-template-columns: repeat(13, minmax(0, 1fr)); border-bottom: 1px solid #111010">
+            <sc-for list="{{ weeks }}" as="w" hint-placeholder-count="13">
+              <div style="padding: 14px 0 12px; text-align: center; font-size: 12px; font-weight: 700; letter-spacing: 0.06em; color: #6B6764; border-right: 1px solid #DEDAD6">{{ w }}</div>
+            </sc-for>
+          </div>
+          <sc-for list="{{ timetable }}" as="t" hint-placeholder-count="4">
+            <div style="display: grid; grid-template-columns: repeat(13, minmax(0, 1fr)); align-items: center; border-bottom: 1px solid #DEDAD6; min-height: 92px" style-hover="background: #FAF8F7">
+              <div style="grid-column: {{ t.span }}; background: {{ t.fill }}; color: {{ t.ink }}; border-radius: 22px; margin: 12px 4px; padding: 14px 20px; display: flex; flex-direction: column; gap: 3px; min-width: 0">
+                <span style="font-size: 11px; font-weight: 700; letter-spacing: 0.14em; text-transform: uppercase; opacity: 0.72">{{ t.kind }}</span>
+                <span style="font-size: 20px; font-weight: 700; font-stretch: 106%; letter-spacing: -0.015em; line-height: 1.15">{{ t.title }}</span>
+              </div>
+            </div>
+          </sc-for>
+          <p style="margin: 18px 0 0; font-size: 14px; color: #6B6764">Placeholder programme — swap in the real dates and it reads as a live calendar.</p>
+        </div>
+
+        <div style="padding: 84px 52px 0">
+          <div style="display: flex; align-items: baseline; justify-content: space-between; gap: 32px; padding-bottom: 18px; border-bottom: 2px solid #111010">
+            <h2 style="margin: 0; font-size: 14px; font-weight: 700; letter-spacing: 0.2em; text-transform: uppercase; color: #111010">What we run</h2>
+            <span style="font-size: 15px; color: #6B6764">Four formats, repeated all year</span>
+          </div>
+          <div style="display: grid; grid-template-columns: repeat(2, minmax(0, 1fr))">
+            <sc-for list="{{ programme }}" as="row" hint-placeholder-count="4">
+              <div style="padding: 34px 40px 34px 0; border-bottom: 1px solid #DEDAD6; display: flex; flex-direction: column; gap: 10px">
+                <span style="font-size: 13px; font-weight: 700; color: #E51B13; letter-spacing: 0.08em">{{ row.n }}</span>
+                <h3 style="margin: 0; font-size: 38px; font-weight: 800; font-stretch: 112%; letter-spacing: -0.03em; line-height: 1; color: #111010">{{ row.title }}</h3>
+                <p style="margin: 0; font-size: 17px; line-height: 1.55; color: #3A3735; text-wrap: pretty">{{ row.body }}</p>
+              </div>
+            </sc-for>
+          </div>
+        </div>
+
+        <div style="margin: 84px 0 0; background: #111010; color: #FFFFFF; padding: 80px 52px; display: grid; grid-template-columns: minmax(0, 1fr) 200px; gap: 48px; align-items: center">
+          <div style="display: flex; flex-direction: column; gap: 26px">
+            <h2 style="margin: 0; font-size: 78px; line-height: 0.93; font-weight: 800; font-stretch: 118%; letter-spacing: -0.04em; text-wrap: balance">Week one is the easiest one to turn up to.</h2>
+            <a href="{{ discordUrl }}" style="align-self: start; display: inline-flex; align-items: center; gap: 12px; height: 68px; padding: 0 34px; border-radius: 18px; background: #E51B13; color: #FFFFFF; font-size: 21px; font-weight: 700" style-hover="background: #FFFFFF; color: #E51B13">Join the Discord <span style="font-size: 23px">→</span></a>
+          </div>
+          <img src="logo/brandmark-white.svg" alt="" style="width: 100%; height: auto; display: block; justify-self: end" />
+        </div>
+
+        <div style="padding: 44px 52px; display: flex; align-items: center; justify-content: space-between; gap: 40px; flex-wrap: wrap; border-top: 1px solid #DEDAD6">
+          <img src="logo/lockup-inline-frame-red-ink.svg" alt="Griffith ICT Club" style="height: 34px; width: auto; display: block" />
+          <nav style="display: flex; gap: 26px; font-size: 15px; color: #111010">
+            <a href="#2c" style="color: #111010">About</a>
+            <a href="#2c" style="color: #111010">Events</a>
+            <a href="#2c" style="color: #111010">Sponsors</a>
+            <a href="{{ discordUrl }}" style="color: #111010">Discord</a>
+            <a href="#2c" style="color: #111010">GitHub</a>
+          </nav>
+          <p style="margin: 0; font-size: 13px; color: #6B6764">© 2026 Griffith ICT Club. Run by students.</p>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</section>
+
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props="{&quot;discordUrl&quot;:{&quot;editor&quot;:&quot;text&quot;,&quot;default&quot;:&quot;https://discord.gg/ESvqmEF4vA&quot;,&quot;tsType&quot;:&quot;string&quot;},&quot;memberUrl&quot;:{&quot;editor&quot;:&quot;text&quot;,&quot;default&quot;:&quot;#&quot;,&quot;tsType&quot;:&quot;string&quot;}}">
+class Component extends DCLogic {
+  renderVals() {
+    return {
+      discordUrl: this.props.discordUrl ?? "https://discord.gg/ESvqmEF4vA",
+      memberUrl: this.props.memberUrl ?? "#",
+      programme: [
+        { n: "01", title: "Workshops", body: "Hands-on sessions on web, cloud, AI and security. You leave having built something that runs." },
+        { n: "02", title: "Hackathons", body: "We design and run our own. Form a team, ship in a weekend, present to judges from industry." },
+        { n: "03", title: "Industry nights", body: "Engineers and recruiters from the companies hiring graduates, in a room where you can ask them anything." },
+        { n: "04", title: "Socials", body: "Game nights, barbecues and trivia. The people are the point, so we make sure you actually meet them." }
+      ],
+      events: [
+        { when: "Semester 2 · Week 3", title: "Semester Kickoff Barbecue", tag: "Placeholder" },
+        { when: "Semester 2 · Week 5", title: "Cloud Fundamentals Workshop", tag: "Placeholder" },
+        { when: "Semester 2 · Week 9", title: "24-Hour Club Hackathon", tag: "Placeholder" }
+      ],
+      pillars: [
+        { n: "01", title: "Get good", body: "Workshops and hackathons where you build things that actually run. You leave with working code and someone who reviewed it." },
+        { n: "02", title: "Get known", body: "A room full of people in your degree — a year ahead of you, three years ahead of you, and sitting next to you." },
+        { n: "03", title: "Get hired", body: "Industry nights and referrals from the companies that hire Griffith graduates, while you are still studying." }
+      ],
+      steps: [
+        { n: "Step 1", title: "Join the Discord", body: "Where events, help and teams happen. Free, instant, no approval queue.", cta: "Open Discord", primary: true },
+        { n: "Step 2", title: "Register on CampusGroups", body: "The official Griffith club registration. Thirty seconds, and it makes you a member on paper.", cta: "Register", primary: false }
+      ],
+      sponsors: ["Sponsor logo", "Sponsor logo", "Sponsor logo", "Sponsor logo"],
+      weeks: ["W1", "W2", "W3", "W4", "W5", "W6", "W7", "W8", "W9", "W10", "W11", "W12", "W13"],
+      timetable: [
+        { span: "1 / 4", fill: "#E51B13", ink: "#FFFFFF", kind: "Social", title: "Semester kickoff barbecue" },
+        { span: "4 / 7", fill: "#111010", ink: "#FFFFFF", kind: "Workshop", title: "Cloud fundamentals" },
+        { span: "8 / 11", fill: "#E51B13", ink: "#FFFFFF", kind: "Hackathon", title: "24-hour club hackathon" },
+        { span: "11 / 14", fill: "#F4F2F0", ink: "#111010", kind: "Industry night", title: "Graduate hiring panel" }
+      ]
+    };
+  }
+}
+
+</script>
+</body>
+</html>

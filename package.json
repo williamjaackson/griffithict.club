@@ -1,0 +1,28 @@
+{
+  "name": "griffithict.club",
+  "private": true,
+  "packageManager": "pnpm@11.22.0",
+  "engines": {
+    "node": ">=24"
+  },
+  "scripts": {
+    "dev": "pnpm --filter @gict/web dev",
+    "build": "pnpm --filter @gict/web build",
+    "start": "pnpm --filter @gict/web start",
+    "lint": "pnpm -r lint",
+    "typecheck": "pnpm -r typecheck",
+    "test": "pnpm -r test",
+    "format": "prettier --write .",
+    "format:check": "prettier --check .",
+    "db:generate": "pnpm --filter @gict/db generate",
+    "db:migrate": "pnpm --filter @gict/db migrate",
+    "db:studio": "pnpm --filter @gict/db studio",
+    "brand:sync": "./scripts/sync-brand.sh",
+    "brand:manifest": "node scripts/brand-manifest.mjs"
+  },
+  "devDependencies": {
+    "prettier": "^3.6.2",
+    "prettier-plugin-tailwindcss": "^0.8.1",
+    "typescript": "^5.9.3"
+  }
+}

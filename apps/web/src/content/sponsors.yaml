@@ -1,0 +1,9 @@
+- name: DataCamp
+  logo: /sponsors/datacamp.png
+  url: https://www.datacamp.com
+- name: Red Bull
+  logo: /sponsors/redbull.png
+  url: https://www.redbull.com
+- name: Cohort Innovation Space
+  logo: /sponsors/cohort.png
+  url: https://www.griffith.edu.au

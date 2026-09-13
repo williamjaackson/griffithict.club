@@ -1,0 +1,24 @@
+# Postgres for local development. Nothing else runs in Docker locally — the site
+# itself is faster and easier to debug with `pnpm dev`.
+services:
+  db:
+    image: postgres:18-alpine
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: gict
+      POSTGRES_PASSWORD: gict
+      POSTGRES_DB: gict
+    ports:
+      - '5432:5432'
+    volumes:
+      # Postgres 18 wants the mount one level up, so pg_upgrade --link can work
+      # across a version bump without hitting a mount-point boundary.
+      - pgdata:/var/lib/postgresql
+    healthcheck:
+      test: ['CMD-SHELL', 'pg_isready -U gict -d gict']
+      interval: 5s
+      timeout: 3s
+      retries: 12
+
+volumes:
+  pgdata:

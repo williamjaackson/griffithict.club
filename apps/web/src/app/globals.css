@@ -1,0 +1,112 @@
+@import 'tailwindcss';
+
+/*
+ * Tokens lifted from design/Homepage v3.dc.html, which sets every colour inline.
+ *
+ * The brand guidelines allow three colours in logo artwork: red, ink and white.
+ * The greys below are interface neutrals, not brand colours — surfaces, rules and
+ * secondary type that the layout depends on structurally.
+ */
+@theme {
+  --color-brand: #e51b13;
+  --color-ink: #111010;
+
+  /* Type */
+  --color-body: #3a3735;
+  --color-muted: #6b6764;
+  --color-muted-dim: #8c8683;
+
+  /* Surfaces */
+  --color-surface: #f4f2f0;
+  --color-surface-faint: #faf8f7;
+
+  /* Lines */
+  --color-edge: #e7e3e0;
+  --color-edge-soft: #eae6e3;
+  --color-edge-dark: #35312f;
+
+  /* Controls */
+  --color-inactive: #c9c4c1;
+  --color-inactive-dim: #c4bdb8;
+  --color-dot-idle: #d6d1cd;
+
+  --font-sans: var(--font-archivo), Helvetica, Arial, sans-serif;
+
+  /*
+   * The mockup switches layout at 700px by swapping style strings in JavaScript.
+   * Here it is one breakpoint and plain media queries: `wide:` is the desktop
+   * arm, and unprefixed classes are the compact one.
+   */
+  --breakpoint-wide: 700px;
+
+  --animate-rise: rise 0.6s cubic-bezier(0.2, 0.8, 0.2, 1) both;
+  --animate-rule: rule 0.9s cubic-bezier(0.2, 0.8, 0.2, 1) both;
+  --animate-slide-in: slide-in 0.32s cubic-bezier(0.2, 0.8, 0.2, 1) both;
+  --animate-fade-up: fade-up 0.34s cubic-bezier(0.2, 0.8, 0.2, 1) both;
+}
+
+@keyframes rise {
+  from {
+    opacity: 0;
+    transform: translateY(16px);
+  }
+}
+
+@keyframes rule {
+  from {
+    transform: scaleX(0);
+  }
+}
+
+@keyframes slide-in {
+  from {
+    transform: translateX(100%);
+  }
+}
+
+@keyframes fade-up {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+}
+
+@layer base {
+  html {
+    -webkit-font-smoothing: antialiased;
+  }
+
+  body {
+    background: #ffffff;
+    color: var(--color-ink);
+    font-family: var(--font-sans);
+  }
+
+  /* Clears the sticky header when jumping to an anchor. */
+  section[id] {
+    scroll-margin-top: 92px;
+  }
+
+  /*
+   * The entrance animations are decoration. Anyone who has asked their OS to stop
+   * moving things gets the final frame immediately.
+   */
+  @media (prefers-reduced-motion: reduce) {
+    *,
+    *::before,
+    *::after {
+      animation-duration: 0.01ms !important;
+      animation-iteration-count: 1 !important;
+      transition-duration: 0.01ms !important;
+      scroll-behavior: auto !important;
+    }
+  }
+}
+
+@utility no-scrollbar {
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+  &::-webkit-scrollbar {
+    display: none;
+  }
+}
