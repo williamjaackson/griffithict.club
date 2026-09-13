@@ -16,7 +16,7 @@ export function db(): Database {
     const url = process.env.DATABASE_URL
     if (!url) {
       throw new Error(
-        'DATABASE_URL is not set. Start Postgres with `docker compose -f infra/compose.dev.yml up -d`.',
+        'DATABASE_URL is not set. Start Postgres with `docker compose -f compose.dev.yaml up -d`.',
       )
     }
     cached = createDatabase(url)

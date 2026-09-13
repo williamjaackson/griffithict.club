@@ -10,7 +10,7 @@ The Griffith ICT Club website.
 | `apps/bot`    | Discord bot. Not built yet                            |
 | `packages/db` | Drizzle schema and migrations for the shared Postgres |
 | `design/`     | The original mockup, kept as a visual reference       |
-| `infra/`      | Compose files and the Caddyfile                       |
+| `deploy/`     | The compose file the VPS runs                         |
 | `docs/`       | Runbook and the annual handover checklist             |
 
 The database is shared with other club services, so `packages/db` owns the schema
@@ -22,7 +22,7 @@ registry.
 ```sh
 pnpm install
 cp .env.example .env      # then fill it in
-docker compose -f infra/compose.dev.yml up -d   # postgres
+docker compose -f compose.dev.yaml up -d   # postgres
 pnpm db:migrate
 pnpm dev
 ```
@@ -45,6 +45,9 @@ too. Until that bot exists, add events with `pnpm db:studio` — see
 
 ## Deploying
 
-Push to `main`. GitHub Actions builds an image, pushes it to GHCR tagged with the
-commit SHA, and the VPS pulls it. Rollback and recovery are in
-[docs/RUNBOOK.md](docs/RUNBOOK.md).
+Push to `master`. GitHub Actions builds both images, tags them with the commit
+SHA, and runs the host's deploy script over SSH.
+
+The site is one app on a shared host: nginx terminates TLS, Postgres is shared
+with the other services, and `/srv/infra` on that host documents the
+arrangement. Rollback and recovery are in [docs/RUNBOOK.md](docs/RUNBOOK.md).

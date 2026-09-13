@@ -6,50 +6,48 @@ same pull request.
 
 ## What exists
 
-| Thing                     | Where                                          | Who pays    |
-| ------------------------- | ---------------------------------------------- | ----------- |
-| Domain `griffithict.club` | _registrar, account_                           | _club card_ |
-| VPS                       | _provider, region, IP_                         | _club card_ |
-| Images                    | `ghcr.io/griffithict/gict-web`, `gict-migrate` | Free        |
-| Backups                   | _Backblaze B2 bucket_                          | ~$1/month   |
+This site is one app among several on a shared host. `/srv/infra` is a git repo
+on that host documenting the arrangement; read its README before changing
+anything shared.
 
-Fill in the italics. About $100 a year all up — worth writing in the treasurer's
-budget so nobody cancels the VPS to save money.
+| Thing               | Where                                                                         |
+| ------------------- | ----------------------------------------------------------------------------- |
+| Host                | `72.61.210.78`                                                                |
+| Shared Postgres     | `/srv/infra/compose.yaml`, reachable as `postgres:5432` on the `club` network |
+| This app's checkout | `/srv/apps/ict-web`                                                           |
+| This app's secrets  | `/etc/club/ict-web.env`, root-owned, mode 600                                 |
+| This app's compose  | `deploy/compose.yaml` in this repo                                            |
+| TLS and routing     | nginx on the host, `/etc/nginx/sites-available/griffithict.club`              |
+| Images              | `ghcr.io/williamjaackson/ict-web`, and `-migrate`                             |
+| Upstream port       | `127.0.0.1:3100`                                                              |
 
-Everything on the VPS lives in `/opt/gict`:
-
-```
-/opt/gict/
-├── compose.yml     copied from infra/compose.yml
-├── Caddyfile       copied from infra/Caddyfile
-└── .env            secrets, root-owned, mode 600, never in git
-```
+The app publishes nothing but that loopback port, and owns no database of its
+own. Postgres publishes no port at all, so it is unreachable from off the host.
 
 ## Deploying
 
-Push to `main`. GitHub Actions builds the images, tags them with the commit SHA,
-and the VPS pulls and restarts. Watch it in the Actions tab.
+Push to `master`. GitHub Actions builds both images, tags them with the commit
+SHA, and runs the host's deploy script over SSH.
 
-To deploy by hand:
+By hand:
 
 ```sh
-ssh gict-vps
-cd /opt/gict
-TAG=<commit-sha> docker compose up -d
+ssh root@72.61.210.78
+/srv/infra/scripts/deploy.sh ict-web <commit-sha>
 ```
+
+That checks out the SHA in `/srv/apps/ict-web`, pulls both images at that tag and
+brings the stack up.
 
 ## Rolling back
 
-Find the SHA of the last good commit, then:
+The same command with an older SHA:
 
 ```sh
-ssh gict-vps
-cd /opt/gict
-TAG=<old-commit-sha> docker compose up -d
+/srv/infra/scripts/deploy.sh ict-web <old-sha>
 ```
 
-Images are kept for a week. Older than that, re-run the deploy workflow from the
-tag you want.
+Images are tagged by SHA, so anything CI has built is still deployable.
 
 ## When a migration fails
 
@@ -109,7 +107,7 @@ There is also Drizzle Studio, a table editor over a tunnel, if you would rather
 click:
 
 ```sh
-ssh -L 5432:localhost:5432 gict-vps    # leave this running
+ssh -L 5432:localhost:5432 root@72.61.210.78   # leave this running
 pnpm db:studio                          # in another terminal
 ```
 
@@ -121,42 +119,42 @@ checked on build, so a typo fails CI instead of breaking the page.
 
 ## Backups
 
-Nightly `pg_dump` to Backblaze B2, 30 days of history.
+**There are none yet.** `/srv/infra/README.md` says the same, and now there is
+finally data to lose: the events table and every sponsorship enquiry.
+
+Set up `pg_dump` or pgBackRest off the host, then restore it once onto a scratch
+database and write the date here. An untested backup is a rumour.
 
 ```sh
-# Restore into a scratch database to check a backup is real
-ssh gict-vps
-docker compose exec -T db createdb -U gict gict_restore_test
-gunzip -c /path/to/backup.sql.gz | docker compose exec -T db psql -U gict -d gict_restore_test
-docker compose exec -T db psql -U gict -d gict_restore_test -c "SELECT count(*) FROM events;"
-docker compose exec -T db dropdb -U gict gict_restore_test
+# Dump the app's database from the shared Postgres
+docker compose -f /srv/infra/compose.yaml exec -T postgres \
+  pg_dump -U ict_web -Fc ict_web > ict-web-$(date +%F).dump
 ```
-
-**Do this once a semester and write the date here.** An untested backup is a
-rumour, not a backup.
 
 Last restore test: _never_
 
-`/opt/gict/.env` and the Caddy volume are not in the nightly job — they change
-roughly never. Copy them somewhere safe by hand when you change them.
+`/etc/club/*.env` is not covered by any of this. Those change rarely; copy them
+somewhere safe by hand when they change.
 
 ## When TLS breaks
 
-Caddy gets certificates automatically. If HTTPS stops working:
+nginx terminates TLS on the host and this app never sees it.
 
 ```sh
-docker compose logs caddy | tail -50
+nginx -t && systemctl reload nginx
+journalctl -u nginx -n 50 --no-pager
 ```
 
-Usual causes:
+The certificate for griffithict.club is currently Let's Encrypt, renewed by
+certbot, and predates the `/srv/infra` convention. That convention expects a
+Cloudflare Origin CA certificate in `/etc/ssl/club/` instead, which needs
+Cloudflare SSL mode set to Full (strict). Worth migrating, but the existing cert
+renews on its own and nothing is broken.
 
-- **DNS moved.** Caddy cannot prove it owns the domain. Check the A record points
-  at the VPS.
-- **The `caddy_data` volume was deleted.** That volume holds the ACME account key
-  and certificates. Losing it forces re-issue, and repeated re-issues hit Let's
-  Encrypt rate limits, which lock you out for hours. Never `docker compose down -v`
-  in production.
-- **Port 80 blocked.** Certificate renewal needs it, even though the site runs on 443.
+```sh
+certbot certificates
+certbot renew --dry-run
+```
 
 ## Rotating the Discord webhook
 
@@ -175,19 +173,21 @@ SELECT * FROM sponsorship_enquiries WHERE delivered_at IS NULL ORDER BY created_
 
 ## The deploy key
 
-CI connects with an SSH key restricted to a single command, so it can ask for a
-tag to be deployed and nothing else. In the deploy user's `~/.ssh/authorized_keys`:
-
-```
-command="/usr/local/bin/gict-deploy",no-agent-forwarding,no-port-forwarding,no-pty,no-X11-forwarding ssh-ed25519 AAAA... gict-deploy
-```
-
-The script is `infra/gict-deploy`, installed at `/usr/local/bin/gict-deploy`. It
-validates the requested tag is a commit SHA before doing anything. If the key
-leaks, an attacker can redeploy an existing image — they cannot get a shell.
+CI connects over SSH and runs `/srv/infra/scripts/deploy.sh`, which takes an app
+name and a SHA and does nothing else with them.
 
 GitHub Secrets holds `DEPLOY_SSH_KEY`, `DEPLOY_HOST`, `DEPLOY_USER` and
-`DEPLOY_KNOWN_HOSTS`. Nothing else. The application secrets live only on the VPS.
+`DEPLOY_KNOWN_HOSTS`. Nothing else. The application's own secrets live only in
+`/etc/club/ict-web.env` on the host.
+
+The key is restricted to a forced command, `/usr/local/bin/ci-deploy-ict-web`.
+That wrapper takes the SHA out of what CI sent, refuses anything that is not 40
+hex characters, and execs the host's deploy script. A leaked key can therefore
+redeploy an existing commit and nothing else: no shell, no file access, no other
+app.
+
+To rotate it: generate a new pair on the host, replace the line in
+`/root/.ssh/authorized_keys`, and update `DEPLOY_SSH_KEY`.
 
 ## Monitoring
 
@@ -199,12 +199,12 @@ Postgres blip cannot send the container into a restart loop.
 ## Health check
 
 ```sh
-ssh gict-vps
-cd /opt/gict
-docker compose ps                    # everything up, migrate exited 0
-docker compose logs --tail=50 web
-df -h                                # disk: the usual quiet killer
-curl -s localhost/api/health/db      # through Caddy
+ssh root@72.61.210.78
+docker compose -p ict-web -f /srv/apps/ict-web/deploy/compose.yaml ps
+docker compose -p ict-web -f /srv/apps/ict-web/deploy/compose.yaml logs --tail=50 web
+df -h                                       # disk: the usual quiet killer
+curl -s 127.0.0.1:3100/api/health           # the app directly
+curl -s https://griffithict.club/api/health/db   # through nginx
 ```
 
 Container logs are capped at 10MB × 3 per service. If the disk fills anyway, look
