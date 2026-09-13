@@ -1,4 +1,4 @@
-import { ChannelType, EmbedBuilder, type GuildMember } from 'discord.js'
+import { ChannelType, type GuildMember } from 'discord.js'
 import { eq } from 'drizzle-orm'
 import { funnelGuilds, funnelJoins, type Database } from '@gict/db'
 import { attribute, type Attribution } from '../invites/attribute'
@@ -6,7 +6,11 @@ import type { InviteCache } from '../invites/cache'
 import { readInvites, readVanity } from '../invites/read'
 import { persistInvites, sourceForInvite } from '../invites/store'
 
-const BRAND = 0xe51b13
+/**
+ * A mention in a plain message pings, unlike one inside an embed description.
+ * Crediting an inviter should not notify them every time someone joins.
+ */
+const NO_PINGS = { parse: [] } as const
 
 /**
  * Work out where a new member came from, record it, and say so if asked to.
@@ -75,16 +79,31 @@ async function announce(
   const channel = member.guild.channels.cache.get(row.channelId)
   if (!channel || channel.type !== ChannelType.GuildText) return
 
-  const embed = new EmbedBuilder()
-    .setColor(BRAND)
-    .setAuthor({ name: member.user.tag, iconURL: member.user.displayAvatarURL() })
-    .setDescription(describe(result, sourceName))
-    .setFooter({ text: `Account created` })
-    .setTimestamp(member.user.createdAt)
+  const content = [
+    `**${member.user.username}** ${describe(result, sourceName)}`,
+    `-# Account ${accountAge(member.user.createdAt)}`,
+  ].join('\n')
 
-  await channel.send({ embeds: [embed] }).catch(() => {
+  await channel.send({ content, allowedMentions: NO_PINGS }).catch(() => {
     // Losing a notice is not worth losing the row that was already written.
   })
+}
+
+/**
+ * How old the account is, in words.
+ *
+ * The cheapest signal there is for telling a recruiting win from a wave of
+ * throwaway accounts, which is why it sits on every notice rather than being
+ * something you go looking for after the fact.
+ */
+function accountAge(createdAt: Date): string {
+  const days = Math.floor((Date.now() - createdAt.getTime()) / 86_400_000)
+  if (days < 1) return 'created today'
+  if (days === 1) return 'created yesterday'
+  if (days < 30) return `${days} days old`
+  if (days < 365) return `${Math.floor(days / 30)} months old`
+  const years = Math.floor(days / 365)
+  return `${years} year${years === 1 ? '' : 's'} old`
 }
 
 /** Says what is actually known, including when that is nothing. */

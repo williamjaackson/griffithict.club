@@ -26,28 +26,10 @@ export const funnelCommand = new SlashCommandBuilder()
       ),
   )
   .addSubcommand((sub) =>
-    sub
-      .setName('leaderboard')
-      .setDescription('Who has brought in the most members')
-      .addIntegerOption((option) =>
-        option
-          .setName('days')
-          .setDescription('How far back to count. Defaults to 30.')
-          .setMinValue(1)
-          .setMaxValue(365),
-      ),
+    sub.setName('leaderboard').setDescription('Who has brought in the most members'),
   )
   .addSubcommand((sub) =>
-    sub
-      .setName('sources')
-      .setDescription('Where members came from, by tagged source')
-      .addIntegerOption((option) =>
-        option
-          .setName('days')
-          .setDescription('How far back to count. Defaults to 30.')
-          .setMinValue(1)
-          .setMaxValue(365),
-      ),
+    sub.setName('sources').setDescription('Where members came from, by tagged source'),
   )
   .addSubcommandGroup((group) =>
     group

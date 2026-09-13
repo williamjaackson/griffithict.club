@@ -1,4 +1,4 @@
-import { EmbedBuilder, MessageFlags, type ChatInputCommandInteraction } from 'discord.js'
+import { MessageFlags, type ChatInputCommandInteraction } from 'discord.js'
 import { and, eq } from 'drizzle-orm'
 import { funnelGuilds, funnelInvites, type Database } from '@gict/db'
 import type { InviteCache } from '../invites/cache'
@@ -9,12 +9,15 @@ import {
   ensureSource,
   invitesWithSources,
   joinsBySource,
-  since,
   topInviters,
 } from '../queries'
 
-const BRAND = 0xe51b13
-const DEFAULT_DAYS = 30
+/**
+ * A mention inside an embed description is inert, but the same text in a plain
+ * message pings. Every report here names people, so without this a leaderboard
+ * would notify everyone on it each time somebody looked.
+ */
+const NO_PINGS = { parse: [] } as const
 
 export async function onCommand(
   interaction: ChatInputCommandInteraction,
@@ -154,9 +157,7 @@ async function sourceList(
     .join('\n')
 
   await interaction.reply({
-    embeds: [
-      new EmbedBuilder().setColor(BRAND).setTitle('Invites').setDescription(body.slice(0, 4000)),
-    ],
+    content: `## Invites\n${body}`.slice(0, 2000),
     flags: MessageFlags.Ephemeral,
   })
 }
@@ -165,23 +166,16 @@ async function leaderboard(
   interaction: ChatInputCommandInteraction,
   database: Database,
 ): Promise<void> {
-  const days = interaction.options.getInteger('days') ?? DEFAULT_DAYS
-  const from = since(days)
-  const rows = await topInviters(database, interaction.guildId!, from)
+  const rows = await topInviters(database, interaction.guildId!)
 
   const body =
     rows.length === 0
-      ? 'Nobody yet.'
+      ? '_Nobody yet._'
       : rows.map((row, index) => `**${index + 1}.** <@${row.inviterId}> — ${row.joins}`).join('\n')
 
   await interaction.reply({
-    embeds: [
-      new EmbedBuilder()
-        .setColor(BRAND)
-        .setTitle(`Top inviters · last ${days} days`)
-        .setDescription(body)
-        .setFooter({ text: await caveat(database, interaction.guildId!, from) }),
-    ],
+    content: `## Top inviters\n${body}\n${await caveat(database, interaction.guildId!)}`,
+    allowedMentions: NO_PINGS,
   })
 }
 
@@ -189,14 +183,12 @@ async function sources(
   interaction: ChatInputCommandInteraction,
   database: Database,
 ): Promise<void> {
-  const days = interaction.options.getInteger('days') ?? DEFAULT_DAYS
-  const from = since(days)
-  const rows = await joinsBySource(database, interaction.guildId!, from)
+  const rows = await joinsBySource(database, interaction.guildId!)
   const total = rows.reduce((sum, row) => sum + row.joins, 0)
 
   const body =
     rows.length === 0
-      ? 'Nobody has joined in this window.'
+      ? '_Nobody has joined since tracking started._'
       : rows
           .map((row) => {
             const share = total === 0 ? 0 : Math.round((row.joins / total) * 100)
@@ -205,32 +197,27 @@ async function sources(
           .join('\n')
 
   await interaction.reply({
-    embeds: [
-      new EmbedBuilder()
-        .setColor(BRAND)
-        .setTitle(`Where members came from · last ${days} days`)
-        .setDescription(body)
-        .setFooter({ text: await caveat(database, interaction.guildId!, from) }),
-    ],
+    content: `## Where members came from\n${body}\n${await caveat(database, interaction.guildId!)}`,
+    allowedMentions: NO_PINGS,
   })
 }
 
 /**
- * The honesty line under every report.
+ * The honesty line under every report, as Discord subtext.
  *
  * Discord never says which invite was used, so some share of these joins is
  * inferred and some is genuinely unknowable. A breakdown with a third of its
  * joins unattributed is a different thing from one without, and nobody reading
  * it can tell unless it says so.
  */
-async function caveat(database: Database, guildId: string, from: Date): Promise<string> {
-  const rows = await confidenceBreakdown(database, guildId, from)
+async function caveat(database: Database, guildId: string): Promise<string> {
+  const rows = await confidenceBreakdown(database, guildId)
   const total = rows.reduce((sum, row) => sum + row.joins, 0)
-  if (total === 0) return 'No joins recorded yet'
+  if (total === 0) return '-# Nothing recorded yet. Counting starts from when the bot joined.'
 
   const exact = rows.find((row) => row.confidence === 'certain')?.joins ?? 0
   const murky = total - exact
-  if (murky === 0) return `${total} joins, all attributed exactly`
+  if (murky === 0) return `-# All time · ${total} joins, every one attributed exactly`
 
-  return `${total} joins · ${murky} could not be pinned to one invite`
+  return `-# All time · ${total} joins · ${murky} could not be pinned to a single invite`
 }

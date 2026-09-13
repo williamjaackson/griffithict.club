@@ -1,9 +1,5 @@
-import { and, count, desc, eq, gte, isNotNull, sql } from 'drizzle-orm'
+import { and, count, desc, eq, isNotNull, sql } from 'drizzle-orm'
 import { funnelInvites, funnelJoins, funnelSources, type Database } from '@gict/db'
-
-export function since(days: number): Date {
-  return new Date(Date.now() - days * 24 * 60 * 60 * 1000)
-}
 
 export type InviterRow = { inviterId: string | null; joins: number }
 
@@ -11,19 +7,12 @@ export type InviterRow = { inviterId: string | null; joins: number }
 export async function topInviters(
   database: Database,
   guildId: string,
-  from: Date,
   limit = 10,
 ): Promise<InviterRow[]> {
   return database
     .select({ inviterId: funnelJoins.inviterId, joins: count() })
     .from(funnelJoins)
-    .where(
-      and(
-        eq(funnelJoins.guildId, guildId),
-        isNotNull(funnelJoins.inviterId),
-        gte(funnelJoins.joinedAt, from),
-      ),
-    )
+    .where(and(eq(funnelJoins.guildId, guildId), isNotNull(funnelJoins.inviterId)))
     .groupBy(funnelJoins.inviterId)
     .orderBy(desc(count()))
     .limit(limit)
@@ -37,17 +26,13 @@ export type SourceRow = { source: string; joins: number }
  * Reads the frozen source_name off the join rather than joining to
  * funnel_sources, so renaming a source later does not rewrite old numbers.
  */
-export async function joinsBySource(
-  database: Database,
-  guildId: string,
-  from: Date,
-): Promise<SourceRow[]> {
+export async function joinsBySource(database: Database, guildId: string): Promise<SourceRow[]> {
   const label = sql<string>`coalesce(${funnelJoins.sourceName}, 'Untagged')`
 
   return database
     .select({ source: label, joins: count() })
     .from(funnelJoins)
-    .where(and(eq(funnelJoins.guildId, guildId), gte(funnelJoins.joinedAt, from)))
+    .where(eq(funnelJoins.guildId, guildId))
     .groupBy(label)
     .orderBy(desc(count()))
 }
@@ -64,12 +49,11 @@ export type ConfidenceRow = { confidence: string; joins: number }
 export async function confidenceBreakdown(
   database: Database,
   guildId: string,
-  from: Date,
 ): Promise<ConfidenceRow[]> {
   return database
     .select({ confidence: funnelJoins.confidence, joins: count() })
     .from(funnelJoins)
-    .where(and(eq(funnelJoins.guildId, guildId), gte(funnelJoins.joinedAt, from)))
+    .where(eq(funnelJoins.guildId, guildId))
     .groupBy(funnelJoins.confidence)
     .orderBy(desc(count()))
 }
