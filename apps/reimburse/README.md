@@ -63,6 +63,19 @@ cannot use, so there is one screen to maintain rather than two that drift.
 
 Moving a single claim along happens on its post in the review channel.
 
+## Deployment
+
+A target in the repo's Dockerfile, sharing every layer up to `deps` with the
+site. No port and no healthcheck: it holds an outbound websocket to Discord and
+serves nothing. Runs `read_only` with a tmpfs for `/tmp`, since tsx writes its
+compile cache there.
+
+Secrets live in `/etc/club/reimburse.env` on the host, separate from the other
+bot's and the website's, because they are rotated for different reasons.
+
+Slash commands are stored by Discord against the application, not the running
+process, so moving the bot between machines does not need them re-registered.
+
 ## Things worth knowing
 
 - **CSV cells that start with `=`, `+`, `-` or `@` are prefixed.** Descriptions

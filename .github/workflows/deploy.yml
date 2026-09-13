@@ -57,6 +57,19 @@ jobs:
           cache-from: type=gha
           cache-to: type=gha,mode=max
 
+      - name: Build and push the Reimburse bot
+        uses: docker/build-push-action@v6
+        with:
+          context: .
+          target: reimburse
+          platforms: linux/amd64
+          push: true
+          tags: |
+            ${{ env.REGISTRY }}/${{ github.repository_owner }}/reimburse:${{ github.sha }}
+            ${{ env.REGISTRY }}/${{ github.repository_owner }}/reimburse:latest
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
+
       - name: Build and push the migration runner
         uses: docker/build-push-action@v6
         with:
