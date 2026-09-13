@@ -4,7 +4,6 @@ const url = z.string().min(1)
 
 export const siteSchema = z.object({
   name: z.string(),
-  shortName: z.string(),
   url: z.url(),
   description: z.string(),
   eyebrow: z.string(),

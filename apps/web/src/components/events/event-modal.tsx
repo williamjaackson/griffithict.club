@@ -3,7 +3,7 @@
 import { useRouter } from 'next/navigation'
 import { useState } from 'react'
 import type { Event } from '@/lib/events'
-import { Dialog, DialogClose } from '@/components/ui/dialog'
+import { Dialog, DialogClose, DialogTitle } from '@/components/ui/dialog'
 import { EventDetail } from './event-detail'
 
 export function EventModal({ event, discordUrl }: { event: Event; discordUrl: string }) {
@@ -19,11 +19,10 @@ export function EventModal({ event, discordUrl }: { event: Event; discordUrl: st
 
   return (
     <Dialog open={open} onOpenChange={handleOpenChange} label={event.title}>
-      <div className="flex items-start justify-between gap-[18px]">
-        <div className="min-w-0 flex-1" />
+      <div className="flex justify-end">
         <DialogClose />
       </div>
-      <EventDetail event={event} discordUrl={discordUrl} />
+      <EventDetail event={event} discordUrl={discordUrl} Title={DialogTitle} />
     </Dialog>
   )
 }

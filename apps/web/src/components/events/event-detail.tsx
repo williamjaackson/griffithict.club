@@ -1,18 +1,33 @@
+import type { ElementType } from 'react'
 import type { Event } from '@/lib/events'
 import { eventMeta, isoDate, longWhen } from '@/lib/datetime'
 import { EventDateChip } from './event-date-chip'
 import { BUTTON } from '@/components/ui/button-styles'
 
-/** Shared by the event page and the modal that intercepts it, so they cannot drift. */
-export function EventDetail({ event, discordUrl }: { event: Event; discordUrl: string }) {
+/**
+ * Shared by the event page and the modal that intercepts it, so they cannot drift.
+ *
+ * `Title` is the element the event name renders as. The page passes `h1`; the
+ * modal passes Radix's `DialogTitle`, which both keeps the page to one `h1` and
+ * makes the dialog's accessible name the heading a sighted user reads.
+ */
+export function EventDetail({
+  event,
+  discordUrl,
+  Title = 'h1',
+}: {
+  event: Event
+  discordUrl: string
+  Title?: ElementType
+}) {
   return (
     <>
       <div className="flex min-w-0 items-center gap-4">
         <EventDateChip date={event.startsAt} size="detail" />
         <div className="flex min-w-0 flex-col gap-1">
-          <h1 className="m-0 text-[clamp(22px,2.4vw,30px)] leading-[1.08] font-extrabold tracking-[-0.028em] [font-stretch:110%]">
+          <Title className="m-0 text-[clamp(22px,2.4vw,30px)] leading-[1.08] font-extrabold tracking-[-0.028em] [font-stretch:110%]">
             {event.title}
-          </h1>
+          </Title>
           <span className="text-muted text-[13px] font-semibold tracking-[0.04em]">
             {eventMeta(event.startsAt)}
           </span>
