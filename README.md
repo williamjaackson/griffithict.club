@@ -45,6 +45,6 @@ too. Until that bot exists, add events with `pnpm db:studio` — see
 
 ## Deploying
 
-Push to `main`. GitHub Actions builds an image, pushes it to GHCR tagged with the
+Push to `master`. GitHub Actions builds an image, pushes it to GHCR tagged with the
 commit SHA, and the VPS pulls it. Rollback and recovery are in
 [docs/RUNBOOK.md](docs/RUNBOOK.md).

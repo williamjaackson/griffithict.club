@@ -27,7 +27,7 @@ Everything on the VPS lives in `/opt/gict`:
 
 ## Deploying
 
-Push to `main`. GitHub Actions builds the images, tags them with the commit SHA,
+Push to `master`. GitHub Actions builds the images, tags them with the commit SHA,
 and the VPS pulls and restarts. Watch it in the Actions tab.
 
 To deploy by hand:
