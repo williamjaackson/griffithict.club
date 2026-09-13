@@ -9,7 +9,7 @@
   Flat on purpose. An earlier pass gave it a gradient body and an elliptical rim,
   which looked better at 512 and read as a cocktail glass at 40.
 
-  Edit this, then run `pnpm funnel:icon` to regenerate the PNG the dev portal wants.
+  Edit this, then run `pnpm icons` to regenerate the PNG the dev portal wants.
 -->
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" width="512" height="512">
   <!-- Discord crops avatars to a circle, so the square is full-bleed and every

@@ -4,6 +4,7 @@ import { index, pgEnum, pgTable, text, timestamp, uuid, varchar } from 'drizzle-
 // them, so they keep their own file. Re-exported here because the Drizzle client
 // builds its schema from this module.
 export * from './funnel'
+export * from './reimburse'
 
 /**
  * Draft events are invisible to the site. Cancelled ones are kept rather than

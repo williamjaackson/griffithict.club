@@ -1,15 +1,15 @@
 {
-  "name": "@gict/funnel",
+  "name": "@gict/reimburse",
   "version": "0.1.0",
   "private": true,
   "type": "module",
   "scripts": {
     "dev": "tsx watch src/index.ts",
     "start": "tsx src/index.ts",
+    "commands": "tsx src/commands/register.ts",
     "typecheck": "tsc --noEmit",
     "test": "vitest run --passWithNoTests",
-    "lint": "eslint .",
-    "commands": "tsx src/commands/register.ts"
+    "lint": "eslint ."
   },
   "dependencies": {
     "@gict/db": "workspace:*",
@@ -22,7 +22,7 @@
     "eslint": "^9.39.5",
     "tsx": "^4.20.6",
     "typescript": "^5.9.3",
-    "typescript-eslint": "^8.70.0",
+    "typescript-eslint": "^8.48.2",
     "vitest": "^3.2.4"
   }
 }

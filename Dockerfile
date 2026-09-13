@@ -1,7 +1,7 @@
 # syntax=docker/dockerfile:1
 
-# Three images out of one file: the site, the one-shot migration runner, and the
-# Funnel bot. They share every layer up to `deps`, so the two small ones cost
+# Four images out of one file: the site, the one-shot migration runner, and the
+# two bots. They share every layer up to `deps`, so the three small ones cost
 # almost nothing beyond the site.
 
 ARG NODE_VERSION=24-alpine
@@ -19,6 +19,8 @@ FROM base AS deps
 COPY pnpm-lock.yaml pnpm-workspace.yaml package.json ./
 COPY apps/web/package.json apps/web/
 COPY apps/funnel/package.json apps/funnel/
+COPY apps/reimburse/package.json apps/reimburse/
+COPY packages/bot-kit/package.json packages/bot-kit/
 COPY packages/db/package.json packages/db/
 RUN --mount=type=cache,id=pnpm,target=/pnpm/store \
     pnpm install --frozen-lockfile
@@ -62,9 +64,29 @@ CMD ["node", "apps/web/server.js"]
 FROM deps AS funnel
 ENV NODE_ENV=production
 COPY packages/db packages/db
+COPY packages/bot-kit packages/bot-kit
 COPY apps/funnel apps/funnel
 WORKDIR /app/apps/funnel
-CMD ["pnpm", "exec", "tsx", "src/index.ts"]
+# Runs tsx directly rather than through `pnpm exec`. pnpm checks whether the
+# workspace's dependencies are up to date before running anything, and that
+# check writes a temp file into /app, which a read_only container refuses. The
+# result is a crash loop with an EROFS buried in a pnpm stack trace.
+CMD ["node_modules/.bin/tsx", "src/index.ts"]
+
+# ---- reimburse -------------------------------------------------------------
+# The claims bot. Same shape as Funnel: outbound websocket, no port, nothing to
+# probe.
+FROM deps AS reimburse
+ENV NODE_ENV=production
+COPY packages/db packages/db
+COPY packages/bot-kit packages/bot-kit
+COPY apps/reimburse apps/reimburse
+WORKDIR /app/apps/reimburse
+# Runs tsx directly rather than through `pnpm exec`. pnpm checks whether the
+# workspace's dependencies are up to date before running anything, and that
+# check writes a temp file into /app, which a read_only container refuses. The
+# result is a crash loop with an EROFS buried in a pnpm stack trace.
+CMD ["node_modules/.bin/tsx", "src/index.ts"]
 
 # ---- migrations ------------------------------------------------------------
 # Runs once before the site starts, then exits. Uses the runtime migrator from
@@ -73,4 +95,4 @@ FROM deps AS migrate
 ENV NODE_ENV=production
 COPY packages/db packages/db
 WORKDIR /app/packages/db
-CMD ["pnpm", "exec", "tsx", "src/migrate.ts"]
+CMD ["node_modules/.bin/tsx", "src/migrate.ts"]

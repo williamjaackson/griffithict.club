@@ -50,6 +50,7 @@ pnpm funnel            # run it
 
 ```
 /funnel setup [channel]              where join notices go, empty to go silent
+/setup                        where join notices go, empty to go silent
 /funnel source create <name> [channel]   make a fresh invite and tag it
 /funnel source set <invite> <name>   tag an invite that already exists
 /funnel source unset <invite>

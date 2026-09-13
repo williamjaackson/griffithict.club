@@ -1,0 +1,41 @@
+<!--
+  The reimbursements bot's avatar.
+
+  Built the same way as apps/funnel/assets/icon.svg on purpose: a solid ink
+  silhouette on the off-white ground, with three colour bands clipped into the
+  top of the shape and the rest left solid. Sharing the construction rather than
+  only the palette is what makes the two read as a set in a member list.
+
+  The three bands are the three states a claim moves through: submitted,
+  approved, paid.
+
+  The two knocked-out lines are not decoration. Without them the shape is a torn
+  rectangle with a coloured top, and the thing that makes it legible as a receipt
+  at 32px is gone.
+
+  Edit this, then run `pnpm icons` to regenerate the PNG the dev portal wants.
+-->
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" width="512" height="512">
+  <!-- Discord crops avatars to a circle, so the square is full-bleed and the
+       whole mark sits well inside the inscribed circle. -->
+  <rect width="512" height="512" fill="#F4F2F0"/>
+
+  <defs>
+    <clipPath id="receipt">
+      <!-- The torn bottom edge does most of the work of saying "receipt". -->
+      <path d="M150,110 H362 V368 L335.5,394 L309,368 L282.5,394 L256,368 L229.5,394 L203,368 L176.5,394 L150,368 Z"/>
+    </clipPath>
+  </defs>
+
+  <g clip-path="url(#receipt)">
+    <rect width="512" height="512" fill="#111010"/>
+    <rect x="150" y="100" width="70.7" height="130" fill="#E51B13"/>
+    <rect x="220.7" y="100" width="70.7" height="130" fill="#F4674E"/>
+    <rect x="291.3" y="100" width="70.7" height="130" fill="#F9A99A"/>
+  </g>
+
+  <g fill="#F4F2F0">
+    <rect x="182" y="262" width="148" height="22" rx="11"/>
+    <rect x="182" y="304" width="110" height="22" rx="11"/>
+  </g>
+</svg>

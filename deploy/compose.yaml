@@ -67,6 +67,23 @@ services:
     networks: [club]
     logging: *logging
 
+  # The claims bot. Outbound only, like Funnel, and with its own env file: a
+  # bot token has no business sitting beside another bot's.
+  reimburse:
+    image: ghcr.io/williamjaackson/reimburse:${IMAGE_TAG:-latest}
+    restart: unless-stopped
+    env_file: /etc/club/reimburse.env
+    init: true
+    read_only: true
+    # tsx compiles to a cache under the system temp directory.
+    tmpfs:
+      - /tmp
+    depends_on:
+      migrate:
+        condition: service_completed_successfully
+    networks: [club]
+    logging: *logging
+
 networks:
   club:
     external: true

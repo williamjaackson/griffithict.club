@@ -21,9 +21,11 @@
     "brand:manifest": "node scripts/brand-manifest.mjs",
     "db:event": "pnpm --filter @gict/db event",
     "brand:og": "./scripts/make-og-image.sh",
-    "funnel:icon": "./scripts/make-funnel-icon.sh",
-    "funnel": "pnpm --filter @gict/funnel dev",
-    "funnel:commands": "pnpm --filter @gict/funnel commands"
+    "funnel": "./scripts/run-bot.sh funnel",
+    "funnel:commands": "pnpm --filter @gict/funnel commands",
+    "icons": "./scripts/make-icons.sh",
+    "reimburse": "./scripts/run-bot.sh reimburse",
+    "reimburse:commands": "pnpm --filter @gict/reimburse commands"
   },
   "devDependencies": {
     "prettier": "^3.6.2",

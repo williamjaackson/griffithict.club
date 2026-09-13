@@ -5,7 +5,7 @@ import {
   type ChatInputCommandInteraction,
 } from 'discord.js'
 import { and, eq } from 'drizzle-orm'
-import { funnelGuilds, funnelInvites, type Database } from '@gict/db'
+import { funnelInvites, type Database } from '@gict/db'
 import type { InviteCache } from '../invites/cache'
 import { readInvites, readVanity } from '../invites/read'
 import { persistInvites, upsertInvite } from '../invites/store'
@@ -58,7 +58,6 @@ export async function onCommand(
     if (sub === 'list') return sourceList(interaction, database)
   }
 
-  if (sub === 'setup') return setup(interaction, database)
   if (sub === 'leaderboard') return leaderboard(interaction, database)
   if (sub === 'sources') return sources(interaction, database)
 }
@@ -75,35 +74,6 @@ function parseCode(input: string): string {
   )
 }
 
-async function setup(interaction: ChatInputCommandInteraction, database: Database): Promise<void> {
-  const channel = interaction.options.getChannel('channel')
-
-  await database
-    .update(funnelGuilds)
-    .set({ logChannelId: channel?.id ?? null })
-    .where(eq(funnelGuilds.id, interaction.guildId!))
-
-  await interaction.reply({
-    content: channel
-      ? `Join notices will go to <#${channel.id}>.`
-      : 'Join notices are off. Arrivals are still recorded and the reports still work.',
-    flags: MessageFlags.Ephemeral,
-  })
-}
-
-/**
- * Make a fresh invite and tag it, in one step.
- *
- * This exists because Discord will not let you do it by hand. Asking for an
- * invite with settings that match an existing one returns that existing one
- * instead of making a new code, and the client never sets the flag that opts
- * out. So a server with a single channel cannot produce separate links for the
- * website and a handbook through the UI at all — they collapse into one code and
- * the funnel has nothing to separate.
- *
- * The API takes `unique`, which forces a new code every time. The bot can pass
- * it; a person clicking "Invite People" cannot.
- */
 async function sourceCreate(
   interaction: ChatInputCommandInteraction,
   database: Database,

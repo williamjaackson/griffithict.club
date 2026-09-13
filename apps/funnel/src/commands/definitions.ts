@@ -32,17 +32,6 @@ export const funnelCommand = new SlashCommandBuilder()
   .setDMPermission(false)
   .addSubcommand((sub) =>
     sub
-      .setName('setup')
-      .setDescription('Choose where join notices get posted')
-      .addChannelOption((option) =>
-        option
-          .setName('channel')
-          .setDescription('Leave empty to stop posting and track silently')
-          .addChannelTypes(ChannelType.GuildText),
-      ),
-  )
-  .addSubcommand((sub) =>
-    sub
       .setName('leaderboard')
       .setDescription('Who has brought in the most members')
       .addBooleanOption(share),
@@ -109,4 +98,18 @@ export const funnelCommand = new SlashCommandBuilder()
       ),
   )
 
-export const commands = [funnelCommand]
+/**
+ * Setup is its own command in every bot in this workspace, so somebody
+ * configuring a new server types the same word whichever one they are adding.
+ *
+ * A modal rather than options, because it is run once per server and then never
+ * again, and because a channel picker in a form beats remembering an option
+ * name.
+ */
+export const setupCommand = new SlashCommandBuilder()
+  .setName('setup')
+  .setDescription('Configure invite tracking for this server')
+  .setDefaultMemberPermissions(PermissionFlagsBits.ManageGuild)
+  .setDMPermission(false)
+
+export const commands = [funnelCommand, setupCommand]
