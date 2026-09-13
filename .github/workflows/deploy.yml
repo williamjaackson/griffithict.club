@@ -44,6 +44,19 @@ jobs:
           cache-from: type=gha
           cache-to: type=gha,mode=max
 
+      - name: Build and push the Funnel bot
+        uses: docker/build-push-action@v6
+        with:
+          context: .
+          target: funnel
+          platforms: linux/amd64
+          push: true
+          tags: |
+            ${{ env.REGISTRY }}/${{ github.repository_owner }}/funnel:${{ github.sha }}
+            ${{ env.REGISTRY }}/${{ github.repository_owner }}/funnel:latest
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
+
       - name: Build and push the migration runner
         uses: docker/build-push-action@v6
         with:

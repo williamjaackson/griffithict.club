@@ -1,7 +1,8 @@
 # syntax=docker/dockerfile:1
 
-# Two images out of one file: the site, and the one-shot migration runner. They
-# share every layer up to `deps`, so the migrate image costs almost nothing extra.
+# Three images out of one file: the site, the one-shot migration runner, and the
+# Funnel bot. They share every layer up to `deps`, so the two small ones cost
+# almost nothing beyond the site.
 
 ARG NODE_VERSION=24-alpine
 
@@ -17,6 +18,7 @@ WORKDIR /app
 FROM base AS deps
 COPY pnpm-lock.yaml pnpm-workspace.yaml package.json ./
 COPY apps/web/package.json apps/web/
+COPY apps/funnel/package.json apps/funnel/
 COPY packages/db/package.json packages/db/
 RUN --mount=type=cache,id=pnpm,target=/pnpm/store \
     pnpm install --frozen-lockfile
@@ -52,6 +54,17 @@ HEALTHCHECK --interval=30s --timeout=3s --start-period=10s --retries=3 \
     CMD node -e "fetch('http://127.0.0.1:3000/api/health').then(r=>process.exit(r.ok?0:1)).catch(()=>process.exit(1))"
 
 CMD ["node", "apps/web/server.js"]
+
+# ---- funnel ----------------------------------------------------------------
+# The Discord bot. No port and no healthcheck: it holds an outbound websocket to
+# Discord and serves nothing, so there is nothing to probe. Compose restarts it
+# if the process dies, which is the failure that actually happens.
+FROM deps AS funnel
+ENV NODE_ENV=production
+COPY packages/db packages/db
+COPY apps/funnel apps/funnel
+WORKDIR /app/apps/funnel
+CMD ["pnpm", "exec", "tsx", "src/index.ts"]
 
 # ---- migrations ------------------------------------------------------------
 # Runs once before the site starts, then exits. Uses the runtime migrator from
