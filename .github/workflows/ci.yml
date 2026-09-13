@@ -1,0 +1,48 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v5
+
+      - uses: pnpm/action-setup@v4
+      - uses: actions/setup-node@v5
+        with:
+          node-version: 24
+          cache: pnpm
+
+      - run: pnpm install --frozen-lockfile
+
+      - name: Formatting
+        run: pnpm format:check
+
+      - name: Lint
+        run: pnpm lint
+
+      - name: Types
+        run: pnpm typecheck
+
+      - name: Tests
+        run: pnpm test
+
+      # The most common Drizzle mistake is editing schema.ts and forgetting to
+      # generate the migration. This catches it before it reaches the VPS.
+      - name: Migrations match the schema
+        run: |
+          pnpm db:generate
+          if [ -n "$(git status --porcelain packages/db/drizzle)" ]; then
+            echo "::error::schema.ts changed without a generated migration. Run pnpm db:generate and commit the result."
+            git status --porcelain packages/db/drizzle
+            exit 1
+          fi
+
+      # Builds with no DATABASE_URL on purpose. If anything reads the database
+      # during a build this fails here rather than in production.
+      - name: Build
+        run: pnpm build
