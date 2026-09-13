@@ -1,9 +1,14 @@
-import { MessageFlags, type ChatInputCommandInteraction } from 'discord.js'
+import {
+  ChannelType,
+  MessageFlags,
+  PermissionFlagsBits,
+  type ChatInputCommandInteraction,
+} from 'discord.js'
 import { and, eq } from 'drizzle-orm'
 import { funnelGuilds, funnelInvites, type Database } from '@gict/db'
 import type { InviteCache } from '../invites/cache'
 import { readInvites, readVanity } from '../invites/read'
-import { persistInvites } from '../invites/store'
+import { persistInvites, upsertInvite } from '../invites/store'
 import {
   confidenceBreakdown,
   ensureSource,
@@ -46,6 +51,7 @@ export async function onCommand(
   const sub = interaction.options.getSubcommand()
 
   if (group === 'source') {
+    if (sub === 'create') return sourceCreate(interaction, database, cache)
     if (sub === 'set') return sourceSet(interaction, database, cache)
     if (sub === 'unset') return sourceUnset(interaction, database)
     if (sub === 'list') return sourceList(interaction, database)
@@ -82,6 +88,89 @@ async function setup(interaction: ChatInputCommandInteraction, database: Databas
       : 'Join notices are off. Arrivals are still recorded and the reports still work.',
     flags: MessageFlags.Ephemeral,
   })
+}
+
+/**
+ * Make a fresh invite and tag it, in one step.
+ *
+ * This exists because Discord will not let you do it by hand. Asking for an
+ * invite with settings that match an existing one returns that existing one
+ * instead of making a new code, and the client never sets the flag that opts
+ * out. So a server with a single channel cannot produce separate links for the
+ * website and a handbook through the UI at all — they collapse into one code and
+ * the funnel has nothing to separate.
+ *
+ * The API takes `unique`, which forces a new code every time. The bot can pass
+ * it; a person clicking "Invite People" cannot.
+ */
+async function sourceCreate(
+  interaction: ChatInputCommandInteraction,
+  database: Database,
+  cache: InviteCache,
+): Promise<void> {
+  const name = interaction.options.getString('name', true).trim()
+  const requested = interaction.options.getChannel('channel')
+  const guildId = interaction.guildId!
+
+  await interaction.deferReply({ flags: MessageFlags.Ephemeral })
+
+  const channel =
+    (requested && interaction.guild?.channels.cache.get(requested.id)) ??
+    (interaction.channel?.type === ChannelType.GuildText ? interaction.channel : null)
+
+  if (!channel || channel.type !== ChannelType.GuildText) {
+    await interaction.editReply('Pick a text channel for the invite to land in.')
+    return
+  }
+
+  const me = interaction.guild?.members.me
+  if (me && !channel.permissionsFor(me).has(PermissionFlagsBits.CreateInstantInvite)) {
+    await interaction.editReply(
+      `I cannot create invites in <#${channel.id}>. Grant **Create Invite** there, or re-add me with the current permissions.`,
+    )
+    return
+  }
+
+  let invite
+  try {
+    invite = await channel.createInvite({
+      // The whole point. Without it Discord hands back an existing invite with
+      // matching settings and both sources end up sharing one code.
+      unique: true,
+      // Never expires, unlimited uses: a link printed in a handbook has to keep
+      // working, and a use cap would silently kill it mid-campaign.
+      maxAge: 0,
+      maxUses: 0,
+      reason: `Funnel source: ${name}`,
+    })
+  } catch {
+    await interaction.editReply(
+      'Discord refused to create the invite. Check my permissions on that channel.',
+    )
+    return
+  }
+
+  const snapshot = {
+    code: invite.code,
+    uses: invite.uses ?? 0,
+    inviterId: invite.inviter?.id ?? null,
+    maxUses: invite.maxUses ?? 0,
+  }
+  cache.add(guildId, snapshot)
+  await upsertInvite(database, guildId, snapshot)
+
+  const source = await ensureSource(database, guildId, name)
+  await database
+    .update(funnelInvites)
+    .set({ sourceId: source.id })
+    .where(and(eq(funnelInvites.code, invite.code), eq(funnelInvites.guildId, guildId)))
+
+  await interaction.editReply(
+    [
+      `**${source.name}** → https://discord.gg/${invite.code}`,
+      `-# Never expires, unlimited uses. Put this exactly where that source lives and nowhere else, or the numbers blur.`,
+    ].join('\n'),
+  )
 }
 
 async function sourceSet(

@@ -59,6 +59,24 @@ export const funnelCommand = new SlashCommandBuilder()
       .setDescription('Label invites with where they were published')
       .addSubcommand((sub) =>
         sub
+          .setName('create')
+          .setDescription('Make a fresh invite for a source and tag it in one go')
+          .addStringOption((option) =>
+            option
+              .setName('name')
+              .setDescription('Website, Campus Groups, Handbook, a poster…')
+              .setRequired(true)
+              .setMaxLength(60),
+          )
+          .addChannelOption((option) =>
+            option
+              .setName('channel')
+              .setDescription('Where it lands. Defaults to this channel.')
+              .addChannelTypes(ChannelType.GuildText),
+          ),
+      )
+      .addSubcommand((sub) =>
+        sub
           .setName('set')
           .setDescription('Tag an invite with the place it was published')
           .addStringOption((option) =>
