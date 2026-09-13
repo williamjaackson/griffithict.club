@@ -16,7 +16,12 @@ export const events = pgTable(
 
     title: varchar('title', { length: 200 }).notNull(),
 
-    /** One line under the title in listings. */
+    /**
+     * A one-line description, used for the page description and link previews.
+     *
+     * Not the time — that is derived from `startsAt` wherever it is shown, so the
+     * two cannot disagree.
+     */
     summary: varchar('summary', { length: 300 }),
 
     /** Markdown. Rendered in the event modal and on the detail page. */

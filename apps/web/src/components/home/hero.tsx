@@ -1,7 +1,9 @@
 import type { ReactNode } from 'react'
 import type { Links, Site } from '@/content/schema'
 import { brandLogo } from '@/lib/brand'
+import { splitHighlight } from '@/lib/headline'
 import { LOGOS } from '@/lib/logos'
+import { BUTTON } from '@/components/ui/button-styles'
 
 export function Hero({
   site,
@@ -25,9 +27,22 @@ export function Hero({
         </div>
 
         <h1 className="animate-rise m-0 text-[clamp(35px,4.6vw,66px)] leading-[1.04] font-extrabold tracking-[-0.035em] text-balance [font-stretch:112%]">
-          The other half
-          <br />
-          of your <span className="text-brand">tech degree</span>.
+          {site.headline.lines.map((line) => {
+            const parts = splitHighlight(line, site.headline.highlight)
+            return (
+              <span key={line} className="block">
+                {parts ? (
+                  <>
+                    {parts.before}
+                    <span className="text-brand">{parts.match}</span>
+                    {parts.after}
+                  </>
+                ) : (
+                  line
+                )}
+              </span>
+            )
+          })}
         </h1>
 
         <p className="text-body m-0 max-w-[52ch] text-[clamp(16.5px,1.35vw,19px)] leading-[1.65] text-pretty">
@@ -37,7 +52,7 @@ export function Hero({
         <div className="flex flex-wrap gap-3">
           <a
             href={links.discord}
-            className="bg-brand hover:bg-ink inline-flex max-w-[340px] flex-[1_1_240px] items-center justify-center gap-3 rounded-[17px] px-[26px] py-3 text-[clamp(16px,1.35vw,19px)] font-bold text-white"
+            className={`${BUTTON.brand} inline-flex max-w-[340px] flex-[1_1_240px] items-center justify-center gap-3 rounded-[17px] px-[26px] py-3 text-[clamp(16px,1.35vw,19px)] font-bold`}
           >
             Join the Discord
           </a>

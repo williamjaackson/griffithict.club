@@ -6,9 +6,19 @@ export const siteSchema = z.object({
   name: z.string(),
   shortName: z.string(),
   url: z.url(),
-  tagline: z.string(),
   description: z.string(),
   eyebrow: z.string(),
+  headline: z
+    .object({
+      lines: z.array(z.string()).min(1),
+      highlight: z.string().min(1),
+    })
+    // An emphasis that matches nothing renders the headline flat, with no
+    // indication anything is wrong.
+    .refine((h) => h.lines.some((line) => line.includes(h.highlight)), {
+      message: 'headline.highlight must appear in one of headline.lines',
+      path: ['highlight'],
+    }),
   nav: z.array(z.object({ label: z.string(), href: z.string() })).min(1),
 })
 
@@ -115,7 +125,6 @@ export const sponsorshipSchema = z
         z.object({
           name: z.string(),
           price: z.string(),
-          blurb: z.string(),
           accent: z.string().regex(/^#[0-9A-Fa-f]{6}$/),
           tint: z.string().regex(/^#[0-9A-Fa-f]{6}$/),
           mark: z.string(),
@@ -132,7 +141,6 @@ export const sponsorshipSchema = z
 export const joinSchema = z
   .array(
     z.object({
-      step: z.string(),
       title: z.string(),
       body: z.string(),
       cta: z.string(),
