@@ -1,5 +1,10 @@
 import { index, pgEnum, pgTable, text, timestamp, uuid, varchar } from 'drizzle-orm/pg-core'
 
+// The bot's tables live beside these in the same database but share nothing with
+// them, so they keep their own file. Re-exported here because the Drizzle client
+// builds its schema from this module.
+export * from './funnel'
+
 /**
  * Draft events are invisible to the site. Cancelled ones are kept rather than
  * deleted so a link already posted in Discord still resolves and explains itself.
