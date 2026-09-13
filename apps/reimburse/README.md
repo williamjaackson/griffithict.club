@@ -54,13 +54,23 @@ claim itself.
   submission and kept in Postgres. A claim has to outlive a committee.
 - **Money is integer cents everywhere.** A float would leave a treasurer with a
   one-cent drift against a bank statement and no way to explain it.
-- **`submitted` means sent to the Guild**, not filed by the member. The club does
-  not hold its own money. `pending` → `submitted` → `paid`, with `rejected` as
-  the way to close one that is not going anywhere.
+- **`submitted` means the treasurer has sent it on for payment**, wherever that
+  is for a given server: a student guild, a finance team, someone's accountant.
+  Not that the member filed it.
+- **Any state can be set from any other.** The usual path is pending → submitted
+  → paid, but the common mistake is pressing the wrong button, and having no way
+  back is worse than any problem a one-way graph solves. Corrections stay visible
+  in `reimburse_events`.
 - **A treasurer may move their own claim along.** In a club the person buying
   things is usually the one holding the role, and a second pair of hands mostly
   means nothing gets logged at all. `reimburse_events` records who moved what
   either way, which is the control an audit actually asks about.
+- **Bank details live on the form**, pre-filled from the last claim rather than
+  asked once and locked in. They are stored per server, and copied onto each
+  claim as given at the time, so changing them later does not rewrite which
+  account an old claim was paid into.
+- **The account number is masked** on the claim post. Whoever pays it has the
+  full number in the payment run; the channel does not need it.
 - **The review channel should be private.** Claims carry names, amounts and what
   people bought.
 - **reimburse_events is append-only.** The status says where a claim is; the

@@ -10,9 +10,23 @@ import {
 } from 'discord.js'
 import { eq } from 'drizzle-orm'
 import { reimburseClaims, type Database, type ReimburseClaim } from '@gict/db'
-import { canMoveTo, configFor, createClaim, type NewReceipt } from '../claims'
+import {
+  ALL_STATUSES,
+  canMoveTo,
+  configFor,
+  createClaim,
+  rememberPayee,
+  type NewReceipt,
+} from '../claims'
 import { formatAmount, parseAmount } from '../money'
-import { FIELD_AMOUNT, FIELD_DESCRIPTION, FIELD_RECEIPT } from '../modal'
+import { formatBankCode, maskAccount, parsePayee, splitBankFields } from '../payee'
+import {
+  FIELD_ACCOUNT_NAME,
+  FIELD_AMOUNT,
+  FIELD_BANK_CODE,
+  FIELD_DESCRIPTION,
+  FIELD_RECEIPT,
+} from '../modal'
 import { STATUS } from '../status'
 
 /** Discord's own ceiling for a free upload. Anything larger never arrives. */
@@ -42,6 +56,17 @@ export async function onClaimSubmit(
       content: 'Say what the money went on.',
       flags: MessageFlags.Ephemeral,
     })
+    return
+  }
+
+  const bank = splitBankFields(interaction.fields.getTextInputValue(FIELD_BANK_CODE))
+  const payee = parsePayee(
+    interaction.fields.getTextInputValue(FIELD_ACCOUNT_NAME),
+    bank.bankCode,
+    bank.accountNumber,
+  )
+  if (!payee.ok) {
+    await interaction.reply({ content: payee.error, flags: MessageFlags.Ephemeral })
     return
   }
 
@@ -81,7 +106,11 @@ export async function onClaimSubmit(
     amountCents: amount.cents,
     description,
     receipts,
+    payee: payee.details,
   })
+
+  // Kept so the next claim comes pre-filled rather than retyped.
+  await rememberPayee(database, interaction.guildId, interaction.user.id, payee.details)
 
   await post(interaction, database, claim, config.reviewChannelId, config.currency, receipts)
 
@@ -112,49 +141,53 @@ async function download(attachment: Attachment): Promise<NewReceipt> {
   }
 }
 
+/**
+ * One button per state the claim is not currently in.
+ *
+ * Every state is reachable from every other, so a wrong press is one more press
+ * to undo rather than something that needs a database.
+ */
 export function reviewButtons(claim: ReimburseClaim): ActionRowBuilder<ButtonBuilder>[] {
-  const buttons: ButtonBuilder[] = []
-
-  if (canMoveTo(claim.status, 'submitted')) {
-    buttons.push(
-      new ButtonBuilder()
-        .setCustomId(`claim:submitted:${claim.id}`)
-        .setEmoji(STATUS.submitted.icon)
-        .setLabel(STATUS.submitted.label)
-        .setStyle(ButtonStyle.Primary),
-    )
+  const STYLE: Record<ReimburseClaim['status'], ButtonStyle> = {
+    pending: ButtonStyle.Secondary,
+    submitted: ButtonStyle.Primary,
+    paid: ButtonStyle.Success,
+    rejected: ButtonStyle.Danger,
   }
 
-  if (canMoveTo(claim.status, 'paid')) {
-    buttons.push(
-      new ButtonBuilder()
-        .setCustomId(`claim:paid:${claim.id}`)
-        .setEmoji(STATUS.paid.icon)
-        .setLabel(STATUS.paid.label)
-        .setStyle(ButtonStyle.Success),
-    )
-  }
-
-  if (canMoveTo(claim.status, 'rejected')) {
-    buttons.push(
-      new ButtonBuilder()
-        .setCustomId(`claim:rejected:${claim.id}`)
-        .setEmoji(STATUS.rejected.icon)
-        .setLabel('Reject')
-        .setStyle(ButtonStyle.Danger),
-    )
-  }
+  const buttons = ALL_STATUSES.filter((status) => canMoveTo(claim.status, status)).map((status) =>
+    new ButtonBuilder()
+      .setCustomId(`claim:${status}:${claim.id}`)
+      .setEmoji(STATUS[status].icon)
+      .setLabel(STATUS[status].button)
+      .setStyle(STYLE[status]),
+  )
 
   return buttons.length === 0 ? [] : [new ActionRowBuilder<ButtonBuilder>().addComponents(buttons)]
 }
 
 export function claimSummary(claim: ReimburseClaim, currency: string): string {
-  return [
+  const lines = [
     `## ${STATUS[claim.status].icon} Claim #${claim.reference} · ${formatAmount(claim.amountCents, currency)}`,
     `<@${claim.claimantId}> · **${STATUS[claim.status].label}**`,
     '',
     claim.description,
-  ].join('\n')
+  ]
+
+  /*
+   * Masked. This sits in a channel the whole committee can read, and whoever is
+   * making the payment has the full number in the payment run already. The last
+   * three digits are enough to tell two of somebody's accounts apart, which is
+   * the only thing anybody needs to do by eye.
+   */
+  if (claim.payeeName && claim.payeeBankCode && claim.payeeAccountNumber) {
+    lines.push(
+      '',
+      `-# ${claim.payeeName} · ${formatBankCode(claim.payeeBankCode)} · ${maskAccount(claim.payeeAccountNumber)}`,
+    )
+  }
+
+  return lines.join('\n')
 }
 
 async function post(

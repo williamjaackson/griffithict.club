@@ -1,5 +1,6 @@
 import { Client, Events, GatewayIntentBits, MessageFlags } from 'discord.js'
 import { loadConfig } from './config'
+import { payeeFor } from './claims'
 import { db } from './db'
 import { onAdminCommand } from './handlers/admin'
 import { onReviewButton } from './handlers/review'
@@ -25,7 +26,12 @@ client.on(Events.InteractionCreate, async (interaction) => {
     if (interaction.isChatInputCommand()) {
       // The bare command opens the form. Everything else is under the plural.
       if (interaction.commandName === 'reimbursement') {
-        await interaction.showModal(claimModal())
+        // Pre-filled from last time, so bank details stay editable on every
+        // claim rather than being locked in by the first one.
+        const payee = interaction.inGuild()
+          ? await payeeFor(database, interaction.guildId, interaction.user.id)
+          : null
+        await interaction.showModal(claimModal(payee))
         return
       }
       if (interaction.commandName === 'reimbursements') {

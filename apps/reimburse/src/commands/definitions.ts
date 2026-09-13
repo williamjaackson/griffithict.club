@@ -55,7 +55,7 @@ export const adminCommand = new SlashCommandBuilder()
           .setDescription('Only claims in this state')
           .addChoices(
             { name: 'Pending', value: 'pending' },
-            { name: 'Sent to the Guild', value: 'submitted' },
+            { name: 'Submitted for payment', value: 'submitted' },
             { name: 'Paid', value: 'paid' },
             { name: 'Rejected', value: 'rejected' },
           ),

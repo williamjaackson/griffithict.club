@@ -5,6 +5,7 @@ import {
   integer,
   pgEnum,
   pgTable,
+  primaryKey,
   text,
   timestamp,
   unique,
@@ -25,12 +26,16 @@ const bytea = customType<{ data: Buffer; default: false }>({
 })
 
 /**
- * Where a claim is in the club's money flow.
+ * Where a claim is.
  *
- * The club does not hold its own funds, so `submitted` means the treasurer has
- * passed it up to the Guild, not that the member has filed it. `rejected` is
- * terminal and exists so a bad claim can be closed; without it one sits in
- * `pending` forever with nothing anybody can do about it.
+ * `submitted` means the treasurer has sent it on for payment, wherever that is
+ * for a given server: a student guild, a finance team, someone's accountant.
+ * `rejected` exists so a claim that is not going anywhere can be closed rather
+ * than sitting in `pending` forever.
+ *
+ * None of these is a dead end. A treasurer can set any state from any other,
+ * because the common mistake is pressing the wrong button and the expensive
+ * failure is having no way back.
  */
 export const claimStatus = pgEnum('reimburse_status', ['pending', 'submitted', 'paid', 'rejected'])
 
@@ -75,6 +80,18 @@ export const reimburseClaims = pgTable(
 
     description: text('description').notNull(),
     status: claimStatus('status').notNull().default('pending'),
+
+    /*
+     * Where the money was to go, as given at the time.
+     *
+     * Copied onto the claim rather than joined from the payee record, for the
+     * same reason a source name is frozen onto a join: somebody updating their
+     * bank details next year must not silently rewrite which account last
+     * year's claim was paid into.
+     */
+    payeeName: varchar('payee_name', { length: 120 }),
+    payeeBankCode: varchar('payee_bank_code', { length: 20 }),
+    payeeAccountNumber: varchar('payee_account_number', { length: 34 }),
 
     /** The message holding the buttons, so it can be edited as the state moves. */
     reviewMessageId: varchar('review_message_id', { length: 20 }),
@@ -147,6 +164,29 @@ export const reimburseEvents = pgTable(
   (table) => [index('reimburse_events_claim').on(table.claimId)],
 )
 
+/**
+ * Where to send somebody's money, remembered between claims.
+ *
+ * `bankCode` rather than `bsb`: the label is Australian, the concept is not.
+ * Sort codes, routing numbers and IBANs all sit in the same place, and naming
+ * the column after one country would need a migration to serve another.
+ */
+export const reimbursePayees = pgTable(
+  'reimburse_payees',
+  {
+    guildId: varchar('guild_id', { length: 20 }).notNull(),
+    userId: varchar('user_id', { length: 20 }).notNull(),
+
+    accountName: varchar('account_name', { length: 120 }).notNull(),
+    bankCode: varchar('bank_code', { length: 20 }).notNull(),
+    accountNumber: varchar('account_number', { length: 34 }).notNull(),
+
+    updatedAt: timestamp('updated_at', { withTimezone: true }).notNull().defaultNow(),
+  },
+  (table) => [primaryKey({ columns: [table.guildId, table.userId] })],
+)
+
+export type ReimbursePayee = typeof reimbursePayees.$inferSelect
 export type ReimburseConfig = typeof reimburseConfig.$inferSelect
 export type ReimburseClaim = typeof reimburseClaims.$inferSelect
 export type NewReimburseClaim = typeof reimburseClaims.$inferInsert

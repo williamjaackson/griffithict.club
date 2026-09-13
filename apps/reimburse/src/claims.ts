@@ -3,25 +3,59 @@ import {
   reimburseClaims,
   reimburseConfig,
   reimburseEvents,
+  reimbursePayees,
   reimburseReceipts,
   type Database,
   type ReimburseClaim,
   type ReimburseConfig,
+  type ReimbursePayee,
 } from '@gict/db'
 import type { ClaimStatus } from './status'
 
 export type { ClaimStatus } from './status'
 
-/** The states a claim can move to from where it is. */
-const NEXT: Record<ClaimStatus, ClaimStatus[]> = {
-  pending: ['submitted', 'rejected'],
-  submitted: ['paid', 'rejected'],
-  paid: [],
-  rejected: [],
+export const ALL_STATUSES: ClaimStatus[] = ['pending', 'submitted', 'paid', 'rejected']
+
+/**
+ * Any state can become any other, except itself.
+ *
+ * There was a one-way graph here: pending to submitted to paid, with no way
+ * back. That is how the money moves, but it is not how the buttons get pressed.
+ * Marking something paid by mistake and having no way to undo it is worse than
+ * any problem the restriction solved, and reimburse_events keeps the correction
+ * visible anyway.
+ */
+export function canMoveTo(from: ClaimStatus, to: ClaimStatus): boolean {
+  return from !== to && ALL_STATUSES.includes(to)
 }
 
-export function canMoveTo(from: ClaimStatus, to: ClaimStatus): boolean {
-  return NEXT[from].includes(to)
+/** What we last knew about where to pay somebody. */
+export async function payeeFor(
+  database: Database,
+  guildId: string,
+  userId: string,
+): Promise<ReimbursePayee | null> {
+  const [row] = await database
+    .select()
+    .from(reimbursePayees)
+    .where(and(eq(reimbursePayees.guildId, guildId), eq(reimbursePayees.userId, userId)))
+    .limit(1)
+  return row ?? null
+}
+
+export async function rememberPayee(
+  database: Database,
+  guildId: string,
+  userId: string,
+  details: { accountName: string; bankCode: string; accountNumber: string },
+): Promise<void> {
+  await database
+    .insert(reimbursePayees)
+    .values({ guildId, userId, ...details })
+    .onConflictDoUpdate({
+      target: [reimbursePayees.guildId, reimbursePayees.userId],
+      set: { ...details, updatedAt: new Date() },
+    })
 }
 
 export async function configFor(
@@ -60,6 +94,7 @@ export async function createClaim(
     amountCents: number
     description: string
     receipts: NewReceipt[]
+    payee: { accountName: string; bankCode: string; accountNumber: string }
   },
 ): Promise<ReimburseClaim> {
   return database.transaction(async (tx) => {
@@ -76,6 +111,9 @@ export async function createClaim(
         claimantId: input.claimantId,
         amountCents: input.amountCents,
         description: input.description,
+        payeeName: input.payee.accountName,
+        payeeBankCode: input.payee.bankCode,
+        payeeAccountNumber: input.payee.accountNumber,
       })
       .returning()
 
