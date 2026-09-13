@@ -1,39 +1,12 @@
-import type { ElementType } from 'react'
 import type { Event } from '@/lib/events'
-import { eventMeta, isoDate, longWhen } from '@/lib/datetime'
-import { EventDateChip } from './event-date-chip'
-import { BUTTON } from '@/components/ui/button-styles'
+import { isoDate, longWhen } from '@/lib/datetime'
+import { ButtonLink } from '@/components/ui/button'
+import { Eyebrow } from '@/components/ui/section'
 
-/**
- * Shared by the event page and the modal that intercepts it, so they cannot drift.
- *
- * `Title` is the element the event name renders as. The page passes `h1`; the
- * modal passes Radix's `DialogTitle`, which both keeps the page to one `h1` and
- * makes the dialog's accessible name the heading a sighted user reads.
- */
-export function EventDetail({
-  event,
-  discordUrl,
-  Title = 'h1',
-}: {
-  event: Event
-  discordUrl: string
-  Title?: ElementType
-}) {
+/** Everything below an event's title in its dialog. */
+export function EventBody({ event, discordUrl }: { event: Event; discordUrl: string }) {
   return (
     <>
-      <div className="flex min-w-0 items-center gap-4">
-        <EventDateChip date={event.startsAt} size="detail" />
-        <div className="flex min-w-0 flex-col gap-1">
-          <Title className="m-0 text-[clamp(22px,2.4vw,30px)] leading-[1.08] font-extrabold tracking-[-0.028em] [font-stretch:110%]">
-            {event.title}
-          </Title>
-          <span className="text-muted text-[13px] font-semibold tracking-[0.04em]">
-            {eventMeta(event.startsAt)}
-          </span>
-        </div>
-      </div>
-
       {event.status === 'cancelled' && (
         <p
           role="status"
@@ -63,20 +36,15 @@ export function EventDetail({
       )}
 
       <div className="bg-surface flex flex-col gap-1.5 rounded-[18px] px-5 py-[18px]">
-        <span className="text-brand text-[11px] font-bold tracking-[0.16em] uppercase">
-          Registration
-        </span>
+        <Eyebrow>Registration</Eyebrow>
         <span className="text-ink text-[clamp(15px,1.3vw,17px)] leading-[1.5] font-medium">
           Sign-ups and tickets for every event are handled in the Discord.
         </span>
       </div>
 
-      <a
-        href={event.registrationUrl ?? discordUrl}
-        className={`${BUTTON.brand} inline-flex min-h-[60px] items-center justify-center rounded-2xl px-7 text-[clamp(17px,1.5vw,19px)] font-bold`}
-      >
+      <ButtonLink href={event.registrationUrl ?? discordUrl} fullWidth>
         {event.registrationUrl ? 'Register' : 'Join the Discord'}
-      </a>
+      </ButtonLink>
     </>
   )
 }
@@ -96,7 +64,7 @@ export function EventJsonLd({ event, siteUrl }: { event: Event; siteUrl: string 
     eventAttendanceMode: 'https://schema.org/OfflineEventAttendanceMode',
     ...(event.location && { location: { '@type': 'Place', name: event.location } }),
     ...(event.description && { description: event.description }),
-    url: `${siteUrl}/events/${event.slug}`,
+    url: `${siteUrl}/events`,
     organizer: { '@type': 'Organization', name: 'Griffith ICT Club', url: siteUrl },
   }
 

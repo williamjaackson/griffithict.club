@@ -12,21 +12,26 @@ import { useScrollLock } from './use-scroll-lock'
  * All three matter: a modal you cannot tab out of or close with the keyboard is
  * unusable without a mouse.
  *
- * Overlay and Content are siblings, not nested. Nesting Content inside Overlay
- * renders fine but leaves `aria-modal` unset, so assistive tech is not told the
- * rest of the page is inert.
+ * Overlay and Content are siblings, not nested, which is how Radix documents it.
  */
 export function Dialog({
   open,
   onOpenChange,
   label,
+  header,
   children,
   size = 'default',
 }: {
   open: boolean
   onOpenChange: (open: boolean) => void
-  /** Accessible name, used unless the content provides its own DialogTitle. */
+  /** Accessible name. A `DialogTitle` inside `header` takes precedence over this. */
   label: string
+  /**
+   * Whatever sits beside the close button: a title, or a date chip and a title,
+   * or a label above a name. Each dialog's header looks different, so this takes
+   * a node rather than a string and the close button stays consistent.
+   */
+  header?: ReactNode
   children: ReactNode
   size?: 'default' | 'wide'
 }) {
@@ -42,6 +47,10 @@ export function Dialog({
             size === 'wide' ? 'max-w-[1040px]' : 'max-w-[560px]'
           }`}
         >
+          <div className="flex items-start justify-between gap-[18px]">
+            <div className="flex min-w-0 flex-1 items-center gap-4">{header}</div>
+            <DialogClose />
+          </div>
           {children}
         </RadixDialog.Content>
       </RadixDialog.Portal>
@@ -49,7 +58,7 @@ export function Dialog({
   )
 }
 
-/** The close control in the top-right of every dialog. */
+/** The close control in the top-right. Rendered by `Dialog`; not usually needed directly. */
 export function DialogClose() {
   return (
     <RadixDialog.Close
@@ -75,5 +84,6 @@ export function DialogClose() {
   )
 }
 
+/** The dialog's heading. Put it inside `header` so it names the dialog for screen readers. */
 export const DialogTitle = RadixDialog.Title
 export const DialogDescription = RadixDialog.Description

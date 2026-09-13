@@ -80,7 +80,8 @@ pnpm db:event \
 Times are Brisbane. `pnpm db:event --help` lists every option.
 
 Idempotent on the slug, so re-running with a corrected time fixes the row instead
-of creating a second event with the same name. Against production, open a tunnel
+of creating a second event with the same name. The slug is an identifier only —
+events have no page of their own, so it is never seen by anyone. Against production, open a tunnel
 first and point `DATABASE_URL` at it.
 
 **Queueing a run of events.** `--publish-at` holds a finished event back until a
@@ -95,11 +96,11 @@ pnpm db:event --title "Tech Social" --slug tech-social-2026-09-22 \
 
 Three states worth keeping straight:
 
-|                                                 | Meaning                                        |
-| ----------------------------------------------- | ---------------------------------------------- |
-| `status: draft`                                 | Unfinished. Never shown                        |
-| `status: published`, `publish_at` in the future | Finished, waiting. Not shown, and its URL 404s |
-| `status: published`, `publish_at` null or past  | On the site                                    |
+|                                                 | Meaning                               |
+| ----------------------------------------------- | ------------------------------------- |
+| `status: draft`                                 | Unfinished. Never shown               |
+| `status: published`, `publish_at` in the future | Finished, waiting. Not shown anywhere |
+| `status: published`, `publish_at` null or past  | On the site                           |
 
 Cancelling: set `status` to `cancelled` rather than deleting. The link is already
 out there, and the page says the event is off.

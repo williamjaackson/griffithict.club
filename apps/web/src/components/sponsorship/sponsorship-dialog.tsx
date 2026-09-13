@@ -3,7 +3,9 @@
 import { useState, useTransition } from 'react'
 import type { Sponsorship } from '@/content/schema'
 import { submitSponsorshipEnquiry } from '@/app/_actions/sponsorship'
-import { Dialog, DialogClose, DialogTitle } from '@/components/ui/dialog'
+import { Dialog, DialogTitle } from '@/components/ui/dialog'
+import { Button } from '@/components/ui/button'
+import { Eyebrow } from '@/components/ui/section'
 import { useSponsorship } from './sponsorship-context'
 
 type Step = 'tier' | 'details' | 'done'
@@ -53,19 +55,20 @@ export function SponsorshipDialog({
   }
 
   return (
-    <Dialog open={open} onOpenChange={handleOpenChange} label="Sponsorship" size="wide">
-      <div className="flex items-start justify-between gap-[18px]">
+    <Dialog
+      open={open}
+      onOpenChange={handleOpenChange}
+      label="Sponsorship"
+      size="wide"
+      header={
         <div className="flex min-w-0 flex-col gap-2">
-          <span className="text-brand text-xs font-bold tracking-[0.16em] uppercase">
-            Sponsorship
-          </span>
+          <Eyebrow className="text-xs">Sponsorship</Eyebrow>
           <DialogTitle className="m-0 text-[clamp(26px,3vw,40px)] leading-[1.02] font-extrabold tracking-[-0.035em] [font-stretch:112%]">
             Reach every tech student at Griffith.
           </DialogTitle>
         </div>
-        <DialogClose />
-      </div>
-
+      }
+    >
       {step === 'tier' && (
         <div className="flex flex-col gap-[clamp(20px,2.4vw,28px)]">
           <div className="grid grid-cols-[repeat(auto-fit,minmax(min(100%,250px),1fr))] items-start gap-[clamp(12px,1.6vw,18px)]">
@@ -80,15 +83,22 @@ export function SponsorshipDialog({
               />
             ))}
           </div>
-          <div className="flex justify-end">
-            <button
-              type="button"
+          <div className="flex flex-wrap items-center justify-end gap-4">
+            {/*
+              A disabled button on its own says something is wrong without saying
+              what. This names the one thing standing in the way, and disappears
+              once it is done.
+            */}
+            {tierIndex === null && (
+              <p className="text-muted m-0 mr-auto text-[15px]">Choose a tier to continue</p>
+            )}
+            <Button
               onClick={() => tierIndex !== null && setStep('details')}
               disabled={tierIndex === null}
-              className="bg-brand hover:bg-ink disabled:bg-inactive inline-flex min-h-[60px] flex-none cursor-pointer items-center justify-center rounded-2xl border-none px-8 font-[inherit] text-[clamp(16px,1.4vw,18px)] font-bold text-white disabled:cursor-not-allowed"
+              className="flex-none"
             >
               Contact Us
-            </button>
+            </Button>
           </div>
         </div>
       )}
@@ -182,13 +192,9 @@ export function SponsorshipDialog({
           )}
 
           <div className="flex justify-end">
-            <button
-              type="submit"
-              disabled={pending}
-              className="bg-brand hover:bg-ink disabled:bg-inactive inline-flex min-h-[60px] flex-none cursor-pointer items-center justify-center rounded-2xl border-none px-8 font-[inherit] text-[clamp(16px,1.4vw,18px)] font-bold text-white"
-            >
+            <Button type="submit" disabled={pending} className="flex-none">
               {pending ? 'Sending…' : 'Express Interest'}
-            </button>
+            </Button>
           </div>
         </form>
       )}
@@ -220,13 +226,9 @@ export function SponsorshipDialog({
             Thanks, the committee will review your interest in the {chosen?.name} package and come
             back to you.
           </p>
-          <button
-            type="button"
-            onClick={() => handleOpenChange(false)}
-            className="bg-ink hover:bg-brand min-h-[58px] cursor-pointer rounded-2xl border-none px-[30px] font-[inherit] text-[17px] font-bold text-white"
-          >
+          <Button onClick={() => handleOpenChange(false)} variant="ink">
             Done
-          </button>
+          </Button>
         </div>
       )}
     </Dialog>

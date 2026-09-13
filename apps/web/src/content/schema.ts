@@ -5,6 +5,8 @@ const url = z.string().min(1)
 export const siteSchema = z.object({
   name: z.string(),
   url: z.url(),
+  /** Used verbatim as the page title, so it is written out rather than composed. */
+  title: z.string(),
   description: z.string(),
   eyebrow: z.string(),
   headline: z
@@ -54,6 +56,8 @@ const month = z
 const termEntry = z
   .object({
     name: z.string(),
+    /** Headshot, if there is one. Absent falls back to a placeholder. */
+    photo: z.string().startsWith('/').optional(),
     /** First month of the term. */
     from: month,
     /** Last month of the term. Omit it for whoever holds the role now. */

@@ -6,6 +6,12 @@
 # current holder.
 #
 # Order does not matter. The site sorts newest first.
+#
+# `photo` belongs to the term, not the person, so a past holder keeps their own
+# face when the role changes hands. Anyone holding two terms is listed twice and
+# needs it on both. Resize before committing: image optimisation is off, so a
+# phone screenshot ships at full size to fill a 76px avatar. Around 400px on the
+# long edge as JPEG.
 - role: President
   about: >-
     Sets the club's direction with the committee and chairs its meetings.
@@ -13,8 +19,10 @@
     Guild.
   history:
     - name: William Jackson
+      photo: /photos/committee/william-jackson.jpg
       from: 2026-07
     - name: Owen Richardson
+      photo: /photos/committee/owen-richardson.jpg
       from: 2025-03
       to: 2026-06
 
@@ -25,8 +33,10 @@
     actually happens on the night.
   history:
     - name: Tylar Pinniger
+      photo: /photos/committee/tylar-pinniger.jpg
       from: 2026-02
     - name: Michael Geurts
+      photo: /photos/committee/michael-geurts.jpg
       from: 2025-09
       to: 2026-01
 
@@ -37,8 +47,10 @@
     committee and member meetings, including the AGM.
   history:
     - name: Julio Medeiros
+      photo: /photos/committee/julio-medeiros.jpg
       from: 2026-07
     - name: Zain Abrahams
+      photo: /photos/committee/zain-abrahams.jpg
       from: 2025-03
       to: 2026-06
 
@@ -49,7 +61,9 @@
     handles purchasing and reimbursements.
   history:
     - name: Novak Bigic
+      photo: /photos/committee/novak-bigic.jpg
       from: 2026-07
     - name: William Jackson
+      photo: /photos/committee/william-jackson.jpg
       from: 2025-03
       to: 2026-06

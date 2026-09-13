@@ -3,23 +3,6 @@
 Things that are deliberately unfinished, and why. Delete an entry when it is
 resolved.
 
-## Photography — blocks launch
-
-The design has a photo panel in the hero and a headshot for each committee
-member. Neither exists, so both render a diagonal hatch placeholder
-(`components/home/hero.tsx`, `components/committee/committee-section.tsx`).
-
-The hero panel is roughly 40% of the first screen. The page does not work without
-it — this is the one item that should hold a launch.
-
-Needs: one strong landscape photo of an event, and four headshots. Same
-treatment, ideally the same session.
-
-## Campus Groups link
-
-`links.yaml` has `membership: '#'`, carried over from the mockup. Step 2 of "How
-to join" points nowhere until that is a real URL.
-
 ## `/sponsors`
 
 The footer's "Our sponsors" is an anchor to the sponsor strip on the homepage.
