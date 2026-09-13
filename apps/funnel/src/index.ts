@@ -1,6 +1,9 @@
 import { loadBotConfig, database as openDatabase, shutdownOn } from '@gict/bot-kit'
 import { Client, Events, GatewayIntentBits, MessageFlags, type Guild } from 'discord.js'
+import { eq } from 'drizzle-orm'
+import { funnelGuilds } from '@gict/db'
 import { onCommand } from './handlers/interaction'
+import { onSetupSubmit, SETUP_MODAL_ID, setupModal } from './setup'
 import { onMemberJoin } from './handlers/member-join'
 import { InviteCache } from './invites/cache'
 import { readInvites, readVanity } from './invites/read'
@@ -180,13 +183,30 @@ client.on(Events.InviteDelete, async (invite) => {
 })
 
 client.on(Events.InteractionCreate, async (interaction) => {
-  if (!interaction.isChatInputCommand()) return
   try {
+    if (interaction.isModalSubmit() && interaction.customId === SETUP_MODAL_ID) {
+      await onSetupSubmit(interaction, database)
+      return
+    }
+
+    if (interaction.isChatInputCommand() && interaction.commandName === 'setup') {
+      const [row] = await database
+        .select({ channelId: funnelGuilds.logChannelId })
+        .from(funnelGuilds)
+        .where(eq(funnelGuilds.id, interaction.guildId!))
+        .limit(1)
+      await interaction.showModal(setupModal(row?.channelId ?? null))
+      return
+    }
+
+    if (!interaction.isChatInputCommand()) return
     await onCommand(interaction, database, cache)
   } catch (error) {
     console.error('Command failed:', error)
     // An interaction with no reply shows "the application did not respond",
-    // which tells the user nothing about what went wrong.
+    // which tells the user nothing about what went wrong. Autocomplete cannot
+    // be replied to at all, which is why this is narrowed first.
+    if (!interaction.isRepliable()) return
     const message = {
       content: 'Something went wrong running that.',
       flags: MessageFlags.Ephemeral,

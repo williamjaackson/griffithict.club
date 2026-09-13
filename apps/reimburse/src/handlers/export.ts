@@ -1,23 +1,41 @@
 import { AttachmentBuilder, MessageFlags, type ButtonInteraction } from 'discord.js'
 import { and, asc, eq, inArray } from 'drizzle-orm'
-import { reimburseClaims, reimbursePayees, type Database, type ReimburseClaim } from '@gict/db'
-import { configFor } from '../claims'
+import {
+  reimburseClaims,
+  reimbursePayees,
+  reimburseReceipts,
+  type Database,
+  type ReimburseClaim,
+} from '@gict/db'
+import { configFor, type ClaimFilter } from '../claims'
 import { decimalAmount, isoDate, toCsv, type Column } from '../csv'
 import { formatBankCode } from '../payee'
 import { STATUS } from '../status'
+import { createZip, safeName, type ZipEntry } from '../zip'
 
 /**
- * Two exports, because they answer different questions.
+ * Discord's ceiling for a bot upload, with room left for the archive's own
+ * bookkeeping. Receipts are photographs, so a few dozen claims will reach this.
+ */
+const MAX_UPLOAD_BYTES = 9 * 1024 * 1024
+
+/**
+ * One export: the spreadsheet and the receipts together, in a zip.
  *
- * `claims` is the record: every claim, no bank details, safe to hand to an
- * auditor or the next committee. `payments` is a worklist: what is owed and
- * where to send it, which means it carries account numbers and should not
- * leave the treasurer's machine.
+ * They were two buttons, and the difference between them was never real — one
+ * was the same rows with bank details added. Worse, neither carried the
+ * receipts, which is half of what actually gets submitted for payment. A
+ * treasurer was downloading a CSV and then saving a dozen images out of Discord
+ * by hand.
+ *
+ * Exports whatever the console is currently filtered to, so the filter does the
+ * job the second button was pretending to.
  */
 export async function onExport(
   interaction: ButtonInteraction,
   database: Database,
-  kind: 'claims' | 'payments',
+  filter: ClaimFilter,
+  label: string,
 ): Promise<void> {
   const guildId = interaction.guildId!
 
@@ -26,51 +44,100 @@ export async function onExport(
   const config = await configFor(database, guildId)
   const currency = config?.currency ?? 'AUD'
 
-  const claims = await database
+  const wheres = [eq(reimburseClaims.guildId, guildId)]
+  if (filter.status) wheres.push(eq(reimburseClaims.status, filter.status))
+
+  const rows = await database
     .select()
     .from(reimburseClaims)
-    .where(
-      kind === 'payments'
-        ? and(
-            eq(reimburseClaims.guildId, guildId),
-            inArray(reimburseClaims.status, ['pending', 'submitted']),
-          )
-        : eq(reimburseClaims.guildId, guildId),
-    )
+    .where(and(...wheres))
     .orderBy(asc(reimburseClaims.reference))
 
-  if (claims.length === 0) {
-    await interaction.editReply(
-      kind === 'payments' ? 'Nothing is waiting to be paid.' : 'No claims yet.',
-    )
+  if (rows.length === 0) {
+    await interaction.editReply('Nothing to export in this view.')
     return
   }
 
-  const names = await displayNames(interaction, claims)
-  const csv =
-    kind === 'payments'
-      ? toCsv(claims, await paymentColumns(database, guildId, names, currency))
-      : toCsv(claims, claimColumns(names, currency))
+  const names = await displayNames(interaction, rows)
+  const payees = await payeeLookup(database, guildId)
+
+  const entries: ZipEntry[] = [
+    {
+      name: 'claims.csv',
+      data: Buffer.from(toCsv(rows, columns(names, payees, currency)), 'utf8'),
+      modified: new Date(),
+    },
+  ]
+
+  const { included, skipped } = await receiptEntries(database, rows, entries[0]!.data.byteLength)
+  entries.push(...included)
 
   const stamp = isoDate(new Date())
-  const file = new AttachmentBuilder(Buffer.from(csv, 'utf8'), {
-    name: `${kind}-${stamp}.csv`,
+  const file = new AttachmentBuilder(Buffer.from(createZip(entries)), {
+    name: `reimbursements-${label.toLowerCase().replace(/\s+/g, '-')}-${stamp}.zip`,
   })
 
-  await interaction.editReply({
-    content:
-      kind === 'payments'
-        ? `${claims.length} claim${claims.length === 1 ? '' : 's'} waiting to be paid.\n-# Contains account numbers. Do not post it anywhere.`
-        : `${claims.length} claim${claims.length === 1 ? '' : 's'}.`,
-    files: [file],
-  })
+  const lines = [
+    `${rows.length} claim${rows.length === 1 ? '' : 's'}, ${included.length} receipt${included.length === 1 ? '' : 's'}.`,
+  ]
+  if (skipped > 0) {
+    lines.push(
+      `-# ${skipped} receipt${skipped === 1 ? '' : 's'} left out to stay under Discord's upload limit. Narrow the filter and export again to get them.`,
+    )
+  }
+  lines.push('-# Contains account numbers. Do not post it anywhere.')
+
+  await interaction.editReply({ content: lines.join('\n'), files: [file] })
+}
+
+/**
+ * Receipts, named so they sort beside the claim they belong to.
+ *
+ * Stops before Discord refuses the upload rather than failing at the end, and
+ * says how many were left behind. Silently truncating a set of financial
+ * records would be worse than not exporting at all.
+ */
+async function receiptEntries(
+  database: Database,
+  claims: readonly ReimburseClaim[],
+  usedBytes: number,
+): Promise<{ included: ZipEntry[]; skipped: number }> {
+  const byClaim = new Map(claims.map((claim) => [claim.id, claim]))
+
+  const receipts = await database
+    .select()
+    .from(reimburseReceipts)
+    .where(inArray(reimburseReceipts.claimId, [...byClaim.keys()]))
+
+  const included: ZipEntry[] = []
+  let total = usedBytes
+  let skipped = 0
+
+  for (const receipt of receipts) {
+    const claim = byClaim.get(receipt.claimId)
+    if (!claim) continue
+
+    if (total + receipt.bytes > MAX_UPLOAD_BYTES) {
+      skipped += 1
+      continue
+    }
+
+    included.push({
+      name: `receipts/${String(claim.reference).padStart(3, '0')}-${safeName(receipt.filename)}`,
+      data: receipt.data,
+      modified: receipt.createdAt,
+    })
+    total += receipt.bytes
+  }
+
+  return { included, skipped }
 }
 
 /**
  * Server nicknames where they exist, usernames otherwise.
  *
- * A CSV full of snowflakes is unreadable by the person who has to reconcile it,
- * and the id stays in its own column for anyone who needs to match rows up.
+ * A spreadsheet full of snowflakes is unreadable to whoever has to reconcile
+ * it, and the id keeps its own column for anyone matching rows up.
  */
 async function displayNames(
   interaction: ButtonInteraction,
@@ -87,7 +154,22 @@ async function displayNames(
   return names
 }
 
-function claimColumns(names: Map<string, string>, currency: string): Column<ReimburseClaim>[] {
+type Payee = { accountName: string; bankCode: string; accountNumber: string }
+
+async function payeeLookup(database: Database, guildId: string): Promise<Map<string, Payee>> {
+  const rows = await database
+    .select()
+    .from(reimbursePayees)
+    .where(eq(reimbursePayees.guildId, guildId))
+
+  return new Map(rows.map((row) => [row.userId, row]))
+}
+
+function columns(
+  names: Map<string, string>,
+  payees: Map<string, Payee>,
+  currency: string,
+): Column<ReimburseClaim>[] {
   return [
     { header: 'Reference', value: (claim) => claim.reference },
     { header: 'Date', value: (claim) => isoDate(claim.createdAt) },
@@ -97,26 +179,6 @@ function claimColumns(names: Map<string, string>, currency: string): Column<Reim
     { header: 'Currency', value: () => currency },
     { header: 'Status', value: (claim) => STATUS[claim.status].label },
     { header: 'Description', value: (claim) => claim.description },
-    { header: 'Last updated', value: (claim) => isoDate(claim.updatedAt) },
-  ]
-}
-
-async function paymentColumns(
-  database: Database,
-  guildId: string,
-  names: Map<string, string>,
-  currency: string,
-): Promise<Column<ReimburseClaim>[]> {
-  const rows = await database
-    .select()
-    .from(reimbursePayees)
-    .where(eq(reimbursePayees.guildId, guildId))
-
-  const payees = new Map(rows.map((row) => [row.userId, row]))
-
-  return [
-    { header: 'Reference', value: (claim) => claim.reference },
-    { header: 'Claimant', value: (claim) => names.get(claim.claimantId) ?? claim.claimantId },
     {
       header: 'Account name',
       value: (claim) => payees.get(claim.claimantId)?.accountName ?? '',
@@ -132,10 +194,6 @@ async function paymentColumns(
       header: 'Account number',
       value: (claim) => payees.get(claim.claimantId)?.accountNumber ?? '',
     },
-    { header: 'Amount', value: (claim) => decimalAmount(claim.amountCents) },
-    { header: 'Currency', value: () => currency },
-    { header: 'Status', value: (claim) => STATUS[claim.status].label },
-    { header: 'Reference text', value: (claim) => `Claim ${claim.reference}` },
-    { header: 'Description', value: (claim) => claim.description },
+    { header: 'Last updated', value: (claim) => isoDate(claim.updatedAt) },
   ]
 }

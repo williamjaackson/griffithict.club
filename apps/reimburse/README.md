@@ -31,7 +31,7 @@ pnpm reimburse:commands   # upload the slash commands, after any change to them
 pnpm reimburse            # run it
 ```
 
-Then, in the server: `/reimbursements` → **Setup**.
+Then, in the server: `/setup`.
 
 ## Use
 
@@ -40,7 +40,11 @@ Two commands, split by what somebody came to do.
 ```
 /reimbursement     claim money back
 /reimbursements    see and manage claims
+/setup             configure this server
 ```
+
+`/setup` is the same word in every bot in this workspace, so somebody adding a
+new one types what they already know.
 
 Claiming is the common act, so it opens the form with nothing in the way. The
 first time it asks for bank details first and hands over with a button, because
@@ -55,7 +59,7 @@ cannot use, so there is one screen to maintain rather than two that drift.
   dozen claims at once in a banking app, and ticking a dozen buttons afterwards
   is where somebody gives up and the records stop matching the bank. Each one
   still gets its own event, so the trail reads as if they were done by hand.
-- Bank details for everyone; exports and setup for the committee
+- Bank details for everyone; the export for the committee
 
 Moving a single claim along happens on its post in the review channel.
 

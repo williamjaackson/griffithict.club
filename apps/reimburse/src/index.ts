@@ -13,6 +13,7 @@ import { onBankSubmit } from './handlers/bank'
 import { isCommittee, openConsole, PREFIX, renderConsole, type View } from './handlers/console'
 import { onExport } from './handlers/export'
 import { onReviewButton } from './handlers/review'
+import { STATUS } from './status'
 import { onClaimSubmit } from './handlers/submit'
 import {
   BANK_MODAL_ID,
@@ -47,6 +48,10 @@ client.on(Events.InteractionCreate, async (interaction) => {
       }
       if (interaction.commandName === 'reimbursements') {
         await openConsole(interaction, database)
+        return
+      }
+      if (interaction.commandName === 'setup') {
+        await interaction.showModal(setupModal(await configFor(database, interaction.guildId!)))
         return
       }
     }
@@ -136,7 +141,13 @@ async function onConsoleControl(
 
   if (action.startsWith('export:')) {
     if (!interaction.isButton()) return
-    await onExport(interaction, database, action.endsWith('payments') ? 'payments' : 'claims')
+    const view = action.slice('export:'.length) as View
+    await onExport(
+      interaction,
+      database,
+      { status: view === 'all' ? undefined : view },
+      view === 'all' ? 'all' : STATUS[view].label,
+    )
     return
   }
 

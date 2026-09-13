@@ -186,15 +186,12 @@ function controls(
 
   if (committee) {
     tools.addComponents(
+      // Carries the view, so the filter decides what comes out rather than a
+      // second button pretending to be a different export.
       new ButtonBuilder()
-        .setCustomId(`${PREFIX}export:claims`)
+        .setCustomId(`${PREFIX}export:${view}`)
         .setEmoji('⬇️')
-        .setLabel('Export')
-        .setStyle(ButtonStyle.Secondary),
-      new ButtonBuilder()
-        .setCustomId(`${PREFIX}export:payments`)
-        .setEmoji('💸')
-        .setLabel('Payment run')
+        .setLabel(view === 'all' ? 'Export all' : `Export ${STATUS[view].label.toLowerCase()}`)
         .setStyle(ButtonStyle.Secondary),
       new ButtonBuilder()
         .setCustomId(`${PREFIX}setup`)

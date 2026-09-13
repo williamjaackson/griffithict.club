@@ -1,4 +1,4 @@
-import { SlashCommandBuilder } from 'discord.js'
+import { PermissionFlagsBits, SlashCommandBuilder } from 'discord.js'
 
 /**
  * Two commands, split by what somebody came to do.
@@ -21,4 +21,17 @@ export const consoleCommand = new SlashCommandBuilder()
   .setDescription('See and manage claims')
   .setDMPermission(false)
 
-export const commands = [claimCommand, consoleCommand]
+/**
+ * Setup is its own command in every bot in this workspace, so somebody
+ * configuring a new server types the same word whichever one they are adding.
+ *
+ * Manage Server, because this is the one thing here that changes how the server
+ * works rather than what somebody sees.
+ */
+export const setupCommand = new SlashCommandBuilder()
+  .setName('setup')
+  .setDescription('Configure reimbursements for this server')
+  .setDefaultMemberPermissions(PermissionFlagsBits.ManageGuild)
+  .setDMPermission(false)
+
+export const commands = [claimCommand, consoleCommand, setupCommand]
