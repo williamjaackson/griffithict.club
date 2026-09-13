@@ -16,7 +16,7 @@ export function EventRow({ event, onOpen }: { event: Event; onOpen: () => void }
     <button
       type="button"
       onClick={onOpen}
-      className="group wide:mx-[clamp(-12px,-1.4vw,-18px)] wide:flex-wrap wide:gap-[clamp(12px,2vw,32px)] wide:px-[clamp(12px,1.4vw,18px)] wide:py-[clamp(16px,1.8vw,22px)] flex w-full cursor-pointer flex-nowrap items-center gap-3 rounded-[18px] border-none bg-transparent py-[14px] text-left hover:bg-white/60"
+      className="group wide:gap-[clamp(12px,2vw,32px)] flex w-full cursor-pointer items-center gap-3 rounded-[18px] border-none bg-transparent p-[var(--row-inset)] text-left hover:bg-white/60"
     >
       <EventDateChip date={event.startsAt} />
 

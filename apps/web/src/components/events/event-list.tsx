@@ -28,7 +28,15 @@ export function EventList({
   const active = openIndex === null ? null : events[openIndex]
 
   return (
-    <div className={dimmed ? 'opacity-60' : undefined}>
+    /*
+      The hover surface reaches past the text on every side, so the list is pulled
+      out by one inset and each row pads itself back in by the same amount. The
+      rows then need no width or margin of their own, and the two values cannot
+      drift apart.
+    */
+    <div
+      className={`-mx-[var(--row-inset)] [--row-inset:clamp(12px,1.4vw,18px)] ${dimmed ? 'opacity-60' : ''}`}
+    >
       {events.map((event, index) => (
         <EventRow key={event.id} event={event} onOpen={() => setOpenIndex(index)} />
       ))}
