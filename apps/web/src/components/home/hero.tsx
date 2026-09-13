@@ -15,10 +15,15 @@ export function Hero({
   /** The "Next up" card. A slot, because it reads the database and the rest of this does not. */
   nextEventSlot: ReactNode
 }) {
+  /*
+   * Three parts copy to two parts photo, and only once the viewport is wide
+   * enough for two columns to breathe. An even split left the copy 261px shorter
+   * than the panel beside it, which reads as a hole rather than as space.
+   */
   return (
     <Section
       id="top"
-      className="grid grid-cols-[repeat(auto-fit,minmax(min(100%,360px),1fr))] items-start gap-[clamp(34px,4vw,72px)] pt-[clamp(44px,4.5vw,72px)] pb-[clamp(56px,5vw,80px)]"
+      className="grid grid-cols-1 items-start gap-[clamp(34px,4vw,72px)] pt-[clamp(44px,4.5vw,72px)] pb-[clamp(56px,5vw,80px)] lg:grid-cols-[3fr_2fr]"
     >
       <div className="flex min-w-0 flex-col gap-[clamp(26px,2vw,30px)]">
         <div className="text-brand flex items-center gap-[14px] text-[clamp(10px,1vw,12px)] font-bold tracking-[0.2em] uppercase">
@@ -26,7 +31,7 @@ export function Hero({
           <span className="animate-rule bg-brand h-px min-w-4 flex-1 origin-left" />
         </div>
 
-        <h1 className="animate-rise m-0 text-[clamp(35px,4.6vw,66px)] leading-[1.04] font-extrabold tracking-[-0.035em] text-balance [font-stretch:112%]">
+        <h1 className="animate-rise m-0 text-[clamp(35px,5.4vw,76px)] leading-[1.04] font-extrabold tracking-[-0.035em] text-balance [font-stretch:112%]">
           {site.headline.lines.map((line) => {
             const parts = splitHighlight(line, site.headline.highlight)
             return (
@@ -45,7 +50,7 @@ export function Hero({
           })}
         </h1>
 
-        <p className="text-body m-0 max-w-[52ch] text-[clamp(16.5px,1.35vw,19px)] leading-[1.65] text-pretty">
+        <p className="text-body m-0 max-w-[46ch] text-[clamp(16.5px,1.5vw,21px)] leading-[1.6] text-pretty">
           {site.description}
         </p>
 

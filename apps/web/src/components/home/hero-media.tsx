@@ -17,10 +17,14 @@ import { LOGOS } from '@/lib/logos'
  *
  * Size comes from the aspect ratio and the max width, and nothing else. A max
  * height as well would win over the ratio at full size and quietly distort it.
+ *
+ * Centred while the hero is stacked, and pushed to the outer edge once it sits
+ * beside the copy. Left to sit at the end in one column it stranded itself
+ * against the right margin with a column of empty space beside it.
  */
 export function HeroMedia({ children }: { children: ReactNode }) {
   return (
-    <div className="animate-rise grid aspect-4/5 w-full max-w-[496px] justify-self-end [--inset:clamp(14px,1.8vw,22px)]">
+    <div className="animate-rise mx-auto grid aspect-4/5 w-full max-w-[496px] [--inset:clamp(14px,1.8vw,22px)] lg:mx-0 lg:justify-self-end">
       {/*
         The photo is 3:4 and the panel is 4:5, so object-cover trims roughly 6% of
         the height. Centred, which takes it off the ceiling and the floor and
