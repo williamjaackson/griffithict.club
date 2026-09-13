@@ -1,11 +1,20 @@
 name: Griffith ICT Club
-shortName: GICT
 url: https://griffithict.club
-tagline: The other half of your tech degree.
 description: >-
   Griffith University's IT club for computer science, information technology,
   cyber security, and software engineering.
 eyebrow: Griffith's Largest Tech Club
+
+# The hero headline. `lines` are rendered on separate lines in the hero and joined
+# with a space for the page title and social cards, so there is one source of
+# truth for the wording. `highlight` is the part shown in red, and has to appear
+# somewhere in the lines.
+headline:
+  lines:
+    - The other half
+    - of your tech degree.
+  highlight: tech degree
+
 nav:
   - label: What's on
     href: '#whats-on'

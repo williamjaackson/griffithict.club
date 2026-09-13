@@ -18,7 +18,8 @@
     "db:migrate": "pnpm --filter @gict/db migrate",
     "db:studio": "pnpm --filter @gict/db studio",
     "brand:sync": "./scripts/sync-brand.sh",
-    "brand:manifest": "node scripts/brand-manifest.mjs"
+    "brand:manifest": "node scripts/brand-manifest.mjs",
+    "db:event": "pnpm --filter @gict/db event"
   },
   "devDependencies": {
     "prettier": "^3.6.2",

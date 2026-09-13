@@ -1,6 +1,7 @@
 import type { Links } from '@/content/schema'
 import { brandLogo } from '@/lib/brand'
 import { LOGOS } from '@/lib/logos'
+import { BUTTON } from '@/components/ui/button-styles'
 
 export function CtaBanner({ links }: { links: Links }) {
   return (
@@ -12,7 +13,7 @@ export function CtaBanner({ links }: { links: Links }) {
           </h2>
           <a
             href={links.discord}
-            className="text-brand hover:bg-ink inline-flex min-h-[66px] items-center justify-center gap-3 rounded-[18px] bg-white px-8 py-3 text-[clamp(18px,1.6vw,21px)] font-bold hover:text-white"
+            className={`${BUTTON.onBrand} inline-flex min-h-[66px] items-center justify-center gap-3 rounded-[18px] px-8 py-3 text-[clamp(18px,1.6vw,21px)] font-bold`}
           >
             Join the Discord
           </a>

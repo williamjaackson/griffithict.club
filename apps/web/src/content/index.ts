@@ -10,7 +10,6 @@ import {
   eventTypesSchema,
   joinSchema,
   linksSchema,
-  perksSchema,
   siteSchema,
   sponsorshipSchema,
   sponsorsSchema,
@@ -43,6 +42,5 @@ export const eventTypes = load('event-types.yaml', eventTypesSchema)
 export const committee = load('committee.yaml', committeeSchema)
 export const sponsorship = load('sponsorship.yaml', sponsorshipSchema)
 export const joinSteps = load('join.yaml', joinSchema)
-export const perks = load('perks.yaml', perksSchema)
 
 export * from './schema'

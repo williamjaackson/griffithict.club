@@ -16,7 +16,12 @@ export const events = pgTable(
 
     title: varchar('title', { length: 200 }).notNull(),
 
-    /** One line under the title in listings. */
+    /**
+     * A one-line description, used for the page description and link previews.
+     *
+     * Not the time — that is derived from `startsAt` wherever it is shown, so the
+     * two cannot disagree.
+     */
     summary: varchar('summary', { length: 300 }),
 
     /** Markdown. Rendered in the event modal and on the detail page. */
@@ -34,6 +39,20 @@ export const events = pgTable(
     registrationUrl: varchar('registration_url', { length: 500 }),
 
     status: eventStatus('status').notNull().default('draft'),
+
+    /**
+     * Hold a published event back until this moment passes.
+     *
+     * Null means show it as soon as it is published, which is the common case.
+     * Setting it lets a run of events be written up once and revealed one at a
+     * time — queue the next month of socials, each appearing as the one before it
+     * happens, so the site is never showing an empty What's On or a wall of
+     * identical entries.
+     *
+     * Distinct from `status`: a draft is unfinished, a scheduled event is
+     * finished and waiting.
+     */
+    publishAt: timestamp('publish_at', { withTimezone: true, mode: 'date' }),
 
     /**
      * Set by the Discord bot when it mirrors this into a Discord scheduled event,

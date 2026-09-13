@@ -8,6 +8,7 @@ import { brandLogo } from '@/lib/brand'
 import { LOGOS } from '@/lib/logos'
 import { useSponsorship } from '@/components/sponsorship/sponsorship-context'
 import { useScrollLock } from '@/components/ui/use-scroll-lock'
+import { BUTTON } from '@/components/ui/button-styles'
 
 export function SiteHeader({ site, links }: { site: Site; links: Links }) {
   const [scrolled, setScrolled] = useState(false)
@@ -43,7 +44,7 @@ export function SiteHeader({ site, links }: { site: Site; links: Links }) {
         ))}
         <a
           href={links.discord}
-          className="bg-brand hover:bg-ink inline-flex h-[42px] items-center gap-2 rounded-[11px] px-[18px] text-[13px] font-bold tracking-[0.06em] text-white"
+          className={`${BUTTON.brand} inline-flex h-[42px] items-center gap-2 rounded-[11px] px-[18px] text-[13px] font-bold tracking-[0.06em]`}
         >
           Join the Discord
         </a>
@@ -112,7 +113,7 @@ function MobileMenu({
           </nav>
           <a
             href={links.discord}
-            className="animate-fade-up bg-brand hover:bg-ink mt-auto inline-flex min-h-[62px] items-center justify-center rounded-2xl px-6 text-lg font-bold text-white"
+            className={`animate-fade-up ${BUTTON.brand} mt-auto inline-flex min-h-[62px] items-center justify-center rounded-2xl px-6 text-lg font-bold`}
             style={{ animationDelay: `${0.09 + site.nav.length * 0.05}s` }}
           >
             Join the Discord

@@ -24,9 +24,6 @@ benefits:
 tiers:
   - name: Bronze
     price: $500
-    blurb: >-
-      Your brand on our materials. Show your support for the student tech
-      community.
     accent: '#C2410C'
     tint: '#FDE9DD'
     mark: >-
@@ -34,8 +31,6 @@ tiers:
       5.9-1.4 8.6-4.1 10-10z
   - name: Silver
     price: $1,250
-    blurb: >-
-      We actively promote you. Your opportunities reach our members directly.
     accent: '#4C5A69'
     tint: '#E6EAEE'
     mark: >-
@@ -43,9 +38,6 @@ tiers:
       0-1.1-.8-.6-1.3L13.9 1.6c.2-.3.4-.4.7-.4z
   - name: Gold
     price: $2,500
-    blurb: >-
-      The full partnership. We build events around you and give you top billing
-      everywhere.
     accent: '#B8860B'
     tint: '#FAF0D2'
     mark: >-

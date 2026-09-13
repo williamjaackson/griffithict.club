@@ -1,10 +1,10 @@
-- step: Step 1
-  title: Join the Discord
+# Order is the step number. "Step 1", "Step 2" are rendered from the position, so
+# reordering these renumbers them.
+- title: Join the Discord
   body: The club's main communication channel.
   cta: Open Discord
   link: discord
-- step: Step 2
-  title: Join Campus Groups
+- title: Join Campus Groups
   body: Official membership registration.
   cta: Register
   link: membership

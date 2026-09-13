@@ -1,53 +1,55 @@
-# Each entry is a role, not a person. `history` is newest first, and the first
-# entry is the person currently holding it — that drives both the card and the
-# timeline in the modal.
+# Each entry is a role, not a person, because the role outlives whoever holds it.
+#
+# A term is two months: `from`, and `to` once it ends. Everything shown on the
+# site — the date range, how long it ran, who currently holds the role — is worked
+# out from those, so there is nothing to keep up to date. Leave `to` off the
+# current holder.
+#
+# Order does not matter. The site sorts newest first.
 - role: President
   about: >-
-    Sets the club's direction, runs committee meetings, and is the club's point of
-    contact with the university and with sponsors. Accountable for everything the
-    club puts its name on.
+    Sets the club's direction with the committee and chairs its meetings.
+    Acts as the club's ambassador and its main point of contact with the Student
+    Guild.
   history:
     - name: William Jackson
-      term: Jul 2026 to Present
-      length: 3 mos
+      from: 2026-07
     - name: Owen Richardson
-      term: Mar 2025 to Jun 2026
-      length: 1 yr 4 mos
+      from: 2025-03
+      to: 2026-06
 
 - role: Vice President
   about: >-
-    Supports the President and steps in when they are unavailable. Owns event
-    delivery day to day, making sure what the committee plans actually happens on
-    the night.
+    Supports the President and stands in when they are unavailable.
+    Takes the lead on getting events delivered, so what the committee plans
+    actually happens on the night.
   history:
     - name: Tylar Pinniger
-      term: Feb 2026 to Present
-      length: 8 mos
+      from: 2026-02
     - name: Michael Geurts
-      term: Sep 2025 to Jan 2026
-      length: 5 mos
+      from: 2025-09
+      to: 2026-01
 
 - role: Secretary
   about: >-
-    Keeps the club's records: meeting minutes, the member register, and the
-    paperwork the university requires. Handles club communications and
-    announcements.
+    Keeps the club's records and correspondence: meeting notices,
+    agendas, minutes, and chasing the actions that come out of them. Coordinates
+    committee and member meetings, including the AGM.
   history:
     - name: Julio Medeiros
-      term: Jul 2026 to Present
-      length: 3 mos
+      from: 2026-07
     - name: Zain Abrahams
-      term: Mar 2025 to Jun 2026
-      length: 1 yr 4 mos
+      from: 2025-03
+      to: 2026-06
 
 - role: Treasurer
   about: >-
-    Looks after the club's money: budgets for each event, sponsorship income,
-    reimbursements, and reporting the accounts back to members.
+    Prepares the club's budget and tracks income and expenditure
+    against it. Reports the accounts back to members and the Student Guild, and
+    handles purchasing and reimbursements.
   history:
     - name: Novak Bigic
-      term: Jul 2026 to Present
-      length: 3 mos
+      from: 2026-07
     - name: William Jackson
-      term: Mar 2025 to Jun 2026
-      length: 1 yr 4 mos
+      from: 2025-03
+      to: 2026-06

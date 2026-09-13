@@ -13,7 +13,8 @@
     "migrate": "tsx src/migrate.ts",
     "studio": "drizzle-kit studio",
     "typecheck": "tsc --noEmit",
-    "test": "vitest run --passWithNoTests"
+    "test": "vitest run --passWithNoTests",
+    "event": "tsx src/scripts/add-event.ts"
   },
   "dependencies": {
     "drizzle-orm": "^0.45.2",
