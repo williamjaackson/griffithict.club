@@ -48,7 +48,7 @@ export async function onBankSubmit(
       // right, and a hidden middle is exactly where a typo would sit. It is
       // ephemeral and it is their own account.
       `Saved: **${payee.details.accountName}** · ${formatBankCode(payee.details.bankCode)} · \`${payee.details.accountNumber}\``,
-      '-# Only asked once. Change it any time with `/reimbursements bank`.',
+      '-# Only asked once. Change it later from the button on any claim you make.',
     ].join('\n'),
     components: [
       new ActionRowBuilder<ButtonBuilder>().addComponents(

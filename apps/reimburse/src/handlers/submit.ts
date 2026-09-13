@@ -61,7 +61,7 @@ export async function onClaimSubmit(
   const payee = await payeeFor(database, interaction.guildId, interaction.user.id)
   if (!payee) {
     await interaction.reply({
-      content: 'Add your bank details first with `/reimbursements bank`.',
+      content: 'No bank details on file. Run `/reimbursement` again and it will ask for them.',
       flags: MessageFlags.Ephemeral,
     })
     return

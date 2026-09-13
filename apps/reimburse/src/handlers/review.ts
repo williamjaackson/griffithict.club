@@ -152,7 +152,7 @@ async function showPaymentDetails(
 
   if (!payee) {
     await interaction.reply({
-      content: `<@${claim.claimantId}> has no bank details on file. They can add them with \`/reimbursements bank\`.`,
+      content: `<@${claim.claimantId}> has no bank details on file. Running \`/reimbursement\` will ask them for some.`,
       flags: MessageFlags.Ephemeral,
       allowedMentions: { parse: [] },
     })
