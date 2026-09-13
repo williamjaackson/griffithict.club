@@ -5,17 +5,22 @@ import { chipDay, chipMonth, isoDate } from '@/lib/datetime'
  *
  * A `<time>` with a machine-readable datetime, so the date is not only legible as
  * two stacked fragments of text.
+ *
+ * The shadow is doing real work rather than decorating: the lower half of the chip
+ * is white, and in a dialog it sits on a white panel with nothing to separate the
+ * two. In a list it sits on the off-white band and the same shadow reads as a
+ * slight lift, so both cases get it and the chip looks like one component.
  */
+const SHADOW = 'shadow-[0_1px_2px_rgba(17,16,16,0.06),0_4px_12px_rgba(17,16,16,0.10)]'
+
 export function EventDateChip({ date, size = 'row' }: { date: Date; size?: 'row' | 'detail' }) {
   const detail = size === 'detail'
 
   return (
     <time
       dateTime={isoDate(date)}
-      className={`flex-none overflow-hidden bg-white ${
-        detail
-          ? 'bg-surface w-[68px] rounded-[15px]'
-          : 'wide:w-[76px] wide:rounded-2xl w-14 rounded-[13px]'
+      className={`flex-none overflow-hidden bg-white ${SHADOW} ${
+        detail ? 'w-[68px] rounded-[15px]' : 'wide:w-[76px] wide:rounded-2xl w-14 rounded-[13px]'
       }`}
     >
       <span

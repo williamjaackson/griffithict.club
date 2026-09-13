@@ -96,11 +96,11 @@ pnpm db:event --title "Tech Social" --slug tech-social-2026-09-22 \
 
 Three states worth keeping straight:
 
-|                                                 | Meaning                                        |
-| ----------------------------------------------- | ---------------------------------------------- |
-| `status: draft`                                 | Unfinished. Never shown                        |
+|                                                 | Meaning                               |
+| ----------------------------------------------- | ------------------------------------- |
+| `status: draft`                                 | Unfinished. Never shown               |
 | `status: published`, `publish_at` in the future | Finished, waiting. Not shown anywhere |
-| `status: published`, `publish_at` null or past  | On the site                                    |
+| `status: published`, `publish_at` null or past  | On the site                           |
 
 Cancelling: set `status` to `cancelled` rather than deleting. The link is already
 out there, and the page says the event is off.
