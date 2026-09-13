@@ -26,7 +26,7 @@ export async function NextEventCard() {
   if (!event) return null
 
   return (
-    <div className="absolute right-[clamp(26px,3.4vw,44px)] bottom-[clamp(12px,1.6vw,20px)] left-[clamp(12px,1.6vw,20px)] grid grid-cols-[minmax(0,1fr)_auto] items-center gap-[14px] rounded-[clamp(18px,2.2vw,28px)] bg-white p-[clamp(16px,1.8vw,22px)]">
+    <div className="grid grid-cols-[minmax(0,1fr)_auto] items-center gap-[14px] self-end rounded-[clamp(18px,2.2vw,28px)] bg-white p-[clamp(16px,1.8vw,22px)]">
       <div className="flex min-w-0 flex-col gap-1">
         <Eyebrow>Next up · {shortWhen(event.startsAt)}</Eyebrow>
         <span className="text-[clamp(17px,1.6vw,22px)] leading-[1.15] font-bold tracking-[-0.02em] [font-stretch:106%]">

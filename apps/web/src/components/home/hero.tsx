@@ -1,10 +1,9 @@
 import type { ReactNode } from 'react'
 import type { Links, Site } from '@/content/schema'
-import { brandLogo } from '@/lib/brand'
 import { splitHighlight } from '@/lib/headline'
-import { LOGOS } from '@/lib/logos'
-import { Section } from '@/components/ui/section'
 import { ButtonLink } from '@/components/ui/button'
+import { Section } from '@/components/ui/section'
+import { HeroMedia } from './hero-media'
 
 export function Hero({
   site,
@@ -50,29 +49,16 @@ export function Hero({
           {site.description}
         </p>
 
-        <div className="flex flex-wrap gap-3">
-          <ButtonLink href={links.discord} size="lg" className="max-w-[340px] flex-[1_1_240px]">
-            Join the Discord
-          </ButtonLink>
-        </div>
-      </div>
-
-      <div className="animate-rise relative w-full max-w-[min(100%,520px)] min-w-0 justify-self-end">
         {/*
-          Placeholder. The design calls for a photo here and the hatch pattern is
-          standing in until the club has one. See docs/OPEN-QUESTIONS.md.
+          The column stretches its children, so full width on a phone is the
+          default and the only thing worth saying is where it stops growing.
         */}
-        <div className="bg-surface flex aspect-[4/5] max-h-[620px] min-h-[280px] items-start rounded-[clamp(28px,3.4vw,48px)] bg-[repeating-linear-gradient(135deg,#E7E3E0_0_10px,#F4F2F0_10px_20px)] p-[clamp(18px,2vw,28px)]" />
-
-        {/* eslint-disable-next-line @next/next/no-img-element */}
-        <img
-          src={brandLogo(LOGOS.heroTile)}
-          alt=""
-          className="wide:right-[clamp(26px,3.4vw,44px)] absolute -top-[12px] right-[clamp(26px,3.4vw,44px)] block w-[clamp(64px,9vw,108px)]"
-        />
-
-        {nextEventSlot}
+        <ButtonLink href={links.discord} size="lg" className="wide:max-w-[340px]">
+          Join the Discord
+        </ButtonLink>
       </div>
+
+      <HeroMedia>{nextEventSlot}</HeroMedia>
     </Section>
   )
 }
