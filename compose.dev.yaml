@@ -1,4 +1,5 @@
-# Postgres for local development. Nothing else runs in Docker locally — the site
+# Postgres for local development only. Production uses the shared Postgres on
+# the VPS; see /srv/infra on the host. Nothing else runs in Docker locally — the site
 # itself is faster and easier to debug with `pnpm dev`.
 services:
   db:
