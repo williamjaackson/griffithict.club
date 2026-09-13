@@ -1,5 +1,6 @@
 import type { ReactNode } from 'react'
 import type { EventType } from '@/content/schema'
+import { Section, SectionHeading } from '@/components/ui/section'
 
 export function WhatsOn({
   eventTypes,
@@ -10,14 +11,13 @@ export function WhatsOn({
   eventsSlot: ReactNode
 }) {
   return (
-    <section
+    <Section
       id="whats-on"
-      className="bg-surface mt-[clamp(40px,5vw,72px)] px-[clamp(24px,5.5vw,88px)] pt-[clamp(52px,7vw,90px)] pb-[clamp(44px,6vw,80px)]"
+      surface
+      className="mt-[clamp(40px,5vw,72px)] pt-[clamp(52px,7vw,90px)] pb-[clamp(44px,6vw,80px)]"
     >
       <div className="flex flex-wrap items-baseline justify-between gap-6 pb-[18px]">
-        <h2 className="m-0 text-[clamp(12px,1.3vw,14px)] font-bold tracking-[0.2em] uppercase">
-          What&rsquo;s on
-        </h2>
+        <SectionHeading>What&rsquo;s on</SectionHeading>
       </div>
 
       <div className="wide:grid-cols-[repeat(auto-fit,minmax(min(100%,250px),1fr))] wide:gap-[clamp(22px,3vw,44px)] wide:pt-[clamp(8px,1vw,14px)] wide:pb-[clamp(34px,4vw,54px)] grid grid-cols-2 gap-x-4 gap-y-5 pt-[6px] pb-[30px]">
@@ -34,6 +34,6 @@ export function WhatsOn({
       </div>
 
       {eventsSlot}
-    </section>
+    </Section>
   )
 }

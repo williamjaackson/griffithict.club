@@ -8,7 +8,7 @@ import { brandLogo } from '@/lib/brand'
 import { LOGOS } from '@/lib/logos'
 import { useSponsorship } from '@/components/sponsorship/sponsorship-context'
 import { useScrollLock } from '@/components/ui/use-scroll-lock'
-import { BUTTON } from '@/components/ui/button-styles'
+import { ButtonLink } from '@/components/ui/button'
 
 export function SiteHeader({ site, links }: { site: Site; links: Links }) {
   const [scrolled, setScrolled] = useState(false)
@@ -42,12 +42,9 @@ export function SiteHeader({ site, links }: { site: Site; links: Links }) {
             {item.label}
           </Link>
         ))}
-        <a
-          href={links.discord}
-          className={`${BUTTON.brand} inline-flex h-[42px] items-center gap-2 rounded-[11px] px-[18px] text-[13px] font-bold tracking-[0.06em]`}
-        >
+        <ButtonLink href={links.discord} size="sm" className="tracking-[0.06em]">
           Join the Discord
-        </a>
+        </ButtonLink>
       </nav>
 
       <MobileMenu site={site} links={links} open={menuOpen} onOpenChange={setMenuOpen} />
@@ -111,13 +108,15 @@ function MobileMenu({
               </button>
             </RadixDialog.Close>
           </nav>
-          <a
+          <ButtonLink
             href={links.discord}
-            className={`animate-fade-up ${BUTTON.brand} mt-auto inline-flex min-h-[62px] items-center justify-center rounded-2xl px-6 text-lg font-bold`}
+            size="lg"
+            fullWidth
+            className="animate-fade-up mt-auto"
             style={{ animationDelay: `${0.09 + site.nav.length * 0.05}s` }}
           >
             Join the Discord
-          </a>
+          </ButtonLink>
         </RadixDialog.Content>
       </RadixDialog.Portal>
     </RadixDialog.Root>

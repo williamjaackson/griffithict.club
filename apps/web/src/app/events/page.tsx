@@ -1,28 +1,32 @@
 import { Suspense } from 'react'
 import { connection } from 'next/server'
 import type { Metadata } from 'next'
-import { EventRow } from '@/components/home/event-row'
+import { links, site } from '@/content'
 import { getPublishedEvents } from '@/lib/events'
+import { EventJsonLd } from '@/components/events/event-body'
+import { EventList } from '@/components/events/event-list'
+import { NothingScheduled, UpcomingEventsFallback } from '@/components/events/upcoming'
+import { Section, SectionHeading } from '@/components/ui/section'
 
 export const metadata: Metadata = {
-  title: 'What&rsquo;s on',
+  title: 'What’s on',
   description: 'Every upcoming Griffith ICT Club event.',
 }
 
 export default function EventsPage() {
   return (
-    <main className="px-[clamp(24px,5.5vw,88px)] pt-[clamp(40px,5vw,72px)] pb-[clamp(52px,7vw,90px)]">
-      <h1 className="m-0 pb-[clamp(20px,2.5vw,30px)] text-[clamp(12px,1.3vw,14px)] font-bold tracking-[0.2em] uppercase">
+    <Section className="pt-[clamp(40px,5vw,72px)] pb-[clamp(52px,7vw,90px)]">
+      <SectionHeading as="h1" className="pb-[clamp(20px,2.5vw,30px)]">
         What&rsquo;s on
-      </h1>
-      <Suspense fallback={<EventListFallback />}>
-        <EventList />
+      </SectionHeading>
+      <Suspense fallback={<UpcomingEventsFallback />}>
+        <EventLists />
       </Suspense>
-    </main>
+    </Section>
   )
 }
 
-async function EventList() {
+async function EventLists() {
   await connection()
   const now = new Date()
   const all = await getPublishedEvents()
@@ -31,36 +35,24 @@ async function EventList() {
 
   return (
     <>
+      {upcoming.map((event) => (
+        <EventJsonLd key={event.id} event={event} siteUrl={site.url} />
+      ))}
+
       {upcoming.length > 0 ? (
-        upcoming.map((event) => <EventRow key={event.id} event={event} />)
+        <EventList events={upcoming} discordUrl={links.discord} />
       ) : (
-        <p className="text-muted m-0 text-[clamp(15px,1.3vw,17px)]">
-          Nothing scheduled right now. The Discord is where things get announced first.
-        </p>
+        <NothingScheduled />
       )}
 
       {past.length > 0 && (
         <>
-          <h2 className="text-muted m-0 pt-[clamp(36px,4vw,56px)] pb-[clamp(12px,1.5vw,20px)] text-[clamp(12px,1.3vw,14px)] font-bold tracking-[0.2em] uppercase">
+          <SectionHeading muted className="pt-[clamp(36px,4vw,56px)] pb-[clamp(12px,1.5vw,20px)]">
             Past events
-          </h2>
-          <div className="opacity-60">
-            {past.map((event) => (
-              <EventRow key={event.id} event={event} />
-            ))}
-          </div>
+          </SectionHeading>
+          <EventList events={past} discordUrl={links.discord} dimmed />
         </>
       )}
     </>
-  )
-}
-
-function EventListFallback() {
-  return (
-    <div className="flex flex-col gap-3" aria-hidden="true">
-      {[0, 1, 2, 3].map((i) => (
-        <div key={i} className="bg-surface h-[72px] animate-pulse rounded-[18px]" />
-      ))}
-    </div>
   )
 }

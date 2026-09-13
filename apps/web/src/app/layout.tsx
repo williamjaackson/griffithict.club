@@ -59,14 +59,7 @@ export const viewport: Viewport = {
   themeColor: '#E51B13',
 }
 
-export default async function RootLayout({
-  children,
-  modal,
-}: {
-  children: React.ReactNode
-  /** Intercepted event routes, rendered over the current page. */
-  modal: React.ReactNode
-}) {
+export default async function RootLayout({ children }: { children: React.ReactNode }) {
   const [periods, year] = await Promise.all([currentSponsorshipPeriods(), currentYear()])
 
   return (
@@ -79,7 +72,6 @@ export default async function RootLayout({
         <SponsorshipProvider>
           <SiteHeader site={site} links={links} />
           {children}
-          {modal}
           <SiteFooter site={site} links={links} year={year} />
           <SponsorshipDialog
             tiers={sponsorship.tiers}

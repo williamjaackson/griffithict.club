@@ -2,18 +2,17 @@
 
 import { useState } from 'react'
 import type { ResolvedRole } from '@/lib/committee'
-import { Dialog, DialogClose, DialogTitle } from '@/components/ui/dialog'
+import { Dialog, DialogTitle } from '@/components/ui/dialog'
+import { Eyebrow, Section, SectionHeading } from '@/components/ui/section'
 
 export function CommitteeSection({ roles }: { roles: ResolvedRole[] }) {
   const [openIndex, setOpenIndex] = useState<number | null>(null)
   const active = openIndex === null ? null : roles[openIndex]
 
   return (
-    <section id="team" className="px-[clamp(24px,5.5vw,88px)] pt-[clamp(52px,7vw,90px)]">
+    <Section id="team" className="pt-[clamp(52px,7vw,90px)]">
       <div className="flex flex-wrap items-baseline justify-between gap-6 pb-[clamp(20px,2.5vw,30px)]">
-        <h2 className="m-0 text-[clamp(12px,1.3vw,14px)] font-bold tracking-[0.2em] uppercase">
-          Executive Committee
-        </h2>
+        <SectionHeading>Executive Committee</SectionHeading>
       </div>
 
       <div className="wide:grid-cols-[repeat(auto-fit,minmax(min(100%,220px),1fr))] wide:gap-[clamp(18px,2.4vw,32px)] grid grid-cols-[repeat(auto-fit,minmax(160px,1fr))] gap-x-3 gap-y-4">
@@ -42,10 +41,20 @@ export function CommitteeSection({ roles }: { roles: ResolvedRole[] }) {
         open={openIndex !== null}
         onOpenChange={(open) => !open && setOpenIndex(null)}
         label={active ? `${active.role}: ${active.holder.name}` : 'Committee role'}
+        header={
+          active && (
+            <div className="flex min-w-0 flex-col gap-[5px]">
+              <Eyebrow className="text-xs">{active.role}</Eyebrow>
+              <DialogTitle className="m-0 text-[clamp(24px,2.6vw,34px)] leading-[1.06] font-extrabold tracking-[-0.03em] [font-stretch:110%]">
+                {active.holder.name}
+              </DialogTitle>
+            </div>
+          )
+        }
       >
         {active && <RoleDetail role={active} />}
       </Dialog>
-    </section>
+    </Section>
   )
 }
 
@@ -54,26 +63,12 @@ function RoleDetail({ role }: { role: ResolvedRole }) {
 
   return (
     <>
-      <div className="flex items-start justify-between gap-[18px]">
-        <div className="flex min-w-0 flex-col gap-[5px]">
-          <span className="text-brand text-xs font-bold tracking-[0.16em] uppercase">
-            {role.role}
-          </span>
-          <DialogTitle className="m-0 text-[clamp(24px,2.6vw,34px)] leading-[1.06] font-extrabold tracking-[-0.03em] [font-stretch:110%]">
-            {role.holder.name}
-          </DialogTitle>
-        </div>
-        <DialogClose />
-      </div>
-
       <p className="text-body m-0 text-[clamp(16px,1.4vw,18px)] leading-[1.6] text-pretty">
         {role.about}
       </p>
 
       <div className="flex flex-col gap-[14px]">
-        <span className="text-muted text-[11px] font-bold tracking-[0.16em] uppercase">
-          Role history
-        </span>
+        <Eyebrow tone="muted">Role history</Eyebrow>
         <ol className="m-0 flex list-none flex-col p-0">
           {role.history.map((entry, index) => (
             <li
