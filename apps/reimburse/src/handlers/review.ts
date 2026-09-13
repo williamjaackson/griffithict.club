@@ -37,7 +37,7 @@ export async function onReviewButton(
     return
   }
 
-  const claim = await claimById(database, claimId)
+  const claim = await claimById(database, interaction.guildId!, claimId)
   if (!claim) {
     await interaction.reply({
       content: 'That claim no longer exists.',
@@ -81,7 +81,14 @@ export async function onReviewButton(
 
   // Conditional on the status still reading as it did, so two treasurers
   // pressing at once cannot both succeed.
-  const moved = await moveClaim(database, claim.id, claim.status, to, interaction.user.id)
+  const moved = await moveClaim(
+    database,
+    interaction.guildId!,
+    claim.id,
+    claim.status,
+    to,
+    interaction.user.id,
+  )
 
   if (!moved) {
     /*
@@ -90,7 +97,7 @@ export async function onReviewButton(
      * already where this press was taking it, the outcome is the one that was
      * wanted and saying "somebody beat you" is just noise.
      */
-    const current = await claimById(database, claim.id)
+    const current = await claimById(database, interaction.guildId!, claim.id)
 
     if (current?.status === to) {
       await interaction.update(claimMessage(current, config.currency))

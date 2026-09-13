@@ -137,6 +137,7 @@ export async function createClaim(
  */
 export async function moveClaim(
   database: Database,
+  guildId: string,
   claimId: string,
   from: ClaimStatus,
   to: ClaimStatus,
@@ -146,7 +147,13 @@ export async function moveClaim(
     const [claim] = await tx
       .update(reimburseClaims)
       .set({ status: to, updatedAt: new Date() })
-      .where(and(eq(reimburseClaims.id, claimId), eq(reimburseClaims.status, from)))
+      .where(
+        and(
+          eq(reimburseClaims.guildId, guildId),
+          eq(reimburseClaims.id, claimId),
+          eq(reimburseClaims.status, from),
+        ),
+      )
       .returning()
 
     if (!claim) return null
@@ -162,26 +169,26 @@ export async function moveClaim(
   })
 }
 
+/**
+ * Fetch a claim, scoped to the server asking.
+ *
+ * The guild id is not optional and not a convenience. Without it a treasurer in
+ * one server holding a claim id from another could read that claimant's account
+ * number and move their claim: the role check upstream is against the caller's
+ * own server, which says nothing about where the claim lives. Needing to know a
+ * UUID is not an access control.
+ */
 export async function claimById(
   database: Database,
+  guildId: string,
   claimId: string,
 ): Promise<ReimburseClaim | null> {
   const [row] = await database
     .select()
     .from(reimburseClaims)
-    .where(eq(reimburseClaims.id, claimId))
+    .where(and(eq(reimburseClaims.guildId, guildId), eq(reimburseClaims.id, claimId)))
     .limit(1)
   return row ?? null
-}
-
-export async function receiptsFor(database: Database, claimId: string) {
-  return database
-    .select({
-      filename: reimburseReceipts.filename,
-      data: reimburseReceipts.data,
-    })
-    .from(reimburseReceipts)
-    .where(eq(reimburseReceipts.claimId, claimId))
 }
 
 export type ClaimFilter = { claimantId?: string; status?: ClaimStatus }
