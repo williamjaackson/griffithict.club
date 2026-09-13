@@ -157,7 +157,19 @@ export function reviewButtons(claim: ReimburseClaim): ActionRowBuilder<ButtonBui
       .setStyle(STYLE[status]),
   )
 
-  return buttons.length === 0 ? [] : [new ActionRowBuilder<ButtonBuilder>().addComponents(buttons)]
+  /*
+   * Always offered, in every state. Before paying it is the point of the thing,
+   * and afterwards it is how somebody checks what was actually sent where.
+   */
+  buttons.push(
+    new ButtonBuilder()
+      .setCustomId(`claim:details:${claim.id}`)
+      .setEmoji('🏦')
+      .setLabel('Payment details')
+      .setStyle(ButtonStyle.Secondary),
+  )
+
+  return [new ActionRowBuilder<ButtonBuilder>().addComponents(buttons)]
 }
 
 export function claimSummary(claim: ReimburseClaim, currency: string): string {

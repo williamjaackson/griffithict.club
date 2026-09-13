@@ -1,8 +1,9 @@
 import { MessageFlags, type ButtonInteraction } from 'discord.js'
-import type { Database } from '@gict/db'
+import type { Database, ReimburseClaim } from '@gict/db'
 import { canMoveTo, claimById, configFor, moveClaim } from '../claims'
 import { STATUS, type ClaimStatus } from '../status'
 import { formatAmount } from '../money'
+import { formatBankCode } from '../payee'
 import { claimSummary, reviewButtons } from './submit'
 
 export async function onReviewButton(
@@ -12,7 +13,6 @@ export async function onReviewButton(
   const [, action, claimId] = interaction.customId.split(':')
   if (!action || !claimId) return
 
-  const to = action as ClaimStatus
   const config = await configFor(database, interaction.guildId!)
 
   /*
@@ -30,7 +30,7 @@ export async function onReviewButton(
   const member = await interaction.guild?.members.fetch(interaction.user.id)
   if (!member?.roles.cache.has(config.treasurerRoleId)) {
     await interaction.reply({
-      content: `Only <@&${config.treasurerRoleId}> can move claims along.`,
+      content: `Only <@&${config.treasurerRoleId}> can do that.`,
       flags: MessageFlags.Ephemeral,
       allowedMentions: { parse: [] },
     })
@@ -45,6 +45,13 @@ export async function onReviewButton(
     })
     return
   }
+
+  if (action === 'details') {
+    await showPaymentDetails(interaction, claim, config.currency)
+    return
+  }
+
+  const to = action as ClaimStatus
 
   /*
    * A treasurer may move their own claim along. In a club the person buying
@@ -125,4 +132,39 @@ export async function onReviewButton(
     .catch(() => {
       // Closed DMs. Not worth failing the transition that already happened.
     })
+}
+
+/**
+ * The full account number, to whoever asked and nobody else.
+ *
+ * The claim post carries a masked one because a whole committee can read that
+ * channel. The person actually making the payment needs the real thing, so it
+ * sits one click away rather than on display, and the reply is ephemeral so it
+ * never lands in the channel at all.
+ */
+async function showPaymentDetails(
+  interaction: ButtonInteraction,
+  claim: ReimburseClaim,
+  currency: string,
+): Promise<void> {
+  if (!claim.payeeBankCode || !claim.payeeAccountNumber) {
+    await interaction.reply({
+      content: `Claim #${claim.reference} has no bank details on it. It was made before the bot asked for them, so <@${claim.claimantId}> needs to add them with \`/reimbursements bank\` and claim again.`,
+      flags: MessageFlags.Ephemeral,
+      allowedMentions: { parse: [] },
+    })
+    return
+  }
+
+  await interaction.reply({
+    content: [
+      `**Claim #${claim.reference}** · ${formatAmount(claim.amountCents, currency)}`,
+      `Pay **${claim.payeeName ?? 'unknown'}**`,
+      `BSB \`${formatBankCode(claim.payeeBankCode)}\``,
+      `Account \`${claim.payeeAccountNumber}\``,
+      '',
+      '-# As given when the claim was made. Only you can see this.',
+    ].join('\n'),
+    flags: MessageFlags.Ephemeral,
+  })
 }

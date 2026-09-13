@@ -78,8 +78,10 @@ claim itself.
   it is one step forever.
 - **Details are copied onto each claim** as given at the time, so changing them
   later does not rewrite which account an old claim was paid into.
-- **The account number is masked** on the claim post. Whoever pays it has the
-  full number in the payment run; the channel does not need it.
+- **The account number is masked** on the claim post, and a **Payment details**
+  button on the claim shows the full one to whoever pressed it and nobody else.
+  The channel is read by a whole committee; the person making the payment needs
+  the real number. Only the treasurer role can press it.
 - **The review channel should be private.** Claims carry names, amounts and what
   people bought.
 - **reimburse_events is append-only.** The status says where a claim is; the
