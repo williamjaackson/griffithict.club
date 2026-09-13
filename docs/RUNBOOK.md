@@ -6,12 +6,12 @@ same pull request.
 
 ## What exists
 
-| Thing | Where | Who pays |
-| --- | --- | --- |
-| Domain `griffithict.club` | *registrar, account* | *club card* |
-| VPS | *provider, region, IP* | *club card* |
-| Images | `ghcr.io/griffithict/gict-web`, `gict-migrate` | Free |
-| Backups | *Backblaze B2 bucket* | ~$1/month |
+| Thing                     | Where                                          | Who pays    |
+| ------------------------- | ---------------------------------------------- | ----------- |
+| Domain `griffithict.club` | _registrar, account_                           | _club card_ |
+| VPS                       | _provider, region, IP_                         | _club card_ |
+| Images                    | `ghcr.io/griffithict/gict-web`, `gict-migrate` | Free        |
+| Backups                   | _Backblaze B2 bucket_                          | ~$1/month   |
 
 Fill in the italics. About $100 a year all up — worth writing in the treasurer's
 budget so nobody cancels the VPS to save money.
@@ -109,7 +109,7 @@ docker compose exec -T db dropdb -U gict gict_restore_test
 **Do this once a semester and write the date here.** An untested backup is a
 rumour, not a backup.
 
-Last restore test: *never*
+Last restore test: _never_
 
 `/opt/gict/.env` and the Caddy volume are not in the nightly job — they change
 roughly never. Copy them somewhere safe by hand when you change them.
@@ -130,8 +130,7 @@ Usual causes:
   and certificates. Losing it forces re-issue, and repeated re-issues hit Let's
   Encrypt rate limits, which lock you out for hours. Never `docker compose down -v`
   in production.
-- **Port 80 blocked.** Certificate renewal needs it, even though the site runs on
-  443.
+- **Port 80 blocked.** Certificate renewal needs it, even though the site runs on 443.
 
 ## Rotating the Discord webhook
 
