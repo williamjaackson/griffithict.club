@@ -19,6 +19,16 @@ import {
  */
 const NO_PINGS = { parse: [] } as const
 
+/**
+ * Private unless the caller asked to post it.
+ *
+ * Returns the flags rather than a boolean so the call sites spread it and
+ * cannot accidentally pass `flags: undefined`, which Discord reads as public.
+ */
+function privacy(interaction: ChatInputCommandInteraction): { flags?: MessageFlags.Ephemeral } {
+  return interaction.options.getBoolean('share') ? {} : { flags: MessageFlags.Ephemeral }
+}
+
 export async function onCommand(
   interaction: ChatInputCommandInteraction,
   database: Database,
@@ -166,6 +176,7 @@ async function leaderboard(
   interaction: ChatInputCommandInteraction,
   database: Database,
 ): Promise<void> {
+  const flags = privacy(interaction)
   const rows = await topInviters(database, interaction.guildId!)
 
   const body =
@@ -176,6 +187,7 @@ async function leaderboard(
   await interaction.reply({
     content: `## Top inviters\n${body}\n${await caveat(database, interaction.guildId!)}`,
     allowedMentions: NO_PINGS,
+    ...flags,
   })
 }
 
@@ -183,6 +195,7 @@ async function sources(
   interaction: ChatInputCommandInteraction,
   database: Database,
 ): Promise<void> {
+  const flags = privacy(interaction)
   const rows = await joinsBySource(database, interaction.guildId!)
   const total = rows.reduce((sum, row) => sum + row.joins, 0)
 
@@ -199,6 +212,7 @@ async function sources(
   await interaction.reply({
     content: `## Where members came from\n${body}\n${await caveat(database, interaction.guildId!)}`,
     allowedMentions: NO_PINGS,
+    ...flags,
   })
 }
 

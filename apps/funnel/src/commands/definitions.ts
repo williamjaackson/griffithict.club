@@ -1,4 +1,9 @@
-import { ChannelType, PermissionFlagsBits, SlashCommandBuilder } from 'discord.js'
+import {
+  ChannelType,
+  PermissionFlagsBits,
+  SlashCommandBuilder,
+  type SlashCommandBooleanOption,
+} from 'discord.js'
 
 /**
  * One top-level command with subcommands, rather than half a dozen verbs in
@@ -9,6 +14,17 @@ import { ChannelType, PermissionFlagsBits, SlashCommandBuilder } from 'discord.j
  * it. A server that wants the leaderboard open to everyone can loosen it under
  * Server Settings → Integrations without a code change.
  */
+/**
+ * Replies are private unless asked for otherwise.
+ *
+ * The whole command is Manage Server gated, so a public reply puts committee
+ * analytics in front of people who could not have asked for them. A top
+ * inviters board is the one thing here worth showing off, so posting it stays
+ * possible but has to be chosen.
+ */
+const share = (option: SlashCommandBooleanOption) =>
+  option.setName('share').setDescription('Post it in the channel instead of only to you')
+
 export const funnelCommand = new SlashCommandBuilder()
   .setName('funnel')
   .setDescription('Invite tracking and join attribution')
@@ -26,10 +42,16 @@ export const funnelCommand = new SlashCommandBuilder()
       ),
   )
   .addSubcommand((sub) =>
-    sub.setName('leaderboard').setDescription('Who has brought in the most members'),
+    sub
+      .setName('leaderboard')
+      .setDescription('Who has brought in the most members')
+      .addBooleanOption(share),
   )
   .addSubcommand((sub) =>
-    sub.setName('sources').setDescription('Where members came from, by tagged source'),
+    sub
+      .setName('sources')
+      .setDescription('Where members came from, by tagged source')
+      .addBooleanOption(share),
   )
   .addSubcommandGroup((group) =>
     group
