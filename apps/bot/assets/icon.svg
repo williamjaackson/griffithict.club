@@ -1,0 +1,33 @@
+<!--
+  Funnel's avatar.
+
+  Three sources entering one funnel, which is the whole product in one shape.
+  The colours live in the mouth rather than as separate dots floating above it,
+  because Discord renders this at 32px in a member list and anything small enough
+  to sit outside the silhouette turns to mush at that size.
+
+  Flat on purpose. An earlier pass gave it a gradient body and an elliptical rim,
+  which looked better at 512 and read as a cocktail glass at 40.
+
+  Edit this, then run `pnpm bot:icon` to regenerate the PNG the dev portal wants.
+-->
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" width="512" height="512">
+  <!-- Discord crops avatars to a circle, so the square is full-bleed and every
+       part of the mark stays well inside the inscribed circle. -->
+  <rect width="512" height="512" fill="#F4F2F0"/>
+
+  <defs>
+    <clipPath id="funnel">
+      <path d="M118,132 H394 L284,300 V396 H228 V300 Z"/>
+    </clipPath>
+  </defs>
+
+  <g clip-path="url(#funnel)">
+    <rect width="512" height="512" fill="#111010"/>
+    <!-- The bands only reach y=232, so the stem below stays solid: three ways in,
+         one stream out. -->
+    <rect x="118" y="120" width="92" height="112" fill="#E51B13"/>
+    <rect x="210" y="120" width="92" height="112" fill="#F4674E"/>
+    <rect x="302" y="120" width="92" height="112" fill="#F9A99A"/>
+  </g>
+</svg>
