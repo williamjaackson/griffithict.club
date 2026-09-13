@@ -1,0 +1,37 @@
+griffithict.club, www.griffithict.club {
+	encode zstd gzip
+
+	header {
+		Strict-Transport-Security "max-age=31536000"
+		X-Content-Type-Options "nosniff"
+		Referrer-Policy "strict-origin-when-cross-origin"
+		Permissions-Policy "camera=(), microphone=(), geolocation=(), interest-cohort=()"
+		X-Frame-Options "DENY"
+		-Server
+	}
+
+	@www host www.griffithict.club
+	redir @www https://griffithict.club{uri} permanent
+
+	# Everything goes to Next, including /_next/static. Serving those from Caddy
+	# would mean sharing a volume and keeping it in step with the running image,
+	# which is how you end up requesting a chunk hash that no longer exists.
+	#
+	# lb_try_duration covers the few seconds a container is down during a deploy:
+	# Caddy holds the request and retries instead of returning a 502, so a deploy
+	# looks like one slow page load rather than an error.
+	reverse_proxy web:3000 {
+		lb_try_duration 30s
+		lb_try_interval 250ms
+	}
+}
+
+# Notes for whoever inherits this:
+#
+# HSTS has no includeSubDomains on purpose. If a future committee puts something
+# on a subdomain over plain HTTP, includeSubDomains breaks it and browsers will
+# have cached that instruction for a year. No preload either, for the same reason.
+#
+# There is no Content-Security-Policy. A strict one with Next means generating a
+# nonce per request in proxy.ts, which costs static optimisation and buys a class
+# of bug that is miserable to debug. Worth adding if the club ever handles logins.

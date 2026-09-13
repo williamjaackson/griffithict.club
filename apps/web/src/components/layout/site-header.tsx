@@ -7,6 +7,7 @@ import type { Links, Site } from '@/content/schema'
 import { brandLogo } from '@/lib/brand'
 import { LOGOS } from '@/lib/logos'
 import { useSponsorship } from '@/components/sponsorship/sponsorship-context'
+import { useScrollLock } from '@/components/ui/use-scroll-lock'
 
 export function SiteHeader({ site, links }: { site: Site; links: Links }) {
   const [scrolled, setScrolled] = useState(false)
@@ -65,6 +66,7 @@ function MobileMenu({
   onOpenChange: (open: boolean) => void
 }) {
   const { setOpen: setSponsorOpen } = useSponsorship()
+  useScrollLock(open)
 
   return (
     <RadixDialog.Root open={open} onOpenChange={onOpenChange}>
