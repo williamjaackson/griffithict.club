@@ -22,10 +22,16 @@ export function HeroMedia({ children }: { children: ReactNode }) {
   return (
     <div className="animate-rise grid aspect-4/5 w-full max-w-[496px] justify-self-end [--inset:clamp(14px,1.8vw,22px)]">
       {/*
-        Placeholder. The design calls for a photo and the hatch stands in until
-        the club has one. See docs/OPEN-QUESTIONS.md.
+        The photo is 3:4 and the panel is 4:5, so object-cover trims roughly 6% of
+        the height. Centred, which takes it off the ceiling and the floor and
+        leaves the room itself intact.
       */}
-      <div className="bg-surface col-start-1 row-start-1 rounded-[clamp(28px,3.4vw,48px)] bg-[repeating-linear-gradient(135deg,#E7E3E0_0_10px,#F4F2F0_10px_20px)]" />
+      {/* eslint-disable-next-line @next/next/no-img-element */}
+      <img
+        src="/photos/hackathon-2026-08.jpg"
+        alt="Students at a Griffith ICT Club hackathon, seated around tables with laptops while three committee members present from the front of the room."
+        className="bg-surface col-start-1 row-start-1 size-full rounded-[clamp(28px,3.4vw,48px)] object-cover"
+      />
 
       <div className="col-start-1 row-start-1 grid grid-rows-[auto_1fr_auto] p-[var(--inset)]">
         {/* Lifted clear of the top edge, which is the one deliberate overhang. */}

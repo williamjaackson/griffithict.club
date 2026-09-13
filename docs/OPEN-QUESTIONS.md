@@ -3,17 +3,16 @@
 Things that are deliberately unfinished, and why. Delete an entry when it is
 resolved.
 
-## Photography — blocks launch
+## Committee headshots
 
-The design has a photo panel in the hero and a headshot for each committee
-member. Neither exists, so both render a diagonal hatch placeholder
-(`components/home/hero.tsx`, `components/committee/committee-section.tsx`).
+The hero photo is in (`public/photos/hackathon-2026-08.jpg`, August 2026
+hackathon). The four committee thumbnails still render a diagonal hatch
+placeholder in `components/committee/committee-section.tsx`.
 
-The hero panel is roughly 40% of the first screen. The page does not work without
-it — this is the one item that should hold a launch.
+Less urgent than the hero was, since the section reads as a list of names and
+roles rather than looking broken. Still the last placeholder on the page.
 
-Needs: one strong landscape photo of an event, and four headshots. Same
-treatment, ideally the same session.
+Needs: four headshots, same treatment, ideally one session.
 
 ## `/sponsors`
 
