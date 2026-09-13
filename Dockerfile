@@ -67,7 +67,11 @@ COPY packages/db packages/db
 COPY packages/bot-kit packages/bot-kit
 COPY apps/funnel apps/funnel
 WORKDIR /app/apps/funnel
-CMD ["pnpm", "exec", "tsx", "src/index.ts"]
+# Runs tsx directly rather than through `pnpm exec`. pnpm checks whether the
+# workspace's dependencies are up to date before running anything, and that
+# check writes a temp file into /app, which a read_only container refuses. The
+# result is a crash loop with an EROFS buried in a pnpm stack trace.
+CMD ["node_modules/.bin/tsx", "src/index.ts"]
 
 # ---- reimburse -------------------------------------------------------------
 # The claims bot. Same shape as Funnel: outbound websocket, no port, nothing to
@@ -78,7 +82,11 @@ COPY packages/db packages/db
 COPY packages/bot-kit packages/bot-kit
 COPY apps/reimburse apps/reimburse
 WORKDIR /app/apps/reimburse
-CMD ["pnpm", "exec", "tsx", "src/index.ts"]
+# Runs tsx directly rather than through `pnpm exec`. pnpm checks whether the
+# workspace's dependencies are up to date before running anything, and that
+# check writes a temp file into /app, which a read_only container refuses. The
+# result is a crash loop with an EROFS buried in a pnpm stack trace.
+CMD ["node_modules/.bin/tsx", "src/index.ts"]
 
 # ---- migrations ------------------------------------------------------------
 # Runs once before the site starts, then exits. Uses the runtime migrator from
@@ -87,4 +95,4 @@ FROM deps AS migrate
 ENV NODE_ENV=production
 COPY packages/db packages/db
 WORKDIR /app/packages/db
-CMD ["pnpm", "exec", "tsx", "src/migrate.ts"]
+CMD ["node_modules/.bin/tsx", "src/migrate.ts"]
