@@ -30,9 +30,7 @@ function load<T extends z.ZodType>(file: string, schema: T): z.infer<T> {
   const result = schema.safeParse(parse(raw))
 
   if (!result.success) {
-    throw new Error(
-      `Invalid content in src/content/${file}:\n${z.prettifyError(result.error)}`,
-    )
+    throw new Error(`Invalid content in src/content/${file}:\n${z.prettifyError(result.error)}`)
   }
 
   return result.data

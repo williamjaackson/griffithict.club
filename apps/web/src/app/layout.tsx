@@ -1,8 +1,13 @@
 import type { Metadata, Viewport } from 'next'
 import { Archivo } from 'next/font/google'
-import { site } from '@/content'
+import { links, site, sponsorship } from '@/content'
+import { SiteFooter } from '@/components/layout/site-footer'
+import { SiteHeader } from '@/components/layout/site-header'
+import { SponsorshipDialog } from '@/components/sponsorship/sponsorship-dialog'
+import { SponsorshipProvider } from '@/components/sponsorship/sponsorship-context'
 import { brandLogo } from '@/lib/brand'
 import { LOGOS } from '@/lib/logos'
+import { currentSponsorshipPeriods, currentYear } from '@/lib/clock'
 import './globals.css'
 
 /*
@@ -51,10 +56,27 @@ export const viewport: Viewport = {
   themeColor: '#E51B13',
 }
 
-export default function RootLayout({ children }: { children: React.ReactNode }) {
+export default async function RootLayout({ children }: { children: React.ReactNode }) {
+  const [periods, year] = await Promise.all([currentSponsorshipPeriods(), currentYear()])
+
   return (
     <html lang="en-AU" className={archivo.variable}>
-      <body>{children}</body>
+      <body>
+        {/*
+          The sponsorship dialog opens from the header, the sponsor strip and the
+          footer, so its state lives above all three rather than inside any one.
+        */}
+        <SponsorshipProvider>
+          <SiteHeader site={site} links={links} />
+          {children}
+          <SiteFooter site={site} links={links} year={year} />
+          <SponsorshipDialog
+            tiers={sponsorship.tiers}
+            benefits={sponsorship.benefits}
+            periods={periods}
+          />
+        </SponsorshipProvider>
+      </body>
     </html>
   )
 }

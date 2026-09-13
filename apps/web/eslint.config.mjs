@@ -1,10 +1,15 @@
-import { dirname } from 'node:path'
-import { fileURLToPath } from 'node:url'
-import { FlatCompat } from '@eslint/eslintrc'
+// eslint-config-next ships flat-config arrays directly, but as CommonJS, so they
+// arrive on the default export rather than as named ones.
+import coreWebVitals from 'eslint-config-next/core-web-vitals'
+import typescript from 'eslint-config-next/typescript'
 
-const compat = new FlatCompat({ baseDirectory: dirname(fileURLToPath(import.meta.url)) })
-
-export default [
-  ...compat.extends('next/core-web-vitals', 'next/typescript'),
-  { ignores: ['.next/**', 'node_modules/**', 'src/lib/brand.ts'] },
+const config = [
+  ...coreWebVitals,
+  ...typescript,
+  {
+    // Generated from the vendored SVG filenames; see scripts/brand-manifest.mjs.
+    ignores: ['.next/**', 'node_modules/**', 'src/lib/brand.ts'],
+  },
 ]
+
+export default config

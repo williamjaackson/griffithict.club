@@ -4,14 +4,14 @@ The Griffith ICT Club website.
 
 ## Layout
 
-| Path | What |
-| --- | --- |
-| `apps/web` | The site. Next.js 16, App Router |
-| `apps/bot` | Discord bot. Not built yet |
+| Path          | What                                                  |
+| ------------- | ----------------------------------------------------- |
+| `apps/web`    | The site. Next.js 16, App Router                      |
+| `apps/bot`    | Discord bot. Not built yet                            |
 | `packages/db` | Drizzle schema and migrations for the shared Postgres |
-| `design/` | The original mockup, kept as a visual reference |
-| `infra/` | Compose files and the Caddyfile |
-| `docs/` | Runbook and the annual handover checklist |
+| `design/`     | The original mockup, kept as a visual reference       |
+| `infra/`      | Compose files and the Caddyfile                       |
+| `docs/`       | Runbook and the annual handover checklist             |
 
 The database is shared with other club services, so `packages/db` owns the schema
 and every service consumes it through the workspace. Nothing is published to a

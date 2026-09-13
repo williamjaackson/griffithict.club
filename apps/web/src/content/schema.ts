@@ -35,9 +35,7 @@ export const sponsorsSchema = z
   )
   .min(1)
 
-export const eventTypesSchema = z
-  .array(z.object({ title: z.string(), body: z.string() }))
-  .min(1)
+export const eventTypesSchema = z.array(z.object({ title: z.string(), body: z.string() })).min(1)
 
 export const committeeSchema = z
   .array(

@@ -30,11 +30,7 @@ export async function getUpcomingEvents(limit = 3): Promise<Event[]> {
  * hidden.
  */
 export async function getEventBySlug(slug: string): Promise<Event | undefined> {
-  const [event] = await db()
-    .select()
-    .from(events)
-    .where(eq(events.slug, slug))
-    .limit(1)
+  const [event] = await db().select().from(events).where(eq(events.slug, slug)).limit(1)
 
   return event?.status === 'draft' ? undefined : event
 }
