@@ -6,7 +6,7 @@ import { useEffect, useState } from 'react'
 import type { Links, Site } from '@/content/schema'
 import { brandLogo } from '@/lib/brand'
 import { LOGOS } from '@/lib/logos'
-import { useSponsorship } from '@/components/sponsorship/sponsorship-context'
+import { useDialog } from '@/components/ui/dialog-state'
 import { useScrollLock } from '@/components/ui/use-scroll-lock'
 import { ButtonLink } from '@/components/ui/button'
 
@@ -63,7 +63,7 @@ function MobileMenu({
   open: boolean
   onOpenChange: (open: boolean) => void
 }) {
-  const { setOpen: setSponsorOpen } = useSponsorship()
+  const { setOpen: setSponsorOpen } = useDialog('sponsorship')
   useScrollLock(open)
 
   return (

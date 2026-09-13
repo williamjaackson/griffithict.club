@@ -7,7 +7,7 @@ import { Dialog, DialogTitle } from '@/components/ui/dialog'
 import { Button } from '@/components/ui/button'
 import { FieldLabel, Honeypot, TextArea, TextField } from '@/components/ui/field'
 import { Eyebrow } from '@/components/ui/section'
-import { useSponsorship } from './sponsorship-context'
+import { useDialog } from '@/components/ui/dialog-state'
 
 type Step = 'tier' | 'details' | 'done'
 
@@ -20,7 +20,7 @@ export function SponsorshipDialog({
   benefits: Sponsorship['benefits']
   periods: string[]
 }) {
-  const { open, setOpen } = useSponsorship()
+  const { open, setOpen } = useDialog('sponsorship')
   const [step, setStep] = useState<Step>('tier')
   const [tierIndex, setTierIndex] = useState<number | null>(null)
   const [error, setError] = useState<string | null>(null)

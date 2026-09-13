@@ -1,12 +1,12 @@
 'use client'
 
 import type { Sponsor } from '@/content/schema'
-import { useSponsorship } from '@/components/sponsorship/sponsorship-context'
+import { useDialog } from '@/components/ui/dialog-state'
 import { Button } from '@/components/ui/button'
 import { Section } from '@/components/ui/section'
 
 export function SponsorStrip({ sponsors }: { sponsors: Sponsor[] }) {
-  const { setOpen } = useSponsorship()
+  const { setOpen } = useDialog('sponsorship')
 
   return (
     <Section
