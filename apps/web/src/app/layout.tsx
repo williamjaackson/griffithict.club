@@ -8,7 +8,6 @@ import { SponsorshipProvider } from '@/components/sponsorship/sponsorship-contex
 import { brandLogo } from '@/lib/brand'
 import { LOGOS } from '@/lib/logos'
 import { currentSponsorshipPeriods, currentYear } from '@/lib/clock'
-import { taglineOf } from '@/lib/headline'
 import './globals.css'
 
 /*
@@ -26,12 +25,11 @@ const archivo = Archivo({
   variable: '--font-archivo',
 })
 
-const tagline = taglineOf(site)
-
 export const metadata: Metadata = {
   metadataBase: new URL(site.url),
   title: {
-    default: `${site.name} — ${tagline}`,
+    default: site.title,
+    // Subpages set their own title and get the club name appended.
     template: `%s — ${site.name}`,
   },
   description: site.description,
@@ -39,14 +37,14 @@ export const metadata: Metadata = {
   openGraph: {
     type: 'website',
     siteName: site.name,
-    title: `${site.name} — ${tagline}`,
+    title: site.title,
     description: site.description,
     url: site.url,
     locale: 'en_AU',
   },
   twitter: {
     card: 'summary_large_image',
-    title: `${site.name} — ${tagline}`,
+    title: site.title,
     description: site.description,
   },
   icons: {

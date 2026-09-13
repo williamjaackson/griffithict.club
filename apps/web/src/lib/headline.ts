@@ -1,10 +1,3 @@
-import type { Site } from '@/content/schema'
-
-/** The headline as one string, for the page title and social cards. */
-export function taglineOf(site: Site): string {
-  return site.headline.lines.join(' ')
-}
-
 /**
  * A headline line split around the emphasised words, so the hero can colour the
  * middle piece without the wording being written out a second time in JSX.

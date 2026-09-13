@@ -1,14 +1,19 @@
 name: Griffith ICT Club
 url: https://griffithict.club
+
+# The <title>, and the title on social cards. Deliberately not the hero headline:
+# the headline is a hook for someone already on the page, while this has to say
+# plainly what the club is to someone scanning a list of search results.
+title: Griffith ICT Club — Griffith University IT and Computer Science Club
+
 description: >-
-  Griffith University's IT club for computer science, information technology,
-  cyber security, and software engineering.
+  Griffith University's tech club for computer science, IT, cyber security, and
+  software engineering students.
+
 eyebrow: Griffith's Largest Tech Club
 
-# The hero headline. `lines` are rendered on separate lines in the hero and joined
-# with a space for the page title and social cards, so there is one source of
-# truth for the wording. `highlight` is the part shown in red, and has to appear
-# somewhere in the lines.
+# The hero headline. `lines` are rendered on separate lines, and `highlight` is
+# the part shown in red, which has to appear somewhere in the lines.
 headline:
   lines:
     - The other half

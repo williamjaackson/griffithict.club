@@ -5,6 +5,8 @@ const url = z.string().min(1)
 export const siteSchema = z.object({
   name: z.string(),
   url: z.url(),
+  /** Used verbatim as the page title, so it is written out rather than composed. */
+  title: z.string(),
   description: z.string(),
   eyebrow: z.string(),
   headline: z
