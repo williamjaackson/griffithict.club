@@ -16,7 +16,9 @@
     "format:check": "prettier --check .",
     "db:generate": "pnpm --filter @gict/db generate",
     "db:migrate": "pnpm --filter @gict/db migrate",
-    "db:studio": "pnpm --filter @gict/db studio"
+    "db:studio": "pnpm --filter @gict/db studio",
+    "brand:sync": "./scripts/sync-brand.sh",
+    "brand:manifest": "node scripts/brand-manifest.mjs"
   },
   "devDependencies": {
     "prettier": "^3.6.2",
