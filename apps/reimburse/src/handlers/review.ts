@@ -1,6 +1,6 @@
 import { MessageFlags, type ButtonInteraction } from 'discord.js'
 import type { Database, ReimburseClaim } from '@gict/db'
-import { canMoveTo, claimById, configFor, moveClaim } from '../claims'
+import { canMoveTo, claimById, configFor, moveClaim, payeeFor } from '../claims'
 import { STATUS, type ClaimStatus } from '../status'
 import { formatAmount } from '../money'
 import { formatBankCode } from '../payee'
@@ -47,7 +47,7 @@ export async function onReviewButton(
   }
 
   if (action === 'details') {
-    await showPaymentDetails(interaction, claim, config.currency)
+    await showPaymentDetails(interaction, database, claim, config.currency)
     return
   }
 
@@ -135,6 +135,7 @@ export async function onReviewButton(
  */
 async function showPaymentDetails(
   interaction: ButtonInteraction,
+  database: Database,
   claim: ReimburseClaim,
   currency: string,
 ): Promise<void> {
@@ -147,15 +148,39 @@ async function showPaymentDetails(
     return
   }
 
-  await interaction.reply({
-    content: [
-      `**Claim #${claim.reference}** · ${formatAmount(claim.amountCents, currency)}`,
-      `Pay **${claim.payeeName ?? 'unknown'}**`,
-      `BSB \`${formatBankCode(claim.payeeBankCode)}\``,
-      `Account \`${claim.payeeAccountNumber}\``,
+  const lines = [
+    `**Claim #${claim.reference}** · ${formatAmount(claim.amountCents, currency)}`,
+    `Pay **${claim.payeeName ?? 'unknown'}**`,
+    `BSB \`${formatBankCode(claim.payeeBankCode)}\``,
+    `Account \`${claim.payeeAccountNumber}\``,
+  ]
+
+  /*
+   * Only mentioned when it matters.
+   *
+   * These are the details frozen onto the claim, which is what should be paid.
+   * Saying so every time is noise, because they are almost always the same as
+   * the person's current ones. When they are not, it is the one thing the
+   * treasurer needs to know before sending money to an account its owner has
+   * since replaced.
+   */
+  const current = await payeeFor(database, claim.guildId, claim.claimantId)
+  const changed =
+    current &&
+    (current.bankCode !== claim.payeeBankCode || current.accountNumber !== claim.payeeAccountNumber)
+
+  if (changed) {
+    lines.push(
       '',
-      '-# As given when the claim was made. Only you can see this.',
-    ].join('\n'),
+      `⚠️ <@${claim.claimantId}> has changed their details since this claim.`,
+      `Now: ${formatBankCode(current.bankCode)} · ${current.accountNumber}`,
+      '-# Pay whichever is right. The claim keeps what it was made with.',
+    )
+  }
+
+  await interaction.reply({
+    content: lines.join('\n'),
     flags: MessageFlags.Ephemeral,
+    allowedMentions: { parse: [] },
   })
 }
