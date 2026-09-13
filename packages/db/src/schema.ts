@@ -86,7 +86,32 @@ export const sponsorshipEnquiries = pgTable('sponsorship_enquiries', {
   createdAt: timestamp('created_at', { withTimezone: true }).notNull().defaultNow(),
 })
 
+/**
+ * Everything that is not a sponsorship enquiry: questions, collaborations,
+ * press, and whatever else the form collects.
+ *
+ * Kept separate from `sponsorship_enquiries` rather than merged behind a `kind`
+ * column. A sponsorship lead has a tier and a period; this has a topic. Merging
+ * them would mean columns that are null for half the rows and meaningful for the
+ * other half, and nothing would enforce which.
+ */
+export const contactEnquiries = pgTable('contact_enquiries', {
+  id: uuid('id').primaryKey().defaultRandom(),
+  /** One of the options in contact.yaml, stored as written so old rows survive an edit. */
+  topic: varchar('topic', { length: 60 }).notNull(),
+  name: varchar('name', { length: 200 }).notNull(),
+  /** Who they are writing on behalf of, if anyone. Blank for most students. */
+  company: varchar('company', { length: 200 }),
+  email: varchar('email', { length: 320 }).notNull(),
+  message: text('message').notNull(),
+  /** Null when Discord rejected it. The row worth checking after a webhook outage. */
+  deliveredAt: timestamp('delivered_at', { withTimezone: true }),
+  createdAt: timestamp('created_at', { withTimezone: true }).notNull().defaultNow(),
+})
+
 export type Event = typeof events.$inferSelect
 export type NewEvent = typeof events.$inferInsert
 export type SponsorshipEnquiry = typeof sponsorshipEnquiries.$inferSelect
 export type NewSponsorshipEnquiry = typeof sponsorshipEnquiries.$inferInsert
+export type ContactEnquiry = typeof contactEnquiries.$inferSelect
+export type NewContactEnquiry = typeof contactEnquiries.$inferInsert

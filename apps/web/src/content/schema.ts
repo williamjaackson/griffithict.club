@@ -141,6 +141,12 @@ export const sponsorshipSchema = z
     path: ['benefits'],
   })
 
+export const contactSchema = z.object({
+  heading: z.string(),
+  body: z.string(),
+  topics: z.array(z.string().min(1).max(60)).min(1),
+})
+
 export const joinSchema = z
   .array(
     z.object({
@@ -160,4 +166,5 @@ export type CommitteeRole = z.infer<typeof committeeSchema>[number]
 export type TermEntry = CommitteeRole['history'][number]
 export type Sponsorship = z.infer<typeof sponsorshipSchema>
 export type SponsorshipTier = Sponsorship['tiers'][number]
+export type Contact = z.infer<typeof contactSchema>
 export type JoinStep = z.infer<typeof joinSchema>[number]

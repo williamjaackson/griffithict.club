@@ -1,10 +1,11 @@
 import type { Metadata, Viewport } from 'next'
 import { Archivo } from 'next/font/google'
-import { links, site, sponsorship } from '@/content'
+import { contact, links, site, sponsorship } from '@/content'
 import { SiteFooter } from '@/components/layout/site-footer'
 import { SiteHeader } from '@/components/layout/site-header'
+import { ContactDialog } from '@/components/contact/contact-dialog'
+import { DialogStateProvider } from '@/components/ui/dialog-state'
 import { SponsorshipDialog } from '@/components/sponsorship/sponsorship-dialog'
-import { SponsorshipProvider } from '@/components/sponsorship/sponsorship-context'
 import { brandLogo } from '@/lib/brand'
 import { LOGOS } from '@/lib/logos'
 import { currentSponsorshipPeriods, currentYear } from '@/lib/clock'
@@ -64,10 +65,11 @@ export default async function RootLayout({ children }: { children: React.ReactNo
     <html lang="en-AU" className={archivo.variable}>
       <body>
         {/*
-          The sponsorship dialog opens from the header, the sponsor strip and the
-          footer, so its state lives above all three rather than inside any one.
+          Both dialogs open from several places across the header, the footer and
+          the page, so their state lives above all of them rather than inside any
+          one trigger.
         */}
-        <SponsorshipProvider>
+        <DialogStateProvider>
           <SiteHeader site={site} links={links} />
           {children}
           <SiteFooter site={site} links={links} year={year} />
@@ -76,7 +78,8 @@ export default async function RootLayout({ children }: { children: React.ReactNo
             benefits={sponsorship.benefits}
             periods={periods}
           />
-        </SponsorshipProvider>
+          <ContactDialog contact={contact} />
+        </DialogStateProvider>
       </body>
     </html>
   )

@@ -10,6 +10,9 @@ import { fileURLToPath } from 'node:url'
 import { migrate } from 'drizzle-orm/node-postgres/migrator'
 import { sql } from 'drizzle-orm'
 import { createDatabase } from './client'
+import { loadRootEnv } from './env'
+
+loadRootEnv()
 
 /** Arbitrary but fixed. Any other migrator must use the same number to queue behind us. */
 const ADVISORY_LOCK_KEY = 4_815_162_342

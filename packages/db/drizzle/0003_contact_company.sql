@@ -1,0 +1,1 @@
+ALTER TABLE "contact_enquiries" ADD COLUMN "company" varchar(200);

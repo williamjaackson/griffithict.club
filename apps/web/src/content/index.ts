@@ -7,6 +7,7 @@ import { parse } from 'yaml'
 import { z } from 'zod'
 import {
   committeeSchema,
+  contactSchema,
   eventTypesSchema,
   joinSchema,
   linksSchema,
@@ -40,6 +41,7 @@ export const links = load('links.yaml', linksSchema)
 export const sponsors = load('sponsors.yaml', sponsorsSchema)
 export const eventTypes = load('event-types.yaml', eventTypesSchema)
 export const committee = load('committee.yaml', committeeSchema)
+export const contact = load('contact.yaml', contactSchema)
 export const sponsorship = load('sponsorship.yaml', sponsorshipSchema)
 export const joinSteps = load('join.yaml', joinSchema)
 

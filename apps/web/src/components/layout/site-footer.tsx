@@ -4,11 +4,16 @@ import Link from 'next/link'
 import type { Links, Site } from '@/content/schema'
 import { brandLogo } from '@/lib/brand'
 import { LOGOS } from '@/lib/logos'
-import { useSponsorship } from '@/components/sponsorship/sponsorship-context'
+import { useDialog } from '@/components/ui/dialog-state'
 import { DiscordIcon, GitHubIcon, InstagramIcon, LinkedInIcon } from './social-icons'
 
+/** A footer button that has to pass for one of the links beside it. */
+const FOOTER_BUTTON =
+  'hover:text-brand cursor-pointer border-none bg-transparent p-0 text-left font-[inherit] text-[15px] text-white'
+
 export function SiteFooter({ site, links, year }: { site: Site; links: Links; year: number }) {
-  const { setOpen } = useSponsorship()
+  const { setOpen } = useDialog('sponsorship')
+  const { setOpen: setContactOpen } = useDialog('contact')
 
   const socials = [
     { href: links.discord, label: 'Discord', Icon: DiscordIcon },
@@ -49,6 +54,9 @@ export function SiteFooter({ site, links, year }: { site: Site; links: Links; ye
               {item.label}
             </Link>
           ))}
+          <button type="button" onClick={() => setContactOpen(true)} className={FOOTER_BUTTON}>
+            Contact us
+          </button>
         </div>
 
         <div className="flex flex-col gap-[11px] text-[15px]">
@@ -58,11 +66,7 @@ export function SiteFooter({ site, links, year }: { site: Site; links: Links; ye
           <Link href="/#sponsors" className="hover:text-brand text-white">
             Our sponsors
           </Link>
-          <button
-            type="button"
-            onClick={() => setOpen(true)}
-            className="hover:text-brand cursor-pointer border-none bg-transparent p-0 text-left text-[15px] text-white"
-          >
+          <button type="button" onClick={() => setOpen(true)} className={FOOTER_BUTTON}>
             Sponsor us
           </button>
         </div>
