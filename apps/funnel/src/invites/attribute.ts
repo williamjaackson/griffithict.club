@@ -22,6 +22,14 @@ export type InviteSnapshot = {
   uses: number
   /** Null for the vanity URL, and when Discord declines to name a creator. */
   inviterId: string | null
+  /**
+   * The cap, with 0 meaning unlimited, which is Discord's own convention.
+   *
+   * Not used to attribute anything. It is here so that when an invite
+   * disappears, the bot can tell "spent its last use" from "a moderator revoked
+   * it" — two very different events that arrive as the same inviteDelete.
+   */
+  maxUses: number
 }
 
 /** The guild's vanity URL, which Discord counts outside the invite list. */

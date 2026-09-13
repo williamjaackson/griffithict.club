@@ -1,11 +1,12 @@
 import { describe, expect, it } from 'vitest'
 import { attribute, type InviteSnapshot } from '../attribute'
 
-const invite = (code: string, uses: number, inviterId: string | null = 'u1'): InviteSnapshot => ({
-  code,
-  uses,
-  inviterId,
-})
+const invite = (
+  code: string,
+  uses: number,
+  inviterId: string | null = 'u1',
+  maxUses = 0,
+): InviteSnapshot => ({ code, uses, inviterId, maxUses })
 
 describe('attribute', () => {
   it('names the invite whose count went up', () => {

@@ -17,6 +17,7 @@ export async function readInvites(guild: Guild): Promise<InviteSnapshot[] | null
       code: invite.code,
       uses: invite.uses ?? 0,
       inviterId: invite.inviter?.id ?? null,
+      maxUses: invite.maxUses ?? 0,
     }))
   } catch {
     return null

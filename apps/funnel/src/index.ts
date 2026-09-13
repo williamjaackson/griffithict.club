@@ -6,12 +6,16 @@ import { onMemberJoin } from './handlers/member-join'
 import { InviteCache } from './invites/cache'
 import { readInvites, readVanity } from './invites/read'
 import {
+  deleteInvite,
   lastKnownUses,
   markGuildRemoved,
   persistInvites,
   pruneInvites,
+  sourceForInvite,
   upsertGuild,
+  upsertInvite,
 } from './invites/store'
+import { notify } from './notify'
 
 const config = loadConfig()
 const database = db(config.databaseUrl)
@@ -104,18 +108,76 @@ client.on(Events.GuildMemberAdd, async (member) => {
  * missing code readable as "spent its last use" rather than "someone revoked
  * it". Without them the attribution guesses wrong every time an invite expires.
  */
-client.on(Events.InviteCreate, (invite) => {
+client.on(Events.InviteCreate, async (invite) => {
   if (!invite.guild) return
-  cache.add(invite.guild.id, {
+  const guild = invite.guild as Guild
+
+  const snapshot = {
     code: invite.code,
     uses: invite.uses ?? 0,
     inviterId: invite.inviter?.id ?? null,
-  })
+    maxUses: invite.maxUses ?? 0,
+  }
+
+  cache.add(guild.id, snapshot)
+  // On file straight away, so it can be tagged in the same minute it was made
+  // rather than after the next join or restart.
+  await upsertInvite(database, guild.id, snapshot).catch((error: unknown) =>
+    console.error('Failed to store a new invite:', error),
+  )
 })
 
-client.on(Events.InviteDelete, (invite) => {
+/**
+ * How long a used-up invite stays in the cache after Discord says it is gone.
+ *
+ * Only applied when the invite hit its limit. Discord sends the deletion and
+ * the join that caused it at the same time with no ordering guarantee, and if
+ * the deletion is handled first the cache no longer holds the invite, so the
+ * join looks like nothing moved and gets recorded as unknown.
+ */
+const EXHAUSTED_GRACE_MS = 10_000
+
+client.on(Events.InviteDelete, async (invite) => {
   if (!invite.guild) return
-  cache.remove(invite.guild.id, invite.code)
+  const guild = invite.guild as Guild
+
+  const cached = cache.get(guild.id, invite.code)
+
+  /*
+   * inviteDelete fires for two unrelated things: somebody revoked it, or it
+   * spent its last use. Holding a revoked invite in the cache would make the
+   * next unrelated join look ambiguous, and dropping an exhausted one
+   * immediately loses the attribution for the join that just consumed it. The
+   * use count against the limit is what separates them.
+   */
+  const exhausted = cached !== undefined && cached.maxUses > 0 && cached.uses + 1 >= cached.maxUses
+
+  if (exhausted) {
+    setTimeout(() => cache.remove(guild.id, invite.code), EXHAUSTED_GRACE_MS)
+  } else {
+    cache.remove(guild.id, invite.code)
+  }
+
+  const source = await sourceForInvite(database, guild.id, invite.code)
+  await deleteInvite(database, invite.code).catch((error: unknown) =>
+    console.error('Failed to remove a deleted invite:', error),
+  )
+
+  /*
+   * Losing a tagged invite silently breaks the funnel: whatever is published
+   * under that link stops being counted, and the report keeps looking healthy
+   * because the old joins are still in it.
+   */
+  if (source) {
+    await notify(
+      guild,
+      database,
+      [
+        `Invite \`${invite.code}\` was deleted. It was the one tagged **${source.name}**.`,
+        `-# Nothing published under that link is being counted now. Make a new invite and run \`/funnel source set\` with the same name to carry on.`,
+      ].join('\n'),
+    )
+  }
 })
 
 client.on(Events.InteractionCreate, async (interaction) => {

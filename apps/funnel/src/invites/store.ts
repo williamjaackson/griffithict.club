@@ -2,6 +2,20 @@ import { and, eq, inArray, sql } from 'drizzle-orm'
 import { funnelGuilds, funnelInvites, funnelSources, type Database } from '@gict/db'
 import type { InviteSnapshot } from './attribute'
 
+/** Put a single invite on file the moment it is made, so it can be tagged at once. */
+export async function upsertInvite(
+  database: Database,
+  guildId: string,
+  invite: InviteSnapshot,
+): Promise<void> {
+  await persistInvites(database, guildId, [invite])
+}
+
+/** Forget an invite that no longer exists. Joins already recorded keep its code. */
+export async function deleteInvite(database: Database, code: string): Promise<void> {
+  await database.delete(funnelInvites).where(eq(funnelInvites.code, code))
+}
+
 /** Write the current invite counts, so a restart knows what it last saw. */
 export async function persistInvites(
   database: Database,

@@ -16,6 +16,10 @@ export class InviteCache {
   private readonly invites = new Map<string, Map<string, InviteSnapshot>>()
   private readonly vanity = new Map<string, VanitySnapshot>()
 
+  get(guildId: string, code: string): InviteSnapshot | undefined {
+    return this.invites.get(guildId)?.get(code)
+  }
+
   snapshot(guildId: string): InviteSnapshot[] {
     return [...(this.invites.get(guildId)?.values() ?? [])]
   }
