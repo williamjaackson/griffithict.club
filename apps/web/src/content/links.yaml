@@ -2,8 +2,8 @@ discord: https://discord.gg/ESvqmEF4vA
 instagram: https://instagram.com/griffithictclub
 linkedin: https://www.linkedin.com/company/griffithtechorg/
 github: https://github.com/williamjaackson/griffith-ict-web/
-# Campus Groups registration. Placeholder in the mockup — replace before launch.
-membership: '#'
+# Campus Groups registration, step 2 of joining.
+membership: https://griffith.campusgroups.com/GIC/club_signup
 university: https://www.griffith.edu.au
 builtBy:
   label: Built and Operated by William Jackson

@@ -35,6 +35,10 @@ Sponsors, links and the committee live in `apps/web/src/content/*.yaml`.
 Edit the file, open a pull request. The schemas are validated on build, so a typo
 fails CI rather than the page.
 
+**Restart `pnpm dev` after editing one.** The loader reads these with `fs`, which
+the dev server does not watch, so the page keeps serving the old values and it
+looks like the edit did nothing.
+
 Events come from the database instead, because the Discord bot will write to them
 too. Until that bot exists, add events with `pnpm db:studio` — see
 [docs/RUNBOOK.md](docs/RUNBOOK.md).

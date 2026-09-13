@@ -15,11 +15,6 @@ it — this is the one item that should hold a launch.
 Needs: one strong landscape photo of an event, and four headshots. Same
 treatment, ideally the same session.
 
-## Campus Groups link
-
-`links.yaml` has `membership: '#'`, carried over from the mockup. Step 2 of "How
-to join" points nowhere until that is a real URL.
-
 ## `/sponsors`
 
 The footer's "Our sponsors" is an anchor to the sponsor strip on the homepage.

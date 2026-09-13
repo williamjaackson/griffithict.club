@@ -29,15 +29,24 @@ export function EventRow({ event, onOpen }: { event: Event; onOpen: () => void }
         </span>
       </span>
 
+      {/*
+        Decoration, not a control: the whole row is the button, and its accessible
+        name is already the event. Aria-hidden keeps a screen reader from reading
+        "Learn more" after the title it has just announced.
+
+        Width is the only thing that changes across the breakpoint, so height and
+        radius are never declared twice for the same viewport.
+      */}
       <span
         aria-hidden="true"
-        className="bg-brand group-hover:bg-ink wide:size-12 wide:rounded-[14px] inline-flex size-11 flex-none items-center justify-center rounded-[13px] text-white"
+        className="bg-brand group-hover:bg-ink wide:w-auto wide:rounded-[11px] wide:px-[18px] wide:text-[13px] wide:font-bold inline-flex h-11 w-11 flex-none items-center justify-center rounded-[13px] whitespace-nowrap text-white"
       >
-        <svg width="18" height="18" viewBox="0 0 16 16" fill="none" className="block">
+        <svg width="18" height="18" viewBox="0 0 16 16" fill="none" className="wide:hidden block">
           <circle cx="8" cy="8" r="6.6" stroke="currentColor" strokeWidth="1.8" />
           <path d="M8 7.1v4.2" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" />
           <circle cx="8" cy="4.7" r="1" fill="currentColor" />
         </svg>
+        <span className="wide:block hidden">Learn more</span>
       </span>
     </button>
   )
