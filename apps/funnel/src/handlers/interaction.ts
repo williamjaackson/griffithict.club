@@ -9,6 +9,7 @@ import { funnelGuilds, funnelInvites, type Database } from '@gict/db'
 import type { InviteCache } from '../invites/cache'
 import { readInvites, readVanity } from '../invites/read'
 import { persistInvites, upsertInvite } from '../invites/store'
+import { barChart } from '../chart'
 import {
   confidenceBreakdown,
   ensureSource,
@@ -286,20 +287,27 @@ async function sources(
 ): Promise<void> {
   const flags = privacy(interaction)
   const rows = await joinsBySource(database, interaction.guildId!)
-  const total = rows.reduce((sum, row) => sum + row.joins, 0)
 
-  const body =
-    rows.length === 0
-      ? '_Nobody has joined since tracking started._'
-      : rows
-          .map((row) => {
-            const share = total === 0 ? 0 : Math.round((row.joins / total) * 100)
-            return `**${row.source}** — ${row.joins} (${share}%)`
-          })
-          .join('\n')
+  if (rows.length === 0) {
+    await interaction.reply({
+      content: `## Where members came from\n_Nobody has joined since tracking started._\n${await caveat(database, interaction.guildId!)}`,
+      ...flags,
+    })
+    return
+  }
+
+  const chart = barChart(rows.map((row) => ({ label: row.source, value: row.joins })))
 
   await interaction.reply({
-    content: `## Where members came from\n${body}\n${await caveat(database, interaction.guildId!)}`,
+    content: [
+      '## Where members came from',
+      // A fenced block, so Discord renders it monospaced and the bars line up.
+      // Without it proportional spacing makes the columns wander.
+      '```',
+      chart,
+      '```',
+      await caveat(database, interaction.guildId!),
+    ].join('\n'),
     allowedMentions: NO_PINGS,
     ...flags,
   })
