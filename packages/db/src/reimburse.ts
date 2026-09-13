@@ -81,18 +81,6 @@ export const reimburseClaims = pgTable(
     description: text('description').notNull(),
     status: claimStatus('status').notNull().default('pending'),
 
-    /*
-     * Where the money was to go, as given at the time.
-     *
-     * Copied onto the claim rather than joined from the payee record, for the
-     * same reason a source name is frozen onto a join: somebody updating their
-     * bank details next year must not silently rewrite which account last
-     * year's claim was paid into.
-     */
-    payeeName: varchar('payee_name', { length: 120 }),
-    payeeBankCode: varchar('payee_bank_code', { length: 20 }),
-    payeeAccountNumber: varchar('payee_account_number', { length: 34 }),
-
     /** The message holding the buttons, so it can be edited as the state moves. */
     reviewMessageId: varchar('review_message_id', { length: 20 }),
 
@@ -165,7 +153,12 @@ export const reimburseEvents = pgTable(
 )
 
 /**
- * Where to send somebody's money, remembered between claims.
+ * Where to send somebody's money.
+ *
+ * Held against the person, not copied onto each claim. A claim is an
+ * instruction that has not been carried out yet, so if somebody changes banks
+ * between claiming and being paid, the money should follow them rather than go
+ * to an account they have closed.
  *
  * `bankCode` rather than `bsb`: the label is Australian, the concept is not.
  * Sort codes, routing numbers and IBANs all sit in the same place, and naming

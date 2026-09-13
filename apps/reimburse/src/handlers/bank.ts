@@ -8,7 +8,7 @@ import {
 import type { Database } from '@gict/db'
 import { rememberPayee } from '../claims'
 import { FIELD_ACCOUNT_NAME, FIELD_ACCOUNT_NUMBER, FIELD_BANK_CODE } from '../modal'
-import { formatBankCode, maskAccount, parsePayee } from '../payee'
+import { formatBankCode, parsePayee } from '../payee'
 
 export const CONTINUE_BUTTON = 'reimbursement:continue'
 
@@ -44,7 +44,10 @@ export async function onBankSubmit(
    */
   await interaction.reply({
     content: [
-      `Saved: **${payee.details.accountName}** · ${formatBankCode(payee.details.bankCode)} · ${maskAccount(payee.details.accountNumber)}`,
+      // In full, not masked: this exists so somebody can check they typed it
+      // right, and a hidden middle is exactly where a typo would sit. It is
+      // ephemeral and it is their own account.
+      `Saved: **${payee.details.accountName}** · ${formatBankCode(payee.details.bankCode)} · \`${payee.details.accountNumber}\``,
       '-# Only asked once. Change it any time with `/reimbursements bank`.',
     ].join('\n'),
     components: [

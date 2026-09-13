@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest'
-import { formatBankCode, maskAccount, parsePayee } from '../payee'
+import { formatBankCode, parsePayee } from '../payee'
 
 const ok = (name: string, code: string, account: string) => {
   const result = parsePayee(name, code, account)
@@ -51,16 +51,6 @@ describe('parsePayee', () => {
     rejects('A B', '12', '12345678')
     rejects('A B', '123456', '123')
     rejects('A B', '123456', '1'.repeat(21))
-  })
-})
-
-describe('maskAccount', () => {
-  it('leaves the last three digits visible', () => {
-    expect(maskAccount('12345678')).toBe('•••••678')
-  })
-
-  it('hides a very short number entirely', () => {
-    expect(maskAccount('123')).toBe('•••')
   })
 })
 

@@ -94,7 +94,6 @@ export async function createClaim(
     amountCents: number
     description: string
     receipts: NewReceipt[]
-    payee: { accountName: string; bankCode: string; accountNumber: string }
   },
 ): Promise<ReimburseClaim> {
   return database.transaction(async (tx) => {
@@ -111,9 +110,6 @@ export async function createClaim(
         claimantId: input.claimantId,
         amountCents: input.amountCents,
         description: input.description,
-        payeeName: input.payee.accountName,
-        payeeBankCode: input.payee.bankCode,
-        payeeAccountNumber: input.payee.accountNumber,
       })
       .returning()
 

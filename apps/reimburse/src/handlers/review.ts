@@ -126,12 +126,14 @@ export async function onReviewButton(
 }
 
 /**
- * The full account number, to whoever asked and nobody else.
+ * Where to send the money, to whoever asked and nobody else.
  *
- * The claim post carries a masked one because a whole committee can read that
- * channel. The person actually making the payment needs the real thing, so it
- * sits one click away rather than on display, and the reply is ephemeral so it
- * never lands in the channel at all.
+ * Read off the person, not the claim. A claim is an instruction that has not
+ * been carried out, so if somebody has changed banks since claiming, the money
+ * should follow them rather than go to an account they have closed.
+ *
+ * Ephemeral, because the claim post sits in a channel a whole committee reads
+ * and only the person making the payment needs the number.
  */
 async function showPaymentDetails(
   interaction: ButtonInteraction,
@@ -139,48 +141,24 @@ async function showPaymentDetails(
   claim: ReimburseClaim,
   currency: string,
 ): Promise<void> {
-  if (!claim.payeeBankCode || !claim.payeeAccountNumber) {
+  const payee = await payeeFor(database, claim.guildId, claim.claimantId)
+
+  if (!payee) {
     await interaction.reply({
-      content: `Claim #${claim.reference} has no bank details on it. It was made before the bot asked for them, so <@${claim.claimantId}> needs to add them with \`/reimbursements bank\` and claim again.`,
+      content: `<@${claim.claimantId}> has no bank details on file. They can add them with \`/reimbursements bank\`.`,
       flags: MessageFlags.Ephemeral,
       allowedMentions: { parse: [] },
     })
     return
   }
 
-  const lines = [
-    `**Claim #${claim.reference}** · ${formatAmount(claim.amountCents, currency)}`,
-    `Pay **${claim.payeeName ?? 'unknown'}**`,
-    `BSB \`${formatBankCode(claim.payeeBankCode)}\``,
-    `Account \`${claim.payeeAccountNumber}\``,
-  ]
-
-  /*
-   * Only mentioned when it matters.
-   *
-   * These are the details frozen onto the claim, which is what should be paid.
-   * Saying so every time is noise, because they are almost always the same as
-   * the person's current ones. When they are not, it is the one thing the
-   * treasurer needs to know before sending money to an account its owner has
-   * since replaced.
-   */
-  const current = await payeeFor(database, claim.guildId, claim.claimantId)
-  const changed =
-    current &&
-    (current.bankCode !== claim.payeeBankCode || current.accountNumber !== claim.payeeAccountNumber)
-
-  if (changed) {
-    lines.push(
-      '',
-      `⚠️ <@${claim.claimantId}> has changed their details since this claim.`,
-      `Now: ${formatBankCode(current.bankCode)} · ${current.accountNumber}`,
-      '-# Pay whichever is right. The claim keeps what it was made with.',
-    )
-  }
-
   await interaction.reply({
-    content: lines.join('\n'),
+    content: [
+      `**Claim #${claim.reference}** · ${formatAmount(claim.amountCents, currency)}`,
+      `Pay **${payee.accountName}**`,
+      `BSB \`${formatBankCode(payee.bankCode)}\``,
+      `Account \`${payee.accountNumber}\``,
+    ].join('\n'),
     flags: MessageFlags.Ephemeral,
-    allowedMentions: { parse: [] },
   })
 }

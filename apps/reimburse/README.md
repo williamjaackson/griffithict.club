@@ -76,12 +76,14 @@ claim itself.
   first-time claimant gets the bank form, then a button through to the claim,
   because Discord will not let a modal submission open another modal. After that
   it is one step forever.
-- **Details are copied onto each claim** as given at the time, so changing them
-  later does not rewrite which account an old claim was paid into.
-- **The account number is masked** on the claim post, and a **Payment details**
-  button on the claim shows the full one to whoever pressed it and nobody else.
-  The channel is read by a whole committee; the person making the payment needs
-  the real number. Only the treasurer role can press it.
+- **Bank details belong to the person, not the claim.** A claim is an
+  instruction that has not been carried out, so if somebody changes banks
+  between claiming and being paid, the money follows them rather than going to
+  an account they have closed.
+- **No bank details on the claim post at all.** A **Payment details** button
+  shows them to whoever pressed it and nobody else, behind the treasurer role.
+  The channel is read by a whole committee; only the person paying needs the
+  number.
 - **The review channel should be private.** Claims carry names, amounts and what
   people bought.
 - **reimburse_events is append-only.** The status says where a claim is; the

@@ -48,19 +48,6 @@ export function parsePayee(
   return { ok: true, details: { accountName: name, bankCode: code, accountNumber: account } }
 }
 
-/**
- * Show an account number with most of it hidden.
- *
- * Claims are posted into a channel a whole committee can read, and the treasurer
- * paying it already has the full number in the payment run. The last three
- * digits are enough to tell two of somebody's accounts apart, which is the only
- * thing anyone needs to do by eye.
- */
-export function maskAccount(accountNumber: string): string {
-  if (accountNumber.length <= 3) return '•'.repeat(accountNumber.length)
-  return `${'•'.repeat(accountNumber.length - 3)}${accountNumber.slice(-3)}`
-}
-
 /** BSBs are read in two halves, so show them that way. */
 export function formatBankCode(bankCode: string): string {
   return bankCode.length === 6 ? `${bankCode.slice(0, 3)}-${bankCode.slice(3)}` : bankCode

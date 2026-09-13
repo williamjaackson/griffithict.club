@@ -19,7 +19,6 @@ import {
   type NewReceipt,
 } from '../claims'
 import { formatAmount, parseAmount } from '../money'
-import { formatBankCode, maskAccount } from '../payee'
 import { FIELD_AMOUNT, FIELD_DESCRIPTION, FIELD_RECEIPT } from '../modal'
 import { STATUS } from '../status'
 
@@ -58,8 +57,8 @@ export async function onClaimSubmit(
    * nobody wants to retype them every time, so /reimbursement sends a first-time
    * claimant through the bank modal before ever showing this one.
    */
-  const payee = await payeeFor(database, interaction.guildId, interaction.user.id)
-  if (!payee) {
+  const hasPayee = await payeeFor(database, interaction.guildId, interaction.user.id)
+  if (!hasPayee) {
     await interaction.reply({
       content: 'Add your bank details first with `/reimbursements bank`.',
       flags: MessageFlags.Ephemeral,
@@ -103,7 +102,6 @@ export async function onClaimSubmit(
     amountCents: amount.cents,
     description,
     receipts,
-    payee,
   })
 
   await post(interaction, database, claim, config.reviewChannelId, config.currency, receipts)
@@ -189,27 +187,17 @@ export function claimMessage(claim: ReimburseClaim, currency: string) {
 }
 
 export function claimSummary(claim: ReimburseClaim, currency: string): string {
-  const lines = [
+  /*
+   * No bank details here, not even masked ones. A partial number cannot be used
+   * to pay anybody, so its only job was hinting that details exist, and the
+   * Payment details button answers that properly and in private.
+   */
+  return [
     `## ${STATUS[claim.status].icon} Claim #${claim.reference} · ${formatAmount(claim.amountCents, currency)}`,
     `<@${claim.claimantId}> · **${STATUS[claim.status].label}**`,
     '',
     claim.description,
-  ]
-
-  /*
-   * Masked. This sits in a channel the whole committee can read, and whoever is
-   * making the payment has the full number in the payment run already. The last
-   * three digits are enough to tell two of somebody's accounts apart, which is
-   * the only thing anybody needs to do by eye.
-   */
-  if (claim.payeeName && claim.payeeBankCode && claim.payeeAccountNumber) {
-    lines.push(
-      '',
-      `-# ${claim.payeeName} · ${formatBankCode(claim.payeeBankCode)} · ${maskAccount(claim.payeeAccountNumber)}`,
-    )
-  }
-
-  return lines.join('\n')
+  ].join('\n')
 }
 
 async function post(
