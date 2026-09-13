@@ -222,63 +222,95 @@ export async function countClaims(
   return row?.total ?? 0
 }
 
-/** What the server still owes: everything not paid and not rejected. */
-export async function outstanding(
+/**
+ * What is still owed, split by where it has got to.
+ *
+ * One total hid the thing a treasurer actually wants to know: money sitting in
+ * `pending` is waiting on them, money in `submitted` is waiting on somebody
+ * else. Those are different problems and a single figure conflates them.
+ */
+export async function outstandingByStatus(
   database: Database,
   guildId: string,
   claimantId?: string,
-): Promise<{ cents: number; claims: number }> {
+): Promise<{ status: ClaimStatus; cents: number; claims: number }[]> {
   const wheres = [
     eq(reimburseClaims.guildId, guildId),
     inArray(reimburseClaims.status, ['pending', 'submitted']),
   ]
   if (claimantId) wheres.push(eq(reimburseClaims.claimantId, claimantId))
 
-  const [row] = await database
-    .select({ cents: sum(reimburseClaims.amountCents), claims: count() })
+  const rows = await database
+    .select({
+      status: reimburseClaims.status,
+      cents: sum(reimburseClaims.amountCents),
+      claims: count(),
+    })
     .from(reimburseClaims)
     .where(and(...wheres))
+    .groupBy(reimburseClaims.status)
 
-  return { cents: Number(row?.cents ?? 0), claims: row?.claims ?? 0 }
+  return rows.map((row) => ({
+    status: row.status,
+    cents: Number(row.cents ?? 0),
+    claims: row.claims,
+  }))
 }
 
 /**
- * Move every claim in one state to another, in one go.
+ * Move exactly these claims, named by their reference numbers.
  *
- * The reason this exists: a treasurer does a payment run of a dozen claims in
- * their banking app and then has to come back and tick a dozen buttons. Doing
- * it one at a time is where somebody gives up and the records stop matching
- * reality.
+ * References rather than ids because the selection has to survive a round trip
+ * through a Discord custom id, which is capped at 100 characters. A UUID is 36
+ * of them; "7,8,12" is six.
  *
- * Still writes an event per claim, so the audit trail reads the same as if they
- * had been done by hand.
+ * Writes an event per claim, so a batch reads in the trail exactly as it would
+ * had each been done by hand.
  */
-export async function moveAllClaims(
+export async function moveClaimsByReference(
   database: Database,
   guildId: string,
-  from: ClaimStatus,
+  references: readonly number[],
   to: ClaimStatus,
   actorId: string,
 ): Promise<number> {
+  if (references.length === 0) return 0
+
   return database.transaction(async (tx) => {
-    const moved = await tx
+    const current = await tx
+      .select({ id: reimburseClaims.id, status: reimburseClaims.status })
+      .from(reimburseClaims)
+      .where(
+        and(
+          eq(reimburseClaims.guildId, guildId),
+          inArray(reimburseClaims.reference, [...references]),
+        ),
+      )
+
+    // Skip anything already there, so a repeated press is not recorded as a
+    // change that did not happen.
+    const moving = current.filter((claim) => claim.status !== to)
+    if (moving.length === 0) return 0
+
+    await tx
       .update(reimburseClaims)
       .set({ status: to, updatedAt: new Date() })
-      .where(and(eq(reimburseClaims.guildId, guildId), eq(reimburseClaims.status, from)))
-      .returning({ id: reimburseClaims.id })
-
-    if (moved.length === 0) return 0
+      .where(
+        inArray(
+          reimburseClaims.id,
+          moving.map((claim) => claim.id),
+        ),
+      )
 
     await tx.insert(reimburseEvents).values(
-      moved.map((claim) => ({
+      moving.map((claim) => ({
         claimId: claim.id,
         actorId,
-        fromStatus: from,
+        fromStatus: claim.status,
         toStatus: to,
-        note: 'Bulk change',
       })),
     )
 
-    return moved.length
+    return moving.length
   })
 }

@@ -34,7 +34,7 @@ const MAX_UPLOAD_BYTES = 9 * 1024 * 1024
 export async function onExport(
   interaction: ButtonInteraction,
   database: Database,
-  filter: ClaimFilter,
+  filter: ClaimFilter & { references?: number[] },
   label: string,
 ): Promise<void> {
   const guildId = interaction.guildId!
@@ -45,7 +45,10 @@ export async function onExport(
   const currency = config?.currency ?? 'AUD'
 
   const wheres = [eq(reimburseClaims.guildId, guildId)]
-  if (filter.status) wheres.push(eq(reimburseClaims.status, filter.status))
+  // An explicit selection wins over the filter: somebody who picked six claims
+  // out of eleven meant those six.
+  if (filter.references) wheres.push(inArray(reimburseClaims.reference, filter.references))
+  else if (filter.status) wheres.push(eq(reimburseClaims.status, filter.status))
 
   const rows = await database
     .select()

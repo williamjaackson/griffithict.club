@@ -7,10 +7,17 @@ import {
   type ButtonInteraction,
   type StringSelectMenuInteraction,
 } from 'discord.js'
-import { configFor, moveAllClaims, payeeFor, type ClaimStatus } from './claims'
+import { configFor, moveClaimsByReference, payeeFor, type ClaimStatus } from './claims'
 import { onSetupSubmit } from './handlers/admin'
 import { onBankSubmit } from './handlers/bank'
-import { isCommittee, openConsole, PREFIX, renderConsole, type View } from './handlers/console'
+import {
+  decodeRefs,
+  isCommittee,
+  openConsole,
+  PREFIX,
+  renderConsole,
+  type View,
+} from './handlers/console'
 import { onExport } from './handlers/export'
 import { onReviewButton } from './handlers/review'
 import { STATUS } from './status'
@@ -103,19 +110,27 @@ async function onConsoleControl(
   interaction: ButtonInteraction | StringSelectMenuInteraction,
   action: string,
 ): Promise<void> {
-  const redraw = async (view: View, offset: number) => {
-    const rendered = await renderConsole(interaction, database, view, offset)
-    await interaction.update(rendered)
+  const redraw = async (view: View, offset: number, selected: readonly number[]) => {
+    await interaction.update(await renderConsole(interaction, database, view, offset, selected))
   }
 
-  if (interaction.isStringSelectMenu() && action === 'view') {
-    await redraw(interaction.values[0] as View, 0)
+  // The filter select. Keeps the page, drops the selection, since what was
+  // picked is almost certainly not in the new view.
+  if (interaction.isStringSelectMenu() && action.startsWith('view:')) {
+    await redraw(interaction.values[0] as View, 0, [])
+    return
+  }
+
+  // The claim select. Its values are the selection.
+  if (interaction.isStringSelectMenu() && action.startsWith('pick:')) {
+    const [, view, offset] = action.split(':')
+    await redraw(view as View, Number(offset) || 0, interaction.values.map(Number))
     return
   }
 
   if (action.startsWith('page:')) {
-    const [, view, offset] = action.split(':')
-    await redraw(view as View, Number(offset) || 0)
+    const [, view, offset, refs] = action.split(':')
+    await redraw(view as View, Number(offset) || 0, decodeRefs(refs))
     return
   }
 
@@ -134,38 +149,40 @@ async function onConsoleControl(
     return
   }
 
-  if (action === 'setup') {
-    await interaction.showModal(setupModal(await configFor(database, interaction.guildId!)))
-    return
-  }
-
   if (action.startsWith('export:')) {
     if (!interaction.isButton()) return
-    const view = action.slice('export:'.length) as View
+    const [, view, refs] = action.split(':')
+    const selected = decodeRefs(refs)
     await onExport(
       interaction,
       database,
-      { status: view === 'all' ? undefined : view },
-      view === 'all' ? 'all' : STATUS[view].label,
+      {
+        status: view === 'all' ? undefined : (view as ClaimStatus),
+        references: selected.length > 0 ? selected : undefined,
+      },
+      selected.length > 0 ? 'selected' : view === 'all' ? 'all' : STATUS[view as ClaimStatus].label,
     )
     return
   }
 
   if (action.startsWith('bulk:')) {
-    const [, from, to] = action.split(':')
-    const moved = await moveAllClaims(
+    const [, view, to, refs] = action.split(':')
+    const selected = decodeRefs(refs)
+
+    const moved = await moveClaimsByReference(
       database,
       interaction.guildId!,
-      from as ClaimStatus,
+      selected,
       to as ClaimStatus,
       interaction.user.id,
     )
-    await redraw(to as View, 0)
+
+    await redraw(view as View, 0, [])
     await interaction.followUp({
       content:
         moved === 0
-          ? 'Nothing left to move — somebody got there first.'
-          : `Moved ${moved} claim${moved === 1 ? '' : 's'}.`,
+          ? 'Nothing moved — those claims were already there.'
+          : `Moved ${moved} claim${moved === 1 ? '' : 's'} to ${STATUS[to as ClaimStatus].label}.`,
       flags: MessageFlags.Ephemeral,
     })
   }

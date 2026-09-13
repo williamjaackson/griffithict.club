@@ -19,6 +19,7 @@ import {
   type NewReceipt,
 } from '../claims'
 import { formatAmount, parseAmount } from '../money'
+import { formatBankCode } from '../payee'
 import { FIELD_AMOUNT, FIELD_DESCRIPTION, FIELD_RECEIPT } from '../modal'
 import { STATUS } from '../status'
 
@@ -57,8 +58,8 @@ export async function onClaimSubmit(
    * nobody wants to retype them every time, so /reimbursement sends a first-time
    * claimant through the bank modal before ever showing this one.
    */
-  const hasPayee = await payeeFor(database, interaction.guildId, interaction.user.id)
-  if (!hasPayee) {
+  const payee = await payeeFor(database, interaction.guildId, interaction.user.id)
+  if (!payee) {
     await interaction.reply({
       content: 'Add your bank details first with `/reimbursements bank`.',
       flags: MessageFlags.Ephemeral,
@@ -106,9 +107,27 @@ export async function onClaimSubmit(
 
   await post(interaction, database, claim, config.reviewChannelId, config.currency, receipts)
 
-  await interaction.editReply(
-    `Claim **#${claim.reference}** for ${formatAmount(claim.amountCents, config.currency)} is in. You will hear back when the treasurer moves it along.`,
-  )
+  /*
+   * Offered here rather than on the management screen. This is the moment
+   * somebody has just been told where their money is going, so it is the moment
+   * they will notice it is the wrong account. Optional, because it is already
+   * correct almost every time.
+   */
+  await interaction.editReply({
+    content: [
+      `Claim **#${claim.reference}** for ${formatAmount(claim.amountCents, config.currency)} is in. You will hear back when the treasurer moves it along.`,
+      `-# Paid to ${payee.accountName} · ${formatBankCode(payee.bankCode)}`,
+    ].join('\n'),
+    components: [
+      new ActionRowBuilder<ButtonBuilder>().addComponents(
+        new ButtonBuilder()
+          .setCustomId('rc:bank')
+          .setEmoji('🏦')
+          .setLabel('Change bank details')
+          .setStyle(ButtonStyle.Secondary),
+      ),
+    ],
+  })
 }
 
 /**
