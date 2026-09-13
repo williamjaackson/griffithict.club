@@ -1,6 +1,6 @@
 import 'server-only'
 
-import { and, asc, eq, gte } from 'drizzle-orm'
+import { and, asc, eq, gte, isNull, lte, ne, or, type SQL } from 'drizzle-orm'
 import { events, type Event } from '@gict/db'
 import { db } from './db'
 
@@ -24,18 +24,29 @@ async function orEmpty<T>(query: () => Promise<T[]>): Promise<T[]> {
 }
 
 /**
+ * An event is on the site once it is published and its reveal time has passed.
+ *
+ * Two separate ideas. `status` is whether it is finished: a draft is still being
+ * written. `publishAt` is when a finished event should appear, which lets a run of
+ * events be queued and revealed one at a time. Null means show it now.
+ */
+function revealed(now: Date): SQL | undefined {
+  return or(isNull(events.publishAt), lte(events.publishAt, now))
+}
+
+/**
  * Events starting from now, soonest first.
  *
- * Only `published` rows. Drafts are invisible so a half-written event can sit in
- * the database without going live, which is what makes Drizzle Studio a safe way
- * for the committee to add one.
+ * Drafts and events still waiting on their reveal time are invisible, which is
+ * what makes it safe for the committee to queue a month of socials in advance.
  */
 export async function getUpcomingEvents(limit = 3): Promise<Event[]> {
+  const now = new Date()
   return orEmpty(() =>
     db()
       .select()
       .from(events)
-      .where(and(eq(events.status, 'published'), gte(events.startsAt, new Date())))
+      .where(and(eq(events.status, 'published'), revealed(now), gte(events.startsAt, now)))
       .orderBy(asc(events.startsAt))
       .limit(limit),
   )
@@ -49,14 +60,22 @@ export async function getUpcomingEvents(limit = 3): Promise<Event[]> {
  * hidden.
  */
 export async function getEventBySlug(slug: string): Promise<Event | undefined> {
-  const [event] = await db().select().from(events).where(eq(events.slug, slug)).limit(1)
+  const [event] = await db()
+    .select()
+    .from(events)
+    .where(and(eq(events.slug, slug), ne(events.status, 'draft'), revealed(new Date())))
+    .limit(1)
 
-  return event?.status === 'draft' ? undefined : event
+  return event
 }
 
 /** Published events, for the calendar page and the sitemap. */
 export async function getPublishedEvents(): Promise<Event[]> {
   return orEmpty(() =>
-    db().select().from(events).where(eq(events.status, 'published')).orderBy(asc(events.startsAt)),
+    db()
+      .select()
+      .from(events)
+      .where(and(eq(events.status, 'published'), revealed(new Date())))
+      .orderBy(asc(events.startsAt)),
   )
 }

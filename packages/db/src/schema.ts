@@ -41,6 +41,20 @@ export const events = pgTable(
     status: eventStatus('status').notNull().default('draft'),
 
     /**
+     * Hold a published event back until this moment passes.
+     *
+     * Null means show it as soon as it is published, which is the common case.
+     * Setting it lets a run of events be written up once and revealed one at a
+     * time — queue the next month of socials, each appearing as the one before it
+     * happens, so the site is never showing an empty What's On or a wall of
+     * identical entries.
+     *
+     * Distinct from `status`: a draft is unfinished, a scheduled event is
+     * finished and waiting.
+     */
+    publishAt: timestamp('publish_at', { withTimezone: true, mode: 'date' }),
+
+    /**
      * Set by the Discord bot when it mirrors this into a Discord scheduled event,
      * so the two stay linked instead of drifting into duplicates.
      */

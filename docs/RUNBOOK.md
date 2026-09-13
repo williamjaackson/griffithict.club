@@ -68,24 +68,49 @@ and confirm the site stays up. An untested failure path is a guess.
 
 ## Adding an event
 
-Events live in Postgres because the Discord bot will write to them too. Until that
-bot exists, use Drizzle Studio through an SSH tunnel:
+```sh
+pnpm db:event \
+  --title "Tech Social" \
+  --starts "2026-09-15 18:30" \
+  --location "G23_1.14, Griffith University" \
+  --summary "Games, hangout, and afters at the Parkwood Tavern." \
+  --status published
+```
+
+Times are Brisbane. `pnpm db:event --help` lists every option.
+
+Idempotent on the slug, so re-running with a corrected time fixes the row instead
+of creating a second event with the same name. Against production, open a tunnel
+first and point `DATABASE_URL` at it.
+
+**Queueing a run of events.** `--publish-at` holds a finished event back until a
+moment passes, so a month of socials can be written up in one sitting and appear
+one at a time:
+
+```sh
+# Written now, appears the evening the previous social runs.
+pnpm db:event --title "Tech Social" --slug tech-social-2026-09-22 \
+  --starts "2026-09-22 18:30" --publish-at "2026-09-15 21:00" --status published
+```
+
+Three states worth keeping straight:
+
+|                                                 | Meaning                                        |
+| ----------------------------------------------- | ---------------------------------------------- |
+| `status: draft`                                 | Unfinished. Never shown                        |
+| `status: published`, `publish_at` in the future | Finished, waiting. Not shown, and its URL 404s |
+| `status: published`, `publish_at` null or past  | On the site                                    |
+
+Cancelling: set `status` to `cancelled` rather than deleting. The link is already
+out there, and the page says the event is off.
+
+There is also Drizzle Studio, a table editor over a tunnel, if you would rather
+click:
 
 ```sh
 ssh -L 5432:localhost:5432 gict-vps    # leave this running
 pnpm db:studio                          # in another terminal
 ```
-
-Open https://local.drizzle.studio, edit the `events` table.
-
-- `slug` is the URL and what gets pasted into Discord. Do not change it after
-  announcing the event.
-- `starts_at` is **UTC**. Brisbane is UTC+10 with no daylight saving, so 5:30pm
-  Brisbane is `07:30` UTC the same day.
-- `status` is `draft` until you set it to `published`. Nothing shows on the site
-  until then, which is what makes this safe.
-- Cancelling: set `status` to `cancelled` rather than deleting. The link is
-  already out there, and the page explains itself.
 
 ## Editing everything else
 
