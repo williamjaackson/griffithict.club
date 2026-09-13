@@ -1,11 +1,20 @@
-import { loadBotConfig, database as openDatabase, shutdownOn } from '@gict/bot-kit'
+import { database as openDatabase, loadBotConfig, shutdownOn } from '@gict/bot-kit'
 import { Client, Events, GatewayIntentBits, MessageFlags } from 'discord.js'
-import { payeeFor } from './claims'
-import { CONTINUE_BUTTON, onBankSubmit } from './handlers/bank'
-import { onAdminCommand } from './handlers/admin'
+import { configFor, payeeFor } from './claims'
+import { onSetupSubmit, showAllClaims } from './handlers/admin'
+import { onBankSubmit } from './handlers/bank'
+import { BUTTON, isCommittee, showDashboard } from './handlers/dashboard'
+import { onExport } from './handlers/export'
 import { onReviewButton } from './handlers/review'
 import { onClaimSubmit } from './handlers/submit'
-import { bankModal, BANK_MODAL_ID, claimModal, CLAIM_MODAL_ID } from './modal'
+import {
+  BANK_MODAL_ID,
+  bankModal,
+  CLAIM_MODAL_ID,
+  claimModal,
+  SETUP_MODAL_ID,
+  setupModal,
+} from './modal'
 
 const config = loadBotConfig('REIMBURSE')
 const database = openDatabase(config.databaseUrl)
@@ -23,46 +32,68 @@ client.once(Events.ClientReady, (ready) => {
 
 client.on(Events.InteractionCreate, async (interaction) => {
   try {
-    if (interaction.isChatInputCommand()) {
-      // The bare command opens the form. Everything else is under the plural.
-      if (interaction.commandName === 'reimbursement') {
-        /*
-         * A first-time claimant is sent through the bank form first, because
-         * the claim needs somewhere to pay and the two together do not fit in
-         * one modal. After that this is a single step forever.
-         */
-        const payee = interaction.inGuild()
-          ? await payeeFor(database, interaction.guildId, interaction.user.id)
-          : null
-        await interaction.showModal(payee ? claimModal() : bankModal(null))
-        return
-      }
-      if (interaction.commandName === 'reimbursements') {
-        await onAdminCommand(interaction, database)
-        return
-      }
+    if (interaction.isChatInputCommand() && interaction.commandName === 'reimbursement') {
+      await showDashboard(interaction, database)
+      return
     }
 
     if (interaction.isModalSubmit()) {
-      if (interaction.customId === CLAIM_MODAL_ID) {
-        await onClaimSubmit(interaction, database)
-        return
-      }
-      if (interaction.customId === BANK_MODAL_ID) {
-        await onBankSubmit(interaction, database)
-        return
-      }
+      if (interaction.customId === CLAIM_MODAL_ID)
+        return void (await onClaimSubmit(interaction, database))
+      if (interaction.customId === BANK_MODAL_ID)
+        return void (await onBankSubmit(interaction, database))
+      if (interaction.customId === SETUP_MODAL_ID)
+        return void (await onSetupSubmit(interaction, database))
     }
 
-    // The hand-off out of the bank form, since a modal cannot open a modal.
-    if (interaction.isButton() && interaction.customId === CONTINUE_BUTTON) {
-      await interaction.showModal(claimModal())
-      return
-    }
+    if (!interaction.isButton()) return
 
-    if (interaction.isButton() && interaction.customId.startsWith('claim:')) {
+    // Moving a claim along, from the post in the review channel.
+    if (interaction.customId.startsWith('claim:')) {
       await onReviewButton(interaction, database)
       return
+    }
+
+    switch (interaction.customId) {
+      case BUTTON.claim:
+      case 'reimbursement:continue': {
+        const payee = await payeeFor(database, interaction.guildId!, interaction.user.id)
+        await interaction.showModal(payee ? claimModal() : bankModal(null))
+        return
+      }
+
+      case BUTTON.bank: {
+        const payee = await payeeFor(database, interaction.guildId!, interaction.user.id)
+        await interaction.showModal(bankModal(payee))
+        return
+      }
+
+      case BUTTON.all:
+      case BUTTON.exportClaims:
+      case BUTTON.exportPayments:
+      case BUTTON.setup: {
+        // One gate for every committee button, rather than four copies of it.
+        if (!(await isCommittee(interaction, database))) {
+          await interaction.reply({
+            content: 'That one is for the committee.',
+            flags: MessageFlags.Ephemeral,
+          })
+          return
+        }
+
+        if (interaction.customId === BUTTON.all)
+          return void (await showAllClaims(interaction, database))
+        if (interaction.customId === BUTTON.setup) {
+          await interaction.showModal(setupModal(await configFor(database, interaction.guildId!)))
+          return
+        }
+        await onExport(
+          interaction,
+          database,
+          interaction.customId === BUTTON.exportPayments ? 'payments' : 'claims',
+        )
+        return
+      }
     }
   } catch (error) {
     console.error('Interaction failed:', error)

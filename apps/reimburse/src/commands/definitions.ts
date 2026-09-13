@@ -1,88 +1,19 @@
-import { ChannelType, SlashCommandBuilder } from 'discord.js'
+import { SlashCommandBuilder } from 'discord.js'
 
 /**
- * The claim form, and nothing else.
+ * One command. No subcommands, no options, no permission gate.
  *
- * Deliberately has no subcommands. A command that has them cannot be run bare,
- * and Discord would make somebody pick from a list before they could type an
- * amount. Everything a treasurer does lives on buttons attached to the claim or
- * under /reimbursements, so the thing most people do stays one word.
+ * It opens a dashboard, and everything else is a button on it. That is fewer
+ * things to remember than a verb per action, and it is the only arrangement
+ * where somebody who has never used the bot can find out what it does: a member
+ * had no way of guessing that `/reimbursements bank` existed.
  *
- * No permission gate: anybody who spent club money can claim it back.
+ * Ungated because the dashboard shows each person only what is theirs. The
+ * committee's buttons appear for the committee and nobody else.
  */
-export const claimCommand = new SlashCommandBuilder()
+export const reimbursementCommand = new SlashCommandBuilder()
   .setName('reimbursement')
-  .setDescription('Claim money back for something you bought for the club')
+  .setDescription('Claim money back, and see where your claims are up to')
   .setDMPermission(false)
 
-/*
- * Not gated at the Discord level, because `bank` and `mine` belong to everyone
- * while `setup` and `list` do not. A single permission on the command would
- * either hide somebody's own bank details from them or show the whole claim
- * list to the server. The checks live in the handler instead.
- */
-export const adminCommand = new SlashCommandBuilder()
-  .setName('reimbursements')
-  .setDescription('Reimbursement claims and your bank details')
-  .setDMPermission(false)
-  .addSubcommand((sub) =>
-    sub.setName('bank').setDescription('Set or change where your reimbursements are paid'),
-  )
-  .addSubcommand((sub) =>
-    sub
-      .setName('setup')
-      .setDescription('Choose where claims are posted and who can act on them')
-      .addChannelOption((option) =>
-        option
-          .setName('channel')
-          .setDescription("Where claims go. Make it private: these are people's finances.")
-          .addChannelTypes(ChannelType.GuildText)
-          .setRequired(true),
-      )
-      .addRoleOption((option) =>
-        option
-          .setName('treasurer')
-          .setDescription('The role allowed to move claims along')
-          .setRequired(true),
-      )
-      .addStringOption((option) =>
-        option
-          .setName('currency')
-          .setDescription('ISO code. Defaults to AUD.')
-          .setMinLength(3)
-          .setMaxLength(3),
-      ),
-  )
-  .addSubcommand((sub) =>
-    sub
-      .setName('list')
-      .setDescription('Claims in this server')
-      .addStringOption((option) =>
-        option
-          .setName('status')
-          .setDescription('Only claims in this state')
-          .addChoices(
-            { name: 'Pending', value: 'pending' },
-            { name: 'Submitted for payment', value: 'submitted' },
-            { name: 'Paid', value: 'paid' },
-            { name: 'Rejected', value: 'rejected' },
-          ),
-      ),
-  )
-  .addSubcommand((sub) => sub.setName('mine').setDescription('Your own claims'))
-  .addSubcommand((sub) =>
-    sub
-      .setName('export')
-      .setDescription('Download claims as a spreadsheet')
-      .addStringOption((option) =>
-        option
-          .setName('what')
-          .setDescription('Which export')
-          .addChoices(
-            { name: 'Claims — the record, no bank details', value: 'claims' },
-            { name: 'Payment run — what is owed, with bank details', value: 'payments' },
-          ),
-      ),
-  )
-
-export const commands = [claimCommand, adminCommand]
+export const commands = [reimbursementCommand]

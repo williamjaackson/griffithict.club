@@ -1,66 +1,65 @@
-import { MessageFlags, PermissionFlagsBits, type ChatInputCommandInteraction } from 'discord.js'
+import { MessageFlags, type ButtonInteraction, type ModalSubmitInteraction } from 'discord.js'
 import { reimburseConfig, type Database } from '@gict/db'
-import { claimsFor, configFor, payeeFor } from '../claims'
-import { bankModal } from '../modal'
-import { onExport } from './export'
-import { statusText, type ClaimStatus } from '../status'
+import { claimsFor, configFor } from '../claims'
+import { FIELD_CHANNEL, FIELD_CURRENCY, FIELD_TREASURER } from '../modal'
 import { formatAmount, totalCents } from '../money'
+import { statusText } from '../status'
 
-export async function onAdminCommand(
-  interaction: ChatInputCommandInteraction,
+/** Every claim in the server, for whoever is chasing them. */
+export async function showAllClaims(
+  interaction: ButtonInteraction,
   database: Database,
 ): Promise<void> {
-  const sub = interaction.options.getSubcommand()
+  const config = await configFor(database, interaction.guildId!)
+  const currency = config?.currency ?? 'AUD'
+  const claims = await claimsFor(database, interaction.guildId!)
 
-  // Open to everyone: your own details, and your own claims.
-  if (sub === 'bank') {
-    const payee = await payeeFor(database, interaction.guildId!, interaction.user.id)
-    await interaction.showModal(bankModal(payee))
+  if (claims.length === 0) {
+    await interaction.reply({ content: 'No claims yet.', flags: MessageFlags.Ephemeral })
     return
   }
-  if (sub === 'mine') return list(interaction, database, true)
 
-  if (!(await allowed(interaction, database, sub))) return
-
-  if (sub === 'setup') return setup(interaction, database)
-  if (sub === 'list') return list(interaction, database, false)
-  if (sub === 'export') return onExport(interaction, database)
-}
-
-/**
- * Who may see the rest.
- *
- * `setup` changes the server's configuration, so it wants Manage Server.
- * `list` shows every member's claims and amounts, so the treasurer role counts
- * too — they are the person the list is for.
- */
-async function allowed(
-  interaction: ChatInputCommandInteraction,
-  database: Database,
-  sub: string,
-): Promise<boolean> {
-  const isAdmin = interaction.memberPermissions?.has(PermissionFlagsBits.ManageGuild) ?? false
-  if (isAdmin) return true
-
-  // The treasurer is who these are for, so the role counts as well as the
-  // server permission.
-  if (sub === 'list' || sub === 'export') {
-    const config = await configFor(database, interaction.guildId!)
-    const member = await interaction.guild?.members.fetch(interaction.user.id)
-    if (config?.treasurerRoleId && member?.roles.cache.has(config.treasurerRoleId)) return true
-  }
+  const outstanding = claims.filter(
+    (claim) => claim.status !== 'paid' && claim.status !== 'rejected',
+  )
 
   await interaction.reply({
-    content: 'That part is for the committee. `/reimbursements mine` shows your own claims.',
+    content: [
+      '## All claims',
+      ...claims.map(
+        (claim) =>
+          `${statusText(claim.status)} · \`#${claim.reference}\` ${formatAmount(claim.amountCents, currency)} · <@${claim.claimantId}>`,
+      ),
+      `-# ${formatAmount(totalCents(outstanding), currency)} outstanding across ${outstanding.length} claim${outstanding.length === 1 ? '' : 's'}`,
+    ].join('\n'),
     flags: MessageFlags.Ephemeral,
+    allowedMentions: { parse: [] },
   })
-  return false
 }
 
-async function setup(interaction: ChatInputCommandInteraction, database: Database): Promise<void> {
-  const channel = interaction.options.getChannel('channel', true)
-  const treasurer = interaction.options.getRole('treasurer', true)
-  const currency = (interaction.options.getString('currency') ?? 'AUD').toUpperCase()
+export async function onSetupSubmit(
+  interaction: ModalSubmitInteraction,
+  database: Database,
+): Promise<void> {
+  const channel = interaction.fields.getSelectedChannels(FIELD_CHANNEL, true).first()
+  const treasurer = interaction.fields.getSelectedRoles(FIELD_TREASURER, true).first()
+  const currency = interaction.fields.getTextInputValue(FIELD_CURRENCY).trim().toUpperCase()
+
+  if (!channel || !treasurer) {
+    await interaction.reply({
+      content: 'Pick both a channel and a role.',
+      flags: MessageFlags.Ephemeral,
+    })
+    return
+  }
+
+  if (!/^[A-Z]{3}$/.test(currency)) {
+    await interaction.reply({
+      content: 'Currency should be a three letter code, like AUD.',
+      flags: MessageFlags.Ephemeral,
+    })
+    return
+  }
 
   await database
     .insert(reimburseConfig)
@@ -77,51 +76,8 @@ async function setup(interaction: ChatInputCommandInteraction, database: Databas
 
   await interaction.reply({
     content: [
-      `Claims will be posted in <#${channel.id}> and <@&${treasurer.id}> can move them along. Amounts in ${currency}.`,
-      `-# Check that channel is private. Claims carry people's names and what they spent.`,
-    ].join('\n'),
-    flags: MessageFlags.Ephemeral,
-    allowedMentions: { parse: [] },
-  })
-}
-
-async function list(
-  interaction: ChatInputCommandInteraction,
-  database: Database,
-  onlyMine: boolean,
-): Promise<void> {
-  const config = await configFor(database, interaction.guildId!)
-  const currency = config?.currency ?? 'AUD'
-  const status = interaction.options.getString('status') as ClaimStatus | null
-
-  const claims = await claimsFor(database, interaction.guildId!, {
-    claimantId: onlyMine ? interaction.user.id : undefined,
-    status: status ?? undefined,
-  })
-
-  if (claims.length === 0) {
-    await interaction.reply({ content: 'Nothing to show.', flags: MessageFlags.Ephemeral })
-    return
-  }
-
-  const rows = claims
-    .map(
-      (claim) =>
-        `${statusText(claim.status)} · \`#${String(claim.reference).padStart(3, '0')}\` ${formatAmount(claim.amountCents, currency)}${
-          onlyMine ? '' : ` · <@${claim.claimantId}>`
-        }`,
-    )
-    .join('\n')
-
-  const outstanding = claims.filter(
-    (claim) => claim.status !== 'paid' && claim.status !== 'rejected',
-  )
-
-  await interaction.reply({
-    content: [
-      `## ${onlyMine ? 'Your claims' : 'Claims'}`,
-      rows,
-      `-# ${formatAmount(totalCents(outstanding), currency)} still owed across ${outstanding.length} claim${outstanding.length === 1 ? '' : 's'}`,
+      `Claims go to <#${channel.id}>, <@&${treasurer.id}> can act on them, amounts in ${currency}.`,
+      '-# Check that channel is private. Claims carry names and what people spent.',
     ].join('\n'),
     flags: MessageFlags.Ephemeral,
     allowedMentions: { parse: [] },

@@ -1,8 +1,13 @@
-import { ModalBuilder, TextInputStyle } from 'discord.js'
+import { ChannelType, ModalBuilder, TextInputStyle } from 'discord.js'
 import type { ReimbursePayee } from '@gict/db'
 
 export const CLAIM_MODAL_ID = 'reimbursement:claim'
 export const BANK_MODAL_ID = 'reimbursement:bank'
+export const SETUP_MODAL_ID = 'reimbursement:setup'
+
+export const FIELD_CHANNEL = 'channel'
+export const FIELD_TREASURER = 'treasurer'
+export const FIELD_CURRENCY = 'currency'
 
 export const FIELD_AMOUNT = 'amount'
 export const FIELD_DESCRIPTION = 'description'
@@ -102,5 +107,57 @@ export function bankModal(payee: ReimbursePayee | null): ModalBuilder {
               .setMaxLength(34)
               .setValue(payee?.accountNumber ?? ''),
           ),
+    )
+}
+
+/**
+ * Where claims go and who can act on them.
+ *
+ * A modal rather than a command, now that they take channel and role pickers.
+ * Setup is run once per server and then never again, which makes it the worst
+ * possible thing to give a permanent slot in everybody's command list.
+ */
+export function setupModal(
+  config: {
+    reviewChannelId: string | null
+    treasurerRoleId: string | null
+    currency: string
+  } | null,
+): ModalBuilder {
+  return new ModalBuilder()
+    .setCustomId(SETUP_MODAL_ID)
+    .setTitle('Reimbursement setup')
+    .addLabelComponents(
+      (label) =>
+        label
+          .setLabel('Where claims are posted')
+          .setDescription('Make it private. Claims carry names and amounts.')
+          .setChannelSelectMenuComponent((select) =>
+            select
+              .setCustomId(FIELD_CHANNEL)
+              .setChannelTypes(ChannelType.GuildText)
+              .setRequired(true)
+              .setDefaultChannels(config?.reviewChannelId ? [config.reviewChannelId] : []),
+          ),
+      (label) =>
+        label
+          .setLabel('Who can act on claims')
+          .setDescription('A role, not an admin permission. Treasurers are rarely admins.')
+          .setRoleSelectMenuComponent((select) =>
+            select
+              .setCustomId(FIELD_TREASURER)
+              .setRequired(true)
+              .setDefaultRoles(config?.treasurerRoleId ? [config.treasurerRoleId] : []),
+          ),
+      (label) =>
+        label.setLabel('Currency').setTextInputComponent((input) =>
+          input
+            .setCustomId(FIELD_CURRENCY)
+            .setStyle(TextInputStyle.Short)
+            .setPlaceholder('AUD')
+            .setRequired(true)
+            .setMaxLength(3)
+            .setValue(config?.currency ?? 'AUD'),
+        ),
     )
 }

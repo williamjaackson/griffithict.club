@@ -31,33 +31,28 @@ pnpm reimburse:commands   # upload the slash commands, after any change to them
 pnpm reimburse            # run it
 ```
 
-Then, in the server: `/reimbursements setup channel:#treasury treasurer:@Treasurer`
+Then, in the server: `/reimbursement` → **Setup**.
 
 ## Use
 
+One command:
+
 ```
-/reimbursement                 opens the claim form
-/reimbursements bank           set or change where you are paid
-/reimbursements mine           your own claims
-/reimbursements setup          review channel, treasurer role, currency
-/reimbursements list [status]  every claim
-/reimbursements export [what]  download a spreadsheet
+/reimbursement
 ```
 
-Two exports. **Claims** is the record: every claim, no bank details, safe to
-hand to an auditor or the next committee. **Payment run** is a worklist: what is
-owed and where to send it, so it carries account numbers and should not leave
-the treasurer's machine. Both arrive as an ephemeral file.
+It opens a private dashboard: your claims, what you are still owed, and buttons
+for everything else. New claim and Bank details for everyone; All claims, Export
+claims, Payment run and Setup for the committee, rendered only for them so
+nobody is shown a button that will refuse them.
 
-`bank` and `mine` are open to everyone; `setup` needs Manage Server and `list`
-needs that or the treasurer role. Those checks are in the handler rather than on
-the command, because a single Discord permission would either hide somebody's
-own bank details from them or show the whole claim list to the server.
+There are no subcommands, and no permission gate on the command. A verb per
+action meant remembering five of them, and a member had no way of discovering
+that `/reimbursements bank` existed at all. Setup is a modal now that those take
+channel and role pickers, which suits something run once per server and then
+never again.
 
-`/reimbursement` has no subcommands on purpose. A command that has them cannot
-be run bare, so Discord would make somebody choose from a list before they could
-type an amount. Everything the treasurer does is on buttons attached to the
-claim itself.
+Moving a claim along happens on the claim post in the review channel, not here.
 
 ## Things worth knowing
 

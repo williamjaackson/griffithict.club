@@ -1,4 +1,4 @@
-import { AttachmentBuilder, MessageFlags, type ChatInputCommandInteraction } from 'discord.js'
+import { AttachmentBuilder, MessageFlags, type ButtonInteraction } from 'discord.js'
 import { and, asc, eq, inArray } from 'drizzle-orm'
 import { reimburseClaims, reimbursePayees, type Database, type ReimburseClaim } from '@gict/db'
 import { configFor } from '../claims'
@@ -15,10 +15,10 @@ import { STATUS } from '../status'
  * leave the treasurer's machine.
  */
 export async function onExport(
-  interaction: ChatInputCommandInteraction,
+  interaction: ButtonInteraction,
   database: Database,
+  kind: 'claims' | 'payments',
 ): Promise<void> {
-  const kind = interaction.options.getString('what') ?? 'claims'
   const guildId = interaction.guildId!
 
   await interaction.deferReply({ flags: MessageFlags.Ephemeral })
@@ -73,7 +73,7 @@ export async function onExport(
  * and the id stays in its own column for anyone who needs to match rows up.
  */
 async function displayNames(
-  interaction: ChatInputCommandInteraction,
+  interaction: ButtonInteraction,
   claims: readonly ReimburseClaim[],
 ): Promise<Map<string, string>> {
   const ids = [...new Set(claims.map((claim) => claim.claimantId))]
