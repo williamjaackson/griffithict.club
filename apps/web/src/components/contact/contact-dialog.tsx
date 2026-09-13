@@ -97,11 +97,7 @@ export function ContactDialog({ contact }: { contact: Contact }) {
             </p>
           )}
 
-          <div className="flex flex-wrap items-center justify-end gap-4">
-            {/* Says where it lands, so nobody wonders whether this goes anywhere. */}
-            <p className="text-muted m-0 mr-auto text-[14px] leading-[1.5]">
-              Goes straight to the committee.
-            </p>
+          <div className="flex justify-end">
             <Button type="submit" disabled={pending} className="wide:w-auto w-full">
               {pending ? 'Sending…' : 'Send message'}
             </Button>
