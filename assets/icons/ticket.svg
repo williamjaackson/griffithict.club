@@ -1,0 +1,21 @@
+<!--
+  Ticket — support tickets with staff.
+
+  A stub rather than a speech bubble, so it does not collide with Event: one is
+  a calendar, the other is the thing you tear. The notches and the perforation
+  are what make it a ticket rather than a rectangle.
+-->
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" width="512" height="512">
+  <rect width="512" height="512" fill="#F4F2F0"/>
+  <defs><clipPath id="ticket"><path d="M92,148 H420 V222 A34,34 0 0 0 420,290 V364 H92 V290 A34,34 0 0 0 92,222 Z"/></clipPath></defs>
+  <!-- Scaled about the centre to sit at the same weight as the other marks. -->
+  <g transform="translate(256,256) scale(0.86) translate(-256,-256)">
+    <g clip-path="url(#ticket)">
+      <rect width="512" height="512" fill="#111010"/>
+      <rect x="92" y="140" width="109.3" height="92" fill="#E51B13"/>
+      <rect x="201.3" y="140" width="109.3" height="92" fill="#F4674E"/>
+      <rect x="310.7" y="140" width="109.3" height="92" fill="#F9A99A"/>
+    </g>
+    <g><rect x="252" y="176" width="8" height="18" rx="4" fill="#F4F2F0"/><rect x="252" y="210" width="8" height="18" rx="4" fill="#F4F2F0"/><rect x="252" y="244" width="8" height="18" rx="4" fill="#F4F2F0"/><rect x="252" y="278" width="8" height="18" rx="4" fill="#F4F2F0"/><rect x="252" y="312" width="8" height="18" rx="4" fill="#F4F2F0"/></g>
+  </g>
+</svg>

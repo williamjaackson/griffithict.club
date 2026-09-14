@@ -1,0 +1,12 @@
+<!--
+  The bot suite.
+
+  No shape, because it stands for all of them rather than any one. The three
+  colours are what the family shares: every bot's mark is an ink silhouette with
+  these clipped into it.
+-->
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" width="512" height="512">
+  <rect x="0" width="170.7" height="512" fill="#E51B13"/>
+  <rect x="170.7" width="170.7" height="512" fill="#F4674E"/>
+  <rect x="341.3" width="170.7" height="512" fill="#F9A99A"/>
+</svg>

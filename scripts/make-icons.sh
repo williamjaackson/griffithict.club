@@ -14,7 +14,9 @@ ROOT="$(git rev-parse --show-toplevel)"
 command -v rsvg-convert >/dev/null || { echo "rsvg-convert not found; brew install librsvg" >&2; exit 1; }
 
 found=0
-for src in "$ROOT"/apps/*/assets/icon.svg; do
+# Bots that exist keep their mark beside their code; designs for bots that do
+# not exist yet live in assets/icons until there is an app to move them into.
+for src in "$ROOT"/apps/*/assets/icon.svg "$ROOT"/assets/icons/*.svg; do
   [ -e "$src" ] || continue
   found=1
   out="${src%.svg}-512.png"
