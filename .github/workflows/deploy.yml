@@ -70,6 +70,19 @@ jobs:
           cache-from: type=gha
           cache-to: type=gha,mode=max
 
+      - name: Build and push the Boost bot
+        uses: docker/build-push-action@v6
+        with:
+          context: .
+          target: boost
+          platforms: linux/amd64
+          push: true
+          tags: |
+            ${{ env.REGISTRY }}/${{ github.repository_owner }}/boost:${{ github.sha }}
+            ${{ env.REGISTRY }}/${{ github.repository_owner }}/boost:latest
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
+
       - name: Build and push the migration runner
         uses: docker/build-push-action@v6
         with:
