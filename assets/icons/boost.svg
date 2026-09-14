@@ -1,25 +1,21 @@
 <!--
   Boost — booster perks.
 
-  Discord's own boost shape: a flat table, flaring to the girdle, tapering to a
-  point. A pointed top instead reads as a house.
+  Discord's own geometry, taken from its boost badge rather than guessed at:
+  a pointed top, vertical sides, a pointed bottom, 10.92 by 18.6 on their 24
+  grid and scaled onto ours. Two earlier attempts drew a squat gem at an aspect
+  of 0.77 against the real 0.59, which reads as a house rather than a diamond.
 
-  The crown facets are knocked out exactly on the band edges, so the facets and
-  the colours are the same lines. Drawn independently they became two competing
-  grids and the gem stopped reading as cut.
+  The colour runs through the body and the ink is the tip, which is how the
+  funnel is built too: colour where the shape is wide, ink where it narrows.
 -->
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" width="512" height="512">
   <rect width="512" height="512" fill="#F4F2F0"/>
-  <defs><clipPath id="gb"><path d="M196,132 H316 L392,220 L256,384 L120,220 Z"/></clipPath></defs>
-  <g clip-path="url(#gb)">
+  <defs><clipPath id="bz"><path d="M256.0,111.0 L170.9,196.1 L170.9,315.9 L256.0,401.0 L341.1,315.9 L341.1,196.1 Z"/></clipPath></defs>
+  <g clip-path="url(#bz)">
     <rect width="512" height="512" fill="#111010"/>
-    <rect x="120" y="110" width="90.7" height="110" fill="#E51B13"/>
-    <rect x="210.7" y="110" width="90.7" height="110" fill="#F4674E"/>
-    <rect x="301.3" y="110" width="90.7" height="110" fill="#F9A99A"/>
-  </g>
-  <g stroke="#F4F2F0" stroke-width="9" fill="none">
-    <path d="M196,132 L210.7,220"/>
-    <path d="M316,132 L301.3,220"/>
-    <path d="M120,220 H392"/>
+    <rect x="170.9" y="100" width="56.8" height="215.9" fill="#E51B13"/>
+    <rect x="227.6" y="100" width="56.8" height="215.9" fill="#F4674E"/>
+    <rect x="284.4" y="100" width="56.8" height="215.9" fill="#F9A99A"/>
   </g>
 </svg>
