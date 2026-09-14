@@ -25,7 +25,9 @@
     "funnel:commands": "pnpm --filter @gict/funnel commands",
     "icons": "./scripts/make-icons.sh",
     "reimburse": "./scripts/run-bot.sh reimburse",
-    "reimburse:commands": "pnpm --filter @gict/reimburse commands"
+    "reimburse:commands": "pnpm --filter @gict/reimburse commands",
+    "boost": "./scripts/run-bot.sh boost",
+    "boost:commands": "pnpm --filter @gict/boost commands"
   },
   "devDependencies": {
     "prettier": "^3.6.2",

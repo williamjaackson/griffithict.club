@@ -1,7 +1,7 @@
 # syntax=docker/dockerfile:1
 
-# Four images out of one file: the site, the one-shot migration runner, and the
-# two bots. They share every layer up to `deps`, so the three small ones cost
+# Five images out of one file: the site, the one-shot migration runner, and the
+# three bots. They share every layer up to `deps`, so the three small ones cost
 # almost nothing beyond the site.
 
 ARG NODE_VERSION=24-alpine
@@ -20,6 +20,7 @@ COPY pnpm-lock.yaml pnpm-workspace.yaml package.json ./
 COPY apps/web/package.json apps/web/
 COPY apps/funnel/package.json apps/funnel/
 COPY apps/reimburse/package.json apps/reimburse/
+COPY apps/boost/package.json apps/boost/
 COPY packages/bot-kit/package.json packages/bot-kit/
 COPY packages/db/package.json packages/db/
 RUN --mount=type=cache,id=pnpm,target=/pnpm/store \
@@ -86,6 +87,17 @@ WORKDIR /app/apps/reimburse
 # workspace's dependencies are up to date before running anything, and that
 # check writes a temp file into /app, which a read_only container refuses. The
 # result is a crash loop with an EROFS buried in a pnpm stack trace.
+CMD ["node_modules/.bin/tsx", "src/index.ts"]
+
+# ---- boost -----------------------------------------------------------------
+# Booster perks. Same shape as the others: outbound websocket, no port, nothing
+# to probe.
+FROM deps AS boost
+ENV NODE_ENV=production
+COPY packages/db packages/db
+COPY packages/bot-kit packages/bot-kit
+COPY apps/boost apps/boost
+WORKDIR /app/apps/boost
 CMD ["node_modules/.bin/tsx", "src/index.ts"]
 
 # ---- migrations ------------------------------------------------------------

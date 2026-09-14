@@ -3,6 +3,7 @@ import { index, pgEnum, pgTable, text, timestamp, uuid, varchar } from 'drizzle-
 // The bot's tables live beside these in the same database but share nothing with
 // them, so they keep their own file. Re-exported here because the Drizzle client
 // builds its schema from this module.
+export * from './boost'
 export * from './funnel'
 export * from './reimburse'
 

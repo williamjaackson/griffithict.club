@@ -84,6 +84,22 @@ services:
     networks: [club]
     logging: *logging
 
+  # Booster perks. Outbound only, its own env file like the others.
+  boost:
+    image: ghcr.io/williamjaackson/boost:${IMAGE_TAG:-latest}
+    restart: unless-stopped
+    env_file: /etc/club/boost.env
+    init: true
+    read_only: true
+    # tsx compiles to a cache under the system temp directory.
+    tmpfs:
+      - /tmp
+    depends_on:
+      migrate:
+        condition: service_completed_successfully
+    networks: [club]
+    logging: *logging
+
 networks:
   club:
     external: true
