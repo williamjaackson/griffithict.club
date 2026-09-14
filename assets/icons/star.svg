@@ -1,0 +1,25 @@
+<!--
+  Star — the starboard bot.
+
+  Larger than its siblings on purpose. A star's concave points mean it reads
+  smaller than the box it occupies, so matching the others' footprint left it
+  looking undersized beside them.
+
+  The colour breaks across the arms rather than on the line through the side
+  tips. Cutting there looks like the natural place and is not: it severs the top
+  point and leaves a coloured hat on a black star.
+-->
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" width="512" height="512">
+  <rect width="512" height="512" fill="#F4F2F0"/>
+  <defs><clipPath id="star"><path d="M256.0,90.0 L299.5,208.1 L425.3,213.0 L326.4,290.9 L360.6,412.0 L256.0,342.0 L151.4,412.0 L185.6,290.9 L86.7,213.0 L212.5,208.1 Z"/></clipPath></defs>
+  <!-- Larger than its siblings on purpose: the concave points mean a star reads
+       smaller than the box it occupies. -->
+  <g transform="translate(256,256) scale(0.9) translate(-256,-256)">
+    <g clip-path="url(#star)">
+      <rect width="512" height="512" fill="#111010"/>
+      <rect x="78" y="80" width="118.7" height="170" fill="#E51B13"/>
+      <rect x="196.7" y="80" width="118.7" height="170" fill="#F4674E"/>
+      <rect x="315.3" y="80" width="118.7" height="170" fill="#F9A99A"/>
+    </g>
+  </g>
+</svg>
