@@ -8,6 +8,7 @@ The Griffith ICT Club website.
 | ------------------ | ----------------------------------------------------- |
 | `apps/web`         | The site. Next.js 16, App Router                      |
 | `apps/funnel`      | Funnel, the Discord invite and funnel tracker         |
+| `apps/boost`       | Booster perks: personal roles and passes              |
 | `apps/reimburse`   | Reimbursement claims, receipts and payment runs       |
 | `packages/bot-kit` | Config, database and shutdown wiring the bots share   |
 | `packages/db`      | Drizzle schema and migrations for the shared Postgres |

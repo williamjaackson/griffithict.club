@@ -18,6 +18,40 @@ importers:
         specifier: ^5.9.3
         version: 5.9.3
 
+  apps/boost:
+    dependencies:
+      '@gict/bot-kit':
+        specifier: workspace:*
+        version: link:../../packages/bot-kit
+      '@gict/db':
+        specifier: workspace:*
+        version: link:../../packages/db
+      discord.js:
+        specifier: ^14.27.0
+        version: 14.27.0
+      drizzle-orm:
+        specifier: ^0.45.2
+        version: 0.45.2(@types/pg@8.23.1)(pg@8.23.0)
+    devDependencies:
+      '@types/node':
+        specifier: ^24.13.4
+        version: 24.13.4
+      eslint:
+        specifier: ^9.39.5
+        version: 9.39.5(jiti@2.7.0)(supports-color@7.2.0)
+      tsx:
+        specifier: ^4.20.6
+        version: 4.23.13
+      typescript:
+        specifier: ^5.9.3
+        version: 5.9.3
+      typescript-eslint:
+        specifier: ^8.48.2
+        version: 8.70.0(eslint@9.39.5(jiti@2.7.0)(supports-color@7.2.0))(supports-color@7.2.0)(typescript@5.9.3)
+      vitest:
+        specifier: ^3.2.4
+        version: 3.2.7(@types/node@24.13.4)(jiti@2.7.0)(lightningcss@1.32.0)(supports-color@7.2.0)(tsx@4.23.13)(yaml@2.9.1)
+
   apps/funnel:
     dependencies:
       '@gict/bot-kit':
