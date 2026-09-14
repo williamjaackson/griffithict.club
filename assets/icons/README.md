@@ -17,6 +17,9 @@ Two rules learned the hard way:
   Anything much larger sits visibly heavier than its siblings at the same size.
   Judge it by eye afterwards, though: the star is deliberately bigger, because
   its concave points make it read smaller than the box it fills.
+- **Check a new mark against the ones that exist, not just on its own.** A
+  front-on plug drawn for Connect was a perfectly good plug and an almost exact
+  copy of the funnel's silhouette.
 - **Copy a shape rather than recalling it.** Boost took three attempts because
   the first two were drawn from memory. Discord's boost badge is 10.92 by 18.6
   on a 24 grid, an aspect of 0.59; both guesses were near 0.77, which is a house

@@ -1,0 +1,28 @@
+<!--
+  Connect — roles granted from account connections.
+
+  A shield with a tick: the outcome rather than the mechanism. The bot's job
+  ends in "you are verified, so you may come in", and that is the part a member
+  meeting it needs to understand.
+
+  Connection metaphors were tried first and every one failed. A front-on plug
+  reads as the funnel, which is already in this set. Two rings side by side read
+  as an infinity symbol; overlapped enough to interlock, their holes run into
+  each other. A node graph works but says network, not identity.
+
+  Scaled to 0.88: untouched the shield is 296 by 328, taller than anything else
+  here, and it sat heavier than the funnel's 276 by 264 beside it.
+-->
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" width="512" height="512">
+  <rect width="512" height="512" fill="#F4F2F0"/>
+  <defs><clipPath id="shield"><path d="M256,92 L404,146 V262 C404,336 336,392 256,420 C176,392 108,336 108,262 V146 Z"/></clipPath></defs>
+  <g transform="translate(256,256) scale(0.88) translate(-256,-256)">
+    <g clip-path="url(#shield)">
+      <rect width="512" height="512" fill="#111010"/>
+      <rect x="108" y="84" width="98.7" height="132" fill="#E51B13"/>
+      <rect x="206.7" y="84" width="98.7" height="132" fill="#F4674E"/>
+      <rect x="305.3" y="84" width="98.7" height="132" fill="#F9A99A"/>
+    </g>
+    <path d="M196,258 L238,300 L322,216" fill="none" stroke="#F4F2F0" stroke-width="34" stroke-linecap="round" stroke-linejoin="round"/>
+  </g>
+</svg>
