@@ -29,8 +29,12 @@ export const LOGOS = {
   /** Watermark in the red call-to-action band. */
   ctaWatermark: 'brandmark-background_frame-white',
 
-  /** Favicon, app icon, avatar. Named for this use in the guidelines. */
-  icon: 'brandmark-background_white-red',
+  /**
+   * Favicon, app icon, avatar. The guidelines name the white field for this, but
+   * a white tile disappears into pale browser chrome and into the light rows of
+   * a bookmark list, so the icon runs inverted: white mark on a red field.
+   */
+  icon: 'brandmark-background_red-white',
 
   /** Open Graph and social cards, where a filled field beats a transparent one. */
   social: 'lockup-inline-background_red-brandmark_white-wordmark_stacked_white',
